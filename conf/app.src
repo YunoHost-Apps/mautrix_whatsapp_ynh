@@ -1,0 +1,6 @@
+SOURCE_URL=https://github.com/tulir/mautrix-whatsapp/archive/44bb623e7a7486a0cdd13fd67b2aaca2ddba20ce.zip
+SOURCE_SUM=d661ed3c79514f6c636176981caffaa8fa5d71c35fc3d2a3a9ffcc12cdb46294
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=zip
+SOURCE_IN_SUBDIR=true
+#SOURCE_FILENAME=

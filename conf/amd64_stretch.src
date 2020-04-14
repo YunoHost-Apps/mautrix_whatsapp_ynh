@@ -1,0 +1,12 @@
+SOURCE_URL=https://mau.dev/tulir/mautrix-whatsapp/-/jobs/1879/artifacts/download
+#SOURCE_URL=https://mau.dev/tulir/mautrix-whatsapp/-/jobs/artifacts/static-build/download?job=1879
+SOURCE_SUM=2f9b9950b5432e12394eb01919a3c8226f9d25dd5a93e40906947692eb1f66a7
+# (Optional) Program to check the integrity (sha256sum, md5sum...)
+# default: sha256
+SOURCE_SUM_PRG=sha256sum
+# (Optional) Archive format
+# default: tar.gz
+SOURCE_FORMAT=zip
+# (Optional) Put false if sources are directly in the archive root
+# default: true
+SOURCE_IN_SUBDIR=true
