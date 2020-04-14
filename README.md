@@ -1,4 +1,5 @@
 # Matrix-WhatsApp puppeting bridge for YunoHost
+[![How components fit togeter](https://camo.githubusercontent.com/857d5c90de07312a60e02ce89efe7f8ece86ab6b/68747470733a2f2f67617a697a6f76612e6e65742f7075622f6d6175747269782d77686174736170702e706e67)](https://github.com/tulir/mautrix-whatsapp/wiki)
 
 [![Integration level](https://dash.yunohost.org/integration/mautrix-whatsapp_ynh.svg)](https://dash.yunohost.org/appci/app/mautrix-whatsapp_ynh)  
 [![Install Mautrix-WhatsApp with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=mautrix-whatsapp_ynh)
@@ -9,7 +10,7 @@
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
 ## Overview
-Matrix-WhatsApp puppeting bridge packaged as a YunoHost service.
+Matrix-WhatsApp puppeting bridge packaged as a YunoHost service. Messages, media and notifications are bridged between a whatsapp user and a matrix user. The bridge consists in a synapse app service and relies on postgresql (mysql also available). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
 **Shipped version:** 1.0
 
@@ -45,7 +46,7 @@ Can the app be used by multiple users?
 
 ## Limitations
 
-* Any known limitations.
+* Audio/Video calls are not bridged yet. It is recommended to install whatsapp on a virtual android running on a server. If whatsapp loses connection, e.g. the phone is set in flight mode, the bot has to be restarted by sending a reconnnect message in the matrix administration room.
 
 ## Additional information
 
