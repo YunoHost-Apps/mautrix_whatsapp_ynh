@@ -135,12 +135,12 @@ ynh_install_app_dependencies $pkg_dependencies
 # INSTALL GO
 #=================================================
 
-type /usr/lib/golang-1.11/bin > /dev/null || {
+type /usr/lib/go-1.11/bin > /dev/null || {
   ynh_script_progression --message="Installing go..." --time --weight=1
 	wget https://dl.google.com/go/go$GO_VERSION.linux-$architecture.tar.gz -q
   tar -C /usr/lib -xzf go$GO_VERSION.linux-$architecture.tar.gz
 }
-export PATH=$PATH:/usr/lib/golang-1.11/bin
+export PATH=$PATH:/usr/lib/go-1.11/bin
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
