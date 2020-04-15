@@ -28,8 +28,8 @@ ynh_abort_if_errors
 
 domain=$YNH_APP_ARG_DOMAIN
 #path_url=$YNH_APP_ARG_PATH
+whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 botadmin=$YNH_APP_ARG_BOTADMIN
-#whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 botusers=$YNH_APP_ARG_BOTUSERS
 is_public=$YNH_APP_ARG_IS_PUBLIC
 #language=$YNH_APP_ARG_LANGUAGE
@@ -87,11 +87,11 @@ ynh_script_progression --message="Storing installation settings..." --time --wei
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 #ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=whatsappbot --value=$whatsappbot
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
+ynh_app_setting_set --app=$app --key=botusers --value=$botusers
 ynh_app_setting_set --app=$app --key=mautrix_version --value=$upstream_version
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-#ynh_app_setting_set --app=$app --key=whatsappbot --value=$whatsappbot
-ynh_app_setting_set --app=$app --key=botusers --value=$botusers
 ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 #ynh_app_setting_set --app=$app --key=language --value=$language
 
@@ -251,7 +251,17 @@ ynh_replace_string --match_string="type: sqlite3" --replace_string="type: postgr
         #   SQLite: File name is enough. https://github.com/mattn/go-sqlite3#connection-string
         #   Postgres: Connection string. For example, postgres://user:password@host/database
 ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="uri: postgres://$mautrix_whatsapp_user@localhost:5432/$mautrix_whatsapp_db_name" --target_file="$final_path/config.yaml"
-        
+
+    # The unique ID of this appservice.
+    #id: whatsapp
+    ynh_replace_string --match_string="id: whatsapp" --replace_string="id: mautrix-$app" --target_file="$final_path/config.yaml"
+    # Appservice bot details.
+    #bot:
+        # Username of the appservice bot.
+        #username: whatsappbot
+	ynh_replace_string --match_string="username: whatsappbot" --replace_string="username: $mautrix_whatsapp_user" --target_file="$final_path/config.yaml"
+
+
         # Maximum number of connections. Mostly relevant for Postgres.
 ynh_replace_string --match_string="max_open_conns: 20" --replace_string="max_open_conns: 20" --target_file="$final_path/config.yaml"
 ynh_replace_string --match_string="max_idle_conns: 2" --replace_string="max_idle_conns: 2" --target_file="$final_path/config.yaml"
