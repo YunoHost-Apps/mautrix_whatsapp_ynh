@@ -264,12 +264,12 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
 
     # The unique ID of this appservice.
     #id: whatsapp
-    ynh_replace_string --match_string="id: whatsapp" --replace_string="id: $app" --target_file="$final_path/config.yaml"
+    ynh_replace_string --match_string="id: whatsapp" --replace_string="id: $whatsappbot" --target_file="$final_path/config.yaml"
     # Appservice bot details.
     #bot:
         # Username of the appservice bot.
         #username: whatsappbot
-	ynh_replace_string --match_string="username: whatsappbot" --replace_string="username: $mautrix_whatsapp_user" --target_file="$final_path/config.yaml"
+	ynh_replace_string --match_string="username: whatsappbot" --replace_string="username: $whatsappbot" --target_file="$final_path/config.yaml"
 
 
         # Maximum number of connections. Mostly relevant for Postgres.
