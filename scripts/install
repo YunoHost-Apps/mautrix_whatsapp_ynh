@@ -8,7 +8,7 @@
 
 source _common.sh
 #source /opt/yunohost/mautrix-whatsapp/_ynh_install_extra_app_dependencies
-source _ynh_install_extra_app_dependencies
+#source _ynh_install_extra_app_dependencies
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -162,14 +162,14 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 
 # WARNING : theses command are used in INSTALL, UPGRADE (2 times)
 # For any update do it in all files
-if [ -n "$(uname -m | grep 64)" ]
-then
-    ynh_setup_source --dest_dir=$final_path/ --source_id="amd64_$(lsb_release --codename --short)"
-else
+#if [ -n "$(uname -m | grep 64)" ]
+#then
+#    ynh_setup_source --dest_dir=$final_path/ --source_id="amd64_$(lsb_release --codename --short)"
+#else
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path"
-fi
+#fi
 
 #=================================================
 # CREATE DEDICATED USER
@@ -205,8 +205,8 @@ ynh_add_systemd_config --service=mautrix-$app --template=mautrix-whatsapp.servic
 #=================================================
 
 cd $final_path
-echo 'export PATH=$PATH:/usr/lib/go-1.11/bin/' >> /etc/profile
-source /etc/profile
+#echo 'export PATH=$PATH:/usr/lib/go-1.11/bin/' >> /etc/profile
+#source /etc/profile
 go build
 #Copy example-config.yaml to config.yaml
 cp example-config.yaml config.yaml
