@@ -135,12 +135,12 @@ ynh_install_app_dependencies $pkg_dependencies
 # INSTALL GO
 #=================================================
 
-type /usr/local/go/bin/go > /dev/null || {
+type /usr/lib/go/bin/go > /dev/null || {
   ynh_script_progression --message="Installing go..." --time --weight=1
 	wget https://dl.google.com/go/go$GO_VERSION.linux-$architecture.tar.gz -q
-  tar -C /usr/local -xzf go$GO_VERSION.linux-$architecture.tar.gz
+  tar -C /usr/lib -xzf go$GO_VERSION.linux-$architecture.tar.gz
 }
-export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:/usr/lib/go/bin
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -332,10 +332,6 @@ fi
 ynh_replace_string --match_string="#app_service_config_files:" --replace_string="app_service_config_files:" --target_file="/etc/matrix-synapse/homeserver.yaml"
 ynh_replace_string --match_string="#  - app_service_1.yaml" --replace_string="  - '/etc/matrix-synapse/$app-registration.yaml'" --target_file="/etc/matrix-synapse/homeserver.yaml"
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
-service matrix-synapse restart
-#Run the bridge with
-#service mautrix-whatsapp restart
-#./mautrix-whatsapp.
 
 
 #=================================================
@@ -377,6 +373,11 @@ chown $mautrix_whatsapp_user:root -R $final_path
 
 chown /etc/matrix-synapse/$app-registration.yaml --reference="/etc/matrix-synapse/homeserver.yaml"
 chmod u=rwX,g=rX,o= /etc/matrix-synapse/$app-registration.yaml
+#You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
+service matrix-synapse restart
+#Run the bridge with
+#service mautrix-whatsapp restart
+#./mautrix-whatsapp.
 
 #=================================================
 # SETUP LOGROTATE
