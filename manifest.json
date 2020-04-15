@@ -3,19 +3,20 @@
     "id": "whatsapp",
     "packaging_format": 1,
     "description": {
-        "en": "Matrix-WhatsApp puppeting bridge packaged as a YunoHost service.",
+        "en": "A Matrix-WhatsApp puppeting bridge packaged as a YunoHost service.",
         "fr": "Passerelle WhatsApp exploitant matrix-synapse et un service d'application matrix packagé comme un service YunoHost."
     },
     "version": "1.0~ynh1",
     "url": "https://github.com/tulir/mautrix-whatsapp",
-    "license": "free",
+    "license": "AGPL3",
     "maintainer": {
         "name": "Gredin67",
         "email": "ghentz@mailz.org",
-        "url": "https://github.com/Gredin67/mautrix-whatsapp_ynh"
+        "url": "https://github.com/YunoHost-Apps/mautrix-whatsapp_ynh"
     },
     "requirements": {
         "yunohost": ">= 3.5"
+	"synapse": ">= 1.11.0"
     },
     "multi_instance": true,
     "services": [
@@ -35,10 +36,11 @@
                 "name": "botadmin",
                 "type": "string",
                 "ask": {
-                    "en": "Choose the matrix account admin of the whatsapp bot",
+                    "en": "Choose the matrix account administrator of the whatsapp bot",
                     "fr": "Choisissez le compte matrix administrateur du robot whatsapp"
                 },
                 "example": "@johndoe:domain.org or @johndoe:matrix.org"
+		"default": "Your main matrix account"
             },
 	    {
                 "name": "botusers",
