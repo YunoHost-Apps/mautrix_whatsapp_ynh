@@ -375,7 +375,7 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #setfacl -R -m user:turnserver:rX  /etc/matrix-$app
 #setfacl -R -m user:turnserver:rwX  /var/log/matrix-$app
 
-chown $app:root /etc/matrix-synapse/$app-registration.yaml
+chown /etc/matrix-synapse/$app-registration.yaml --reference="/etc/matrix-synapse/homeserver.yaml"
 chmod u=rwX,g=rX,o= /etc/matrix-synapse/$app-registration.yaml
 
 #=================================================
