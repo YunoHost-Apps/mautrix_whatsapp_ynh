@@ -271,13 +271,13 @@ ynh_replace_string --match_string="max_idle_conns: 2" --replace_string="max_idle
 #        "example.com": user
 #        "@admin:example.com": admin
 #ynh_replace_string --match_string=""*": relaybot" --replace_string=""*": relaybot" --target_file="$final_path/config.yaml"
-ynh_replace_string --match_string="@admin:example.com" --replace_string="$admin" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="@admin:example.com" --replace_string="$botadmin" --target_file="$final_path/config.yaml"
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
 ynh_replace_string --match_string="example.com" --replace_string="domain" --target_file="$final_path/config.yaml"
 else
-ynh_replace_string --match_string="example.com" --replace_string="$authorized" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="example.com" --replace_string="$botusers" --target_file="$final_path/config.yaml"
 fi
 
 #    relaybot:
