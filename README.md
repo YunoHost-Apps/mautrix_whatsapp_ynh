@@ -1,4 +1,4 @@
-# Matrix-WhatsApp puppeting bridge for YunoHost
+# A Matrix-WhatsApp puppeting bridge for YunoHost
 [![How components fit togeter](https://camo.githubusercontent.com/857d5c90de07312a60e02ce89efe7f8ece86ab6b/68747470733a2f2f67617a697a6f76612e6e65742f7075622f6d6175747269782d77686174736170702e706e67)](https://github.com/tulir/mautrix-whatsapp/wiki)
 
 [![Integration level](https://dash.yunohost.org/integration/mautrix-whatsapp_ynh.svg)](https://dash.yunohost.org/appci/app/mautrix-whatsapp_ynh)  
@@ -10,7 +10,7 @@
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
 ## Overview
-Matrix-WhatsApp puppeting bridge packaged as a YunoHost service. Messages, media and notifications are bridged between a whatsapp user and a matrix user. The bridge consists in a synapse app service and relies on postgresql (mysql also available). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
+A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. Messages, media and notifications are bridged between a whatsapp user and a matrix user. The matrix user can invite other matrix user in a bridged whatsapp room, such that even people without a whatsapp account can participate to whatsapp group conversations. The ["mautrix-whatsapp"](https://github.com/tulir/mautrix-whatsapp/wiki) bridge consists in a synapse app service and relies on postgresql (mysql also available). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
 **Shipped version:** 1.0
 
