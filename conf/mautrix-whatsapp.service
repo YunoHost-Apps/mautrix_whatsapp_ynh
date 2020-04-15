@@ -4,10 +4,9 @@ After=matrix-synapse.service
 
 [Service]
 Type=simple
-User=mautrix-__APP__
-WorkingDirectory=/opt/yunohost/mautrix-__APP__
-ExecStartPre=/opt/yunohost/mmautrix-__APP__/mautrix-whatsapp --config-path=/opt/yunohost/mmautrix-__APP__/config.yaml --config-path=/etc/matrix-synapse/homeserver.yaml --generate-keys
-ExecStart=/opt/yunohost/mautrix-__APP__/mautrix-whatsapp --config-path=/opt/yunohost/mmautrix-__APP__/config.yaml --config-path=/etc/matrix-synapse/homeserver.yaml
+User=__APP__
+WorkingDirectory=/opt/yunohost/__APP__
+ExecStart=/opt/yunohost/__APP__/mautrix-whatsapp -c=/opt/yunohost/__APP__/config.yaml >> /var/log/__APP__/__APP__.log 2>&1
 Restart=always
 RestartSec=3
 

@@ -45,15 +45,15 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 ### The app instance name is probably what interests you most, since this is
 ### guaranteed to be unique. This is a good unique identifier to define installation path,
 ### db names, ...
-app="$YNH_APP_INSTANCE_NAME"
+app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
 # SET CONSTANTS
 #=================================================
 
-mautrix_whatsapp_user="mautrix-$app"
-mautrix_whatsapp_db_name="mautrix_$app"
-mautrix_whatsapp_db_user="mautrix_$app"
+mautrix_whatsapp_user=$app
+mautrix_whatsapp_db_name=$app
+mautrix_whatsapp_db_user=$app
 upstream_version=$(ynh_app_upstream_version)
 #report_stats="false"
 #allow_public_rooms="false"
@@ -74,7 +74,7 @@ ynh_script_progression --message="Validating installation parameters..." --time 
 
 ### If the app uses nginx as web server (written in HTML/PHP in most cases), the final path should be "/var/www/$app".
 ### If the app provides an internal web server (or uses another application server such as uwsgi), the final path should be "/opt/yunohost/$app"
-final_path=/opt/yunohost/mautrix-$app
+final_path=/opt/yunohost/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
 # Register (book) web path
@@ -132,6 +132,17 @@ ynh_script_progression --message="Installing dependencies..." --time --weight=1
 ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
+# INSTALL GO
+#=================================================
+
+type /usr/local/go/bin/go > /dev/null || {
+  ynh_script_progression --message="Installing go..." --time --weight=1
+	wget https://dl.google.com/go/go$GO_VERSION.linux-$architecture.tar.gz -q
+  tar -C /usr/local -xzf go$GO_VERSION.linux-$architecture.tar.gz
+}
+export PATH=$PATH:/usr/local/go/bin
+
+#=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
 ynh_script_progression --message="Creating a PostgreSQL database..." --weight=4
@@ -147,7 +158,7 @@ ynh_print_OFF
 ynh_psql_create_user $mautrix_whatsapp_db_user $mautrix_whatsapp_db_pwd
 ynh_print_ON
 ynh_psql_execute_as_root \
---sql="CREATE DATABASE $mautrix_whatsapp_db_name ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER $mautrix_whatsapp_db_user;"
+--sql="CREATE DATABASE ""$mautrix_whatsapp_db_name"" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER ""$mautrix_whatsapp_db_user"";"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -179,7 +190,6 @@ ynh_script_progression --message="Configuring system user..." --time --weight=1
 # Create a system user
 ynh_system_user_create --username=$mautrix_whatsapp_user
 
-
 #=================================================
 # SETUP SYSTEMD
 #=================================================
@@ -197,8 +207,8 @@ ynh_script_progression --message="Configuring a systemd service..." --time --wei
 ###		- And the section "SETUP SYSTEMD" in the upgrade script
 
 # Create systemd config for mautrix-whatsapp
-#cp ../conf/default_mautrix-whatsapp /etc/default/mautrix-$app
-ynh_add_systemd_config --service=mautrix-$app --template=mautrix-whatsapp.service
+#cp ../conf/default_mautrix-whatsapp /etc/default/$app
+ynh_add_systemd_config --service=$app --template=mautrix-whatsapp.service
 
 #=================================================
 # SPECIFIC SETUP
@@ -231,7 +241,7 @@ cp example-config.yaml config.yaml
 ynh_replace_string --match_string="address: https://example.com" --replace_string="address: https://$domain" --target_file="$final_path/config.yaml"
     # The domain of the homeserver (for MXIDs, etc).
     #"domain: example.com"
-ynh_replace_string --match_string="domain: example.com" --replace_string="domain: "$domain --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="domain: example.com" --replace_string="domain: $domain" --target_file="$final_path/config.yaml"
 
 # Application service host/registration related details.
 # Changing these values requires regeneration of the registration.
@@ -250,11 +260,11 @@ ynh_replace_string --match_string="type: sqlite3" --replace_string="type: postgr
         # The database URI.
         #   SQLite: File name is enough. https://github.com/mattn/go-sqlite3#connection-string
         #   Postgres: Connection string. For example, postgres://user:password@host/database
-ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="uri: postgres://$mautrix_whatsapp_user@localhost:5432/$mautrix_whatsapp_db_name" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="uri: postgres://$mautrix_whatsapp_user:$mautrix_whatsapp_db_pwd@localhost:5432/$mautrix_whatsapp_db_name" --target_file="$final_path/config.yaml"
 
     # The unique ID of this appservice.
     #id: whatsapp
-    ynh_replace_string --match_string="id: whatsapp" --replace_string="id: mautrix-$app" --target_file="$final_path/config.yaml"
+    ynh_replace_string --match_string="id: whatsapp" --replace_string="id: $app" --target_file="$final_path/config.yaml"
     # Appservice bot details.
     #bot:
         # Username of the appservice bot.
@@ -313,7 +323,7 @@ fi
 #Generate the appservice registration file by running ./mautrix-whatsapp -g.
     #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
 ./mautrix-whatsapp -g -r /etc/matrix-synapse/mautrix-whatsapp-registration.yaml
-#Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files. 
+#Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 # A list of application service config files to use
 #
 #app_service_config_files:
@@ -323,7 +333,7 @@ ynh_replace_string --match_string="#app_service_config_files:" --replace_string=
 ynh_replace_string --match_string="#  - app_service_1.yaml" --replace_string="  - '/etc/matrix-synapse/mautrix-whatsapp-registration.yaml'" --target_file="/etc/matrix-synapse/homeserver.yaml"
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
 service matrix-synapse restart
-#Run the bridge with 
+#Run the bridge with
 #service mautrix-whatsapp restart
 #./mautrix-whatsapp.
 
@@ -357,10 +367,10 @@ ynh_store_file_checksum --file="/etc/matrix-synapse/homeserver.yaml"
 # For any update do it in all files
 chown $mautrix_whatsapp_user:root -R $final_path
 #chmod 770 $final_path/Coturn_config_rotate.sh
-#chown $mautrix_whatsapp_user:root -R /var/lib/mautrix-$app
-#chown $mautrix_whatsapp_user:root -R /var/log/mautrix-$app
-#chown $mautrix_whatsapp_user:root -R /etc/mautrix-$app
-#chmod u=rwX,g=rX,o= -R /etc/mautrix-$app
+#chown $mautrix_whatsapp_user:root -R /var/lib/$app
+#chown $mautrix_whatsapp_user:root -R /var/log/$app
+#chown $mautrix_whatsapp_user:root -R /etc/$app
+#chmod u=rwX,g=rX,o= -R /etc/$app
 #chmod 600 /etc/matrix-$app/$server_name.signing.key
 #setfacl -R -m user:turnserver:rX  /etc/matrix-$app
 #setfacl -R -m user:turnserver:rwX  /var/log/matrix-$app
@@ -382,7 +392,7 @@ ynh_script_progression --message="Configuring log rotation..." --time --weight=1
 ###		- And the section "SETUP LOGROTATE" in the upgrade script
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/mautrix-$app"
+ynh_use_logrotate --logfile "/var/log/$app"
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
@@ -396,7 +406,7 @@ ynh_use_logrotate --logfile "/var/log/mautrix-$app"
 ###		- Remove the section "REMOVE SERVICE FROM ADMIN PANEL" in the remove script
 ###		- As well as the section "ADVERTISE SERVICE IN ADMIN PANEL" in the restore script
 
-yunohost service add mautrix-$app --log "/var/log/mautrix-$app/mautrix-whatsapp.log"
+yunohost service add $app --log "/var/log/$app/mautrix-whatsapp.log"
 # if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
 #yunohost service add $app --description "$app daemon for XXX" --log "/var/log/$app/$app.log"
 
@@ -414,7 +424,7 @@ ynh_script_progression --message="Starting a systemd service..." --time --weight
 ###		- And the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the change_url script
 
 # Start a systemd service
-ynh_systemd_action --service_name=mautrix-$app --action="start" --line_match="Bot now ready to bridge Whatsapp and Matrix users from $botusers" --log_path="/var/log/mautrix-$app/mautrix-whatsapp.log" --timeout=300
+ynh_systemd_action --service_name=$app --action="start" --line_match="Bot now ready to bridge Whatsapp and Matrix users from $botusers" --log_path="/var/log/$app/mautrix-whatsapp.log" --timeout=300
 
 #=================================================
 # SETUP FAIL2BAN
@@ -448,4 +458,4 @@ ynh_add_fail2ban_config --use_template
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of mautrix-$app completed" --time --last
+ynh_script_progression --message="Installation of $app completed" --time --last
