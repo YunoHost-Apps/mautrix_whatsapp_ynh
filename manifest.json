@@ -19,8 +19,6 @@
     },
     "multi_instance": true,
     "services": [
-        "matrix-synapse",
-        "postgres"
     ],
     "arguments": {
         "install" : [
