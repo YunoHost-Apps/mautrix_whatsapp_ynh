@@ -135,12 +135,12 @@ ynh_install_app_dependencies $pkg_dependencies
 # INSTALL GO
 #=================================================
 
-type /usr/lib/go/bin/go > /dev/null || {
+type /usr/lib/golang-1.11/bin > /dev/null || {
   ynh_script_progression --message="Installing go..." --time --weight=1
 	wget https://dl.google.com/go/go$GO_VERSION.linux-$architecture.tar.gz -q
   tar -C /usr/lib -xzf go$GO_VERSION.linux-$architecture.tar.gz
 }
-export PATH=$PATH:/usr/lib/go/bin
+export PATH=$PATH:/usr/lib/golang-1.11/bin
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -295,7 +295,7 @@ ynh_replace_string --match_string="@admin:example.com" --replace_string="$botadm
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-ynh_replace_string --match_string="example.com" --replace_string="domain" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="example.com" --replace_string="$domain" --target_file="$final_path/config.yaml"
 else
 ynh_replace_string --match_string="example.com" --replace_string="$botusers" --target_file="$final_path/config.yaml"
 fi
