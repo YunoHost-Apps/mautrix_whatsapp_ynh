@@ -50,6 +50,8 @@ ynh_script_progression --message="Removing the MySQL database..." --time --weigh
 
 # Remove a database if it exists, along with the associated user
 ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
+ynh_psql_drop_db $app
+ynh_psql_drop_user $app
 
 #=================================================
 # REMOVE DEPENDENCIES
@@ -66,6 +68,8 @@ ynh_script_progression --message="Removing app main directory..." --time --weigh
 
 # Remove the app directory securely
 ynh_secure_remove --file="$final_path"
+
+ynh_secure_remove --file="/etc/matrix-synapse/$app-registration.yaml"
 
 #=================================================
 # REMOVE NGINX CONFIGURATION
