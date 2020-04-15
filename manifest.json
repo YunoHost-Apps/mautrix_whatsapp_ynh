@@ -33,6 +33,16 @@
 				"example": "domain.org"
             },            
 	    {
+                "name": "whatsappbot",
+                "type": "string",
+                "ask": {
+                    "en": "Choose the user name of the whatsapp bot for which to create a YunoHost and a local synapse server account",
+                    "fr": "Choisissez le nom d'utilisateur du robot whatsapp pour lequel un compte sera créé sur YunoHost et le serveur local synapse"
+                },
+                "example": "whatsappbot"
+		"default": "whatsappbot"
+            },
+	    {
                 "name": "botadmin",
                 "type": "string",
                 "ask": {
