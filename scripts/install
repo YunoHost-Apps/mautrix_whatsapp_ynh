@@ -264,14 +264,22 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
 
     # The unique ID of this appservice.
     #id: whatsapp
-    ynh_replace_string --match_string="id: whatsapp" --replace_string="id: $whatsappbot" --target_file="$final_path/config.yaml"
+    #ynh_replace_string --match_string="id: whatsapp" --replace_string="id: $whatsappbot" --target_file="$final_path/config.yaml"
     # Appservice bot details.
     #bot:
         # Username of the appservice bot.
         #username: whatsappbot
 	ynh_replace_string --match_string="username: whatsappbot" --replace_string="username: $whatsappbot" --target_file="$final_path/config.yaml"
-
-
+# Bridge config
+#bridge:
+    # Localpart template of MXIDs for WhatsApp users.
+    # {{.}} is replaced with the phone number of the WhatsApp user.
+    #username_template: whatsapp_{{.}}
+    #ynh_replace_string --match_string="username_template: whatsapp" --replace_string="username_template: $whatsappbot" --target_file="$final_path/config.yaml"
+    # {{.Localpart}} is the MXID localpart and {{.Server}} is the MXID server part of the user.
+    #community_template: whatsapp_{{.Localpart}}={{.Server}}
+    #ynh_replace_string --match_string="community_template: whatsapp" --replace_string="community_template: $whatsappbot" --target_file="$final_path/config.yaml"
+    
         # Maximum number of connections. Mostly relevant for Postgres.
 ynh_replace_string --match_string="max_open_conns: 20" --replace_string="max_open_conns: 20" --target_file="$final_path/config.yaml"
 ynh_replace_string --match_string="max_idle_conns: 2" --replace_string="max_idle_conns: 2" --target_file="$final_path/config.yaml"
