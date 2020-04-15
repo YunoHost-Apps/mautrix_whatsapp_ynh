@@ -5,7 +5,7 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies="postgresql postgresql-client"
+pkg_dependencies=""
 
 #=================================================
 # PERSONAL HELPERS
