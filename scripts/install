@@ -388,7 +388,7 @@ ynh_store_file_checksum --file="/etc/matrix-synapse/homeserver.yaml"
 chown $mautrix_whatsapp_user:root -R $final_path
 #chmod 770 $final_path/Coturn_config_rotate.sh
 #chown $mautrix_whatsapp_user:root -R /var/lib/$app
-chown $mautrix_whatsapp_user:root -R /var/log/$app
+#chown $mautrix_whatsapp_user:root -R /var/log/$app
 #chown $mautrix_whatsapp_user:root -R /etc/$app
 #chmod u=rwX,g=rX,o= -R /etc/$app
 #chmod 600 /etc/matrix-$app/$server_name.signing.key
