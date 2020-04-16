@@ -264,7 +264,7 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
 
     # The unique ID of this appservice.
     #id: whatsapp
-    #ynh_replace_string --match_string="id: whatsapp" --replace_string="id: $whatsappbot" --target_file="$final_path/config.yaml"
+    ynh_replace_string --match_string="id: whatsapp" --replace_string="id: $whatsappbot" --target_file="$final_path/config.yaml"
     # Appservice bot details.
     #bot:
         # Username of the appservice bot.
@@ -341,7 +341,23 @@ ynh_replace_string --match_string="#app_service_config_files:" --replace_string=
 ynh_replace_string --match_string="#  - app_service_1.yaml" --replace_string="  - '/etc/matrix-synapse/$app-registration.yaml'" --target_file="/etc/matrix-synapse/homeserver.yaml"
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
 
-
+# Logging config.
+#logging:
+    # The directory for log files. Will be created if not found.
+    #directory: ./logs
+    ynh_replace_string --match_string="directory: ./logs" --replace_string="/var/log/$app" --target_file="/etc/matrix-synapse/homeserver.yaml"
+    # Available variables: .Date for the file date and .Index for different log files on the same day.
+    #file_name_format: "{{.Date}}-{{.Index}}.log"
+    # Date format for file names in the Go time format: https://golang.org/pkg/time/#pkg-constants
+    #file_date_format: 2006-01-02
+    # Log file permissions.
+    #file_mode: 0600
+    # Timestamp format for log entries in the Go time format.
+    #timestamp_format: Jan _2, 2006 15:04:05
+    # Minimum severity for log messages.
+    # Options: debug, info, warn, error, fatal
+    #print_level: debug
+    
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
 #=================================================
@@ -372,7 +388,7 @@ ynh_store_file_checksum --file="/etc/matrix-synapse/homeserver.yaml"
 chown $mautrix_whatsapp_user:root -R $final_path
 #chmod 770 $final_path/Coturn_config_rotate.sh
 #chown $mautrix_whatsapp_user:root -R /var/lib/$app
-#chown $mautrix_whatsapp_user:root -R /var/log/$app
+chown $mautrix_whatsapp_user:root -R /var/log/$app
 #chown $mautrix_whatsapp_user:root -R /etc/$app
 #chmod u=rwX,g=rX,o= -R /etc/$app
 #chmod 600 /etc/matrix-$app/$server_name.signing.key
