@@ -67,12 +67,8 @@ https://github.com/tulir/mautrix-whatsapp/wiki
 Developers info
 ----------------
 
-**Only if you want to use a testing branch for coding, instead of merging directly into master.**
-Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/REPLACEBYYOURAPP_ynh/tree/testing).
-
-To try the testing branch, please proceed like that.
+To test communication between the app service and synapse on a VM, you must install a certificate:
 ```
-sudo yunohost app install https://github.com/YunoHost-Apps/REPLACEBYYOURAPP_ynh/tree/testing --debug
-or
-sudo yunohost app upgrade REPLACEBYYOURAPP -u https://github.com/YunoHost-Apps/REPLACEBYYOURAPP_ynh/tree/testing --debug
+echo | openssl s_client -showcerts -servername synapse.vm -connect synapse.vm:443 2>/dev/null | awk '/-----BEGIN CERTIFICATE-----/, /-----END CERTIFICATE-----/' >> /usr/local/share/ca-certificates/synapse.vm.crt
+update-ca-certificates
 ```
