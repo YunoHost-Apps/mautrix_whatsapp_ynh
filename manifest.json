@@ -43,7 +43,7 @@
 				"help": {
 					"en": "Invite @whatsappbot:domain.org from an authorize Matrix account to setup the bridge.",
 					"fr": "Inviter @whatsappbot:domain.org depuis votre compte Matrix principal pour démarrer la passerelle."
-				}
+				},
 				"default": "whatsappbot"
 			},
 			{
@@ -57,7 +57,7 @@
 				"help": {
 					"en": "The WhatsApp bot administrator does not need to be a local Matrix/Synapse account.",
 					"fr": "Le compte administrateur du robot WhatsApp peut ne pas etre un compte Matrix/Synapse local."
-				}
+				},
 				"default": "Your main Matrix account"
 			},
 			{
@@ -67,8 +67,8 @@
 					"en": "Choose Matrix user(s) authorized to use the WhatsApp bot.",
 					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser le robot WhatsApp."
 				},
-				"example": "@johndoe:domain.org or matrix.org or *"
-				"default": ""
+				"example": "@johndoe:domain.org or matrix.org or *",
+				"default": "",
 				"help": {
 					"en": "Either the administrator only (), a Matrix user (@johndoe:domain.org), a server (matrix.org) or all servers (*) can be authorized.",
 					"fr": "On peut autoriser le compte administrateur seul (), un compte (@johndoe:domain.org), un serveur (matrix.org) ou tous les serveurs Matrix (*)."
