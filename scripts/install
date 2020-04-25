@@ -26,8 +26,9 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-domain=$YNH_APP_ARG_DOMAIN
+#domain=$YNH_APP_ARG_DOMAIN
 #path_url=$YNH_APP_ARG_PATH
+port=$YNH_APP_ARG_PORT
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
@@ -46,6 +47,16 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 ### guaranteed to be unique. This is a good unique identifier to define installation path,
 ### db names, ...
 app=$YNH_APP_INSTANCE_NAME
+
+if [ $YNH_APP_INSTANCE_NUMBER -eq "1" ]
+then
+server_name=$(ynh_app_setting_get --app synapse --key server_name)
+domain=$(ynh_app_setting_get --app synapse --key domain)
+else
+server_name=$(ynh_app_setting_get --app synapse__$YNH_APP_INSTANCE_NUMBER --key server_name)
+domain=$(ynh_app_setting_get --app synapse__$YNH_APP_INSTANCE_NUMBER --key domain)
+fi
+
 
 #=================================================
 # SET CONSTANTS
@@ -86,6 +97,8 @@ test ! -e "$final_path" || ynh_die --message="This path already contains a folde
 ynh_script_progression --message="Storing installation settings..." --time --weight=1
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=server_name --value=$server_name
+ynh_app_setting_set --app=$app --key=port --value=$port
 #ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=whatsappbot --value=$whatsappbot
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
@@ -241,17 +254,17 @@ cp example-config.yaml config.yaml
 ynh_replace_string --match_string="address: https://example.com" --replace_string="address: https://$domain" --target_file="$final_path/config.yaml"
     # The domain of the homeserver (for MXIDs, etc).
     #"domain: example.com"
-ynh_replace_string --match_string="domain: example.com" --replace_string="domain: $domain" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="domain: example.com" --replace_string="domain: $server_name" --target_file="$final_path/config.yaml"
 
 # Application service host/registration related details.
 # Changing these values requires regeneration of the registration.
 #appservice:
     # The address that the homeserver can use to connect to this appservice.
-#ynh_replace_string --match_string="address: http://localhost:29318" --replace_string="address: http://localhost:8449" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="address: http://localhost:29318" --replace_string="address: http://localhost:$port" --target_file="$final_path/config.yaml"
 
     # The hostname and port where this appservice should listen.
 #ynh_replace_string --match_string="hostname: 0.0.0.0" --replace_string="hostname: 0.0.0.0" --target_file="$final_path/config.yaml"
-#ynh_replace_string --match_string="port: 29318" --replace_string="port: 8449" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="port: 29318" --replace_string="port: $port" --target_file="$final_path/config.yaml"
 
     # Database config.
     #database:

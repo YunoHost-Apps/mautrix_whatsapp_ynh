@@ -24,20 +24,31 @@
 	"arguments": {
 		"install": [
       {
-				"name": "domain",
-				"type": "domain",
+				"name": "port",
+				"type": "string",
 				"ask": {
-					"en": "Choose the domain name where the local Matrix/Synapse instance is installed.",
-					"fr": "Choisissez le nom de domaine associé à l'instance locale Matrix/Synapse."
+					"en": "Choose a port for communication between app service and home server",
+					"fr": "Choisissez un port pour la communication entre l'app service et le home server"
 				},
-				"example": "domain.org"
+				"example": "29318",
+				"default": "8449"
+			},
+			{
+				"name": "synapsenumber",
+				"type": "string",
+				"ask": {
+					"en": "Choose the synapse instance number to communicate with app service",
+					"fr": "Choisissez le numéro de l'instance synapse qui doit communiquer avec l'app service"
+				},
+				"example": "2",
+				"default": "1"
 			},
 			{
 				"name": "whatsappbot",
 				"type": "string",
 				"ask": {
-					"en": "Choose the local Matrix/Synapse user name of the WhatsApp bot.",
-					"fr": "Choisissez le nom d'utilisateur local Matrix/Synapse du robot WhatsApp."
+					"en": "Choose the local Matrix/Synapse user name of the WhatsApp bot",
+					"fr": "Choisissez le nom d'utilisateur local Matrix/Synapse du robot WhatsApp"
 				},
 				"example": "whatsappbot",
 				"help": {
@@ -50,8 +61,8 @@
 				"name": "botadmin",
 				"type": "string",
 				"ask": {
-					"en": "Choose the Matrix account administrator of the WhatsApp bot.",
-					"fr": "Choisissez le compte Matrix administrateur du robot WhatsApp."
+					"en": "Choose the Matrix account administrator of the WhatsApp bot",
+					"fr": "Choisissez le compte Matrix administrateur du robot WhatsApp"
 				},
 				"example": "@johndoe:domain.org or @johndoe:matrix.org",
 				"help": {
@@ -64,8 +75,8 @@
 				"name": "botusers",
 				"type": "string",
 				"ask": {
-					"en": "Choose Matrix user(s) authorized to use the WhatsApp bot.",
-					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser le robot WhatsApp."
+					"en": "Choose Matrix user(s) authorized to use the WhatsApp bot",
+					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser le robot WhatsApp"
 				},
 				"example": "@johndoe:domain.org or matrix.org or *",
 				"default": "",
