@@ -247,11 +247,11 @@ ynh_replace_string --match_string="domain: example.com" --replace_string="domain
 # Changing these values requires regeneration of the registration.
 #appservice:
     # The address that the homeserver can use to connect to this appservice.
-ynh_replace_string --match_string="address: http://localhost:29318" --replace_string="address: http://0.0.0.0:8449" --target_file="$final_path/config.yaml"
+#ynh_replace_string --match_string="address: http://localhost:29318" --replace_string="address: http://localhost:8449" --target_file="$final_path/config.yaml"
 
     # The hostname and port where this appservice should listen.
 #ynh_replace_string --match_string="hostname: 0.0.0.0" --replace_string="hostname: 0.0.0.0" --target_file="$final_path/config.yaml"
-ynh_replace_string --match_string="port: 29318" --replace_string="port: 8449" --target_file="$final_path/config.yaml"
+#ynh_replace_string --match_string="port: 29318" --replace_string="port: 8449" --target_file="$final_path/config.yaml"
 
     # Database config.
     #database:
@@ -281,8 +281,8 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
     #ynh_replace_string --match_string="community_template: whatsapp" --replace_string="community_template: $whatsappbot" --target_file="$final_path/config.yaml"
     
         # Maximum number of connections. Mostly relevant for Postgres.
-ynh_replace_string --match_string="max_open_conns: 20" --replace_string="max_open_conns: 20" --target_file="$final_path/config.yaml"
-ynh_replace_string --match_string="max_idle_conns: 2" --replace_string="max_idle_conns: 2" --target_file="$final_path/config.yaml"
+#ynh_replace_string --match_string="max_open_conns: 20" --replace_string="max_open_conns: 20" --target_file="$final_path/config.yaml"
+#ynh_replace_string --match_string="max_idle_conns: 2" --replace_string="max_idle_conns: 2" --target_file="$final_path/config.yaml"
 
     #You will also need to add your user of admin user under the permissions section.
     # Permissions for using the bridge.
@@ -328,6 +328,27 @@ fi
 #            m.video: "<b>{{ .Sender.Displayname }}</b> sent a video"
 #            m.location: "<b>{{ .Sender.Displayname }}</b> sent a location"
 
+# Logging config.
+#logging:
+    # The directory for log files. Will be created if not found.
+    #directory: ./logs
+    ynh_replace_string --match_string="directory: ./logs" --replace_string="directory: /var/log/$app" --target_file="$final_path/config.yaml"
+    # Available variables: .Date for the file date and .Index for different log files on the same day.
+    #file_name_format: "{{.Date}}-{{.Index}}.log"
+    ynh_replace_string --match_string="{{.Date}}-{{.Index}}.log" --replace_string="log.log" --target_file="$final_path/config.yaml"
+    # Date format for file names in the Go time format: https://golang.org/pkg/time/#pkg-constants
+    #file_date_format: 2006-01-02
+    ynh_replace_string --match_string="file_date_format: 2006-01-02" --replace_string="#file_date_format: 2006-01-02" --target_file="$final_path/config.yaml"
+    # Log file permissions.
+    #file_mode: 0600
+    #ynh_replace_string --match_string="file_mode: 0600" --replace_string="file_mode: 384" --target_file="$final_path/config.yaml"
+    # Timestamp format for log entries in the Go time format.
+    #timestamp_format: Jan _2, 2006 15:04:05
+    # Minimum severity for log messages.
+    # Options: debug, info, warn, error, fatal
+    #print_level: debug
+    ynh_replace_string --match_string="print_level: debug" --replace_string="print_level: warn" --target_file="$final_path/config.yaml"
+  
 #Generate the appservice registration file by running ./mautrix-whatsapp -g.
     #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
 ./mautrix-whatsapp -g -r /etc/matrix-synapse/$app-registration.yaml
@@ -341,23 +362,7 @@ ynh_replace_string --match_string="#app_service_config_files:" --replace_string=
 ynh_replace_string --match_string="#  - app_service_1.yaml" --replace_string="  - '/etc/matrix-synapse/$app-registration.yaml'" --target_file="/etc/matrix-synapse/homeserver.yaml"
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
 
-# Logging config.
-#logging:
-    # The directory for log files. Will be created if not found.
-    #directory: ./logs
-    ynh_replace_string --match_string="directory: ./logs" --replace_string="/var/log/$app" --target_file="/etc/matrix-synapse/homeserver.yaml"
-    # Available variables: .Date for the file date and .Index for different log files on the same day.
-    #file_name_format: "{{.Date}}-{{.Index}}.log"
-    # Date format for file names in the Go time format: https://golang.org/pkg/time/#pkg-constants
-    #file_date_format: 2006-01-02
-    # Log file permissions.
-    #file_mode: 0600
-    # Timestamp format for log entries in the Go time format.
-    #timestamp_format: Jan _2, 2006 15:04:05
-    # Minimum severity for log messages.
-    # Options: debug, info, warn, error, fatal
-    #print_level: debug
-    
+  
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
 #=================================================
@@ -417,7 +422,8 @@ ynh_script_progression --message="Configuring log rotation..." --time --weight=1
 ###		- And the section "SETUP LOGROTATE" in the upgrade script
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app"
+ynh_use_logrotate --logfile "/var/log/$app/log.log"
+chown $mautrix_whatsapp_user:root -R /var/log/$app
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
@@ -431,7 +437,7 @@ ynh_use_logrotate --logfile "/var/log/$app"
 ###		- Remove the section "REMOVE SERVICE FROM ADMIN PANEL" in the remove script
 ###		- As well as the section "ADVERTISE SERVICE IN ADMIN PANEL" in the restore script
 
-yunohost service add $app --log "/var/log/$app/$app.log"
+yunohost service add $app --log "/var/log/$app/log.log"
 # if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
 #yunohost service add $app --description "$app daemon for XXX" --log "/var/log/$app/$app.log"
 
@@ -449,12 +455,12 @@ ynh_script_progression --message="Starting a systemd service..." --time --weight
 ###		- And the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the change_url script
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --line_match="Bot now ready to bridge Whatsapp and Matrix users from $botusers" --log_path="/var/log/$app/$app.log" --timeout=300
+ynh_systemd_action --service_name=$app --action="start"
 
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
-ynh_script_progression --message="Configuring fail2ban..." --time --weight=1
+#ynh_script_progression --message="Configuring fail2ban..." --time --weight=1
 
 # Create a dedicated fail2ban config
 #ynh_add_fail2ban_config --logpath="/var/log/nginx/${domain}-error.log" --failregex="Regex to match into the log for a failed login"
