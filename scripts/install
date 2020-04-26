@@ -33,7 +33,7 @@ synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
-is_public=$YNH_APP_ARG_IS_PUBLIC
+#is_public=$YNH_APP_ARG_IS_PUBLIC
 #language=$YNH_APP_ARG_LANGUAGE
 #password=$YNH_APP_ARG_PASSWORD
 
@@ -107,7 +107,7 @@ ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
 ynh_app_setting_set --app=$app --key=botusers --value=$botusers
 ynh_app_setting_set --app=$app --key=mautrix_version --value=$upstream_version
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
+#ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 #ynh_app_setting_set --app=$app --key=language --value=$language
 
 #=================================================
@@ -314,8 +314,15 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
 #        "*": relaybot
 #ynh_replace_string --match_string=""*": relaybot" --replace_string=""*": relaybot" --target_file="$final_path/config.yaml"
 #        "example.com": user
+if [ $botusers -eq "domain" ]
+then
+ynh_replace_string --match_string="example.com" --replace_string="$server_name" --target_file="$final_path/config.yaml"
+else if [ $botusers -eq "admin" ]
+ynh_replace_string --match_string="example.com" --replace_string="" --target_file="$final_path/config.yaml"
+else
 ynh_replace_string --match_string="example.com" --replace_string="$botusers" --target_file="$final_path/config.yaml"
-#ynh_replace_string --match_string="example.com" --replace_string="$domain" --target_file="$final_path/config.yaml"
+fi
+
 #        "@admin:example.com": admin
 ynh_replace_string --match_string="@admin:example.com" --replace_string="$botadmin" --target_file="$final_path/config.yaml"
 
