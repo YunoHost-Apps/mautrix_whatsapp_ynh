@@ -312,23 +312,23 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
     #     mxid - Specific user
     #permissions:
 #        "*": relaybot
-#ynh_replace_string --match_string=""*": relaybot" --replace_string=""*": relaybot" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="'*': relaybot" --replace_string="'': relaybot" --target_file="$final_path/config.yaml"
+#        "@admin:example.com": admin
+ynh_replace_string --match_string="@admin:example.com" --replace_string="$botadmin" --target_file="$final_path/config.yaml"
 #        "example.com": user
 echo "$botusers"
 echo "domain"
 echo "admin"
 if [ "$botusers" = "domain" ]
 then
-ynh_replace_string --match_string='"example.com": user' --replace_string='"$server_name": user' --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="example.com" --replace_string="$server_name" --target_file="$final_path/config.yaml"
 elif [ "$botusers" = "admin" ]
 then
-ynh_replace_string --match_string='"example.com": user' --replace_string='#"example.com": user' --target_file="$final_path/config.yaml"
+#ynh_replace_string --match_string='"example.com": user' --replace_string='#"example.com": user' --target_file="$final_path/config.yaml"
 else
-ynh_replace_string --match_string='"example.com": user' --replace_string='"$botusers": user' --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="example.com" --replace_string="$botusers" --target_file="$final_path/config.yaml"
 fi
 
-#        "@admin:example.com": admin
-ynh_replace_string --match_string='"@admin:example.com": admin' --replace_string='"$botadmin": admin' --target_file="$final_path/config.yaml"
 
 #    relaybot:
 #        # Whether or not relaybot support is enabled.
