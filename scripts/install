@@ -29,6 +29,7 @@ ynh_abort_if_errors
 #domain=$YNH_APP_ARG_DOMAIN
 #path_url=$YNH_APP_ARG_PATH
 port=$YNH_APP_ARG_PORT
+synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
@@ -48,13 +49,14 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 ### db names, ...
 app=$YNH_APP_INSTANCE_NAME
 
-if [ $YNH_APP_INSTANCE_NUMBER -eq "1" ]
+# ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_whatsapp bridge
+if [ $synapsenumber -eq "1" ]
 then
 server_name=$(ynh_app_setting_get --app synapse --key server_name)
 domain=$(ynh_app_setting_get --app synapse --key domain)
 else
-server_name=$(ynh_app_setting_get --app synapse__$YNH_APP_INSTANCE_NUMBER --key server_name)
-domain=$(ynh_app_setting_get --app synapse__$YNH_APP_INSTANCE_NUMBER --key domain)
+server_name=$(ynh_app_setting_get --app synapse__$synapsenumber --key server_name)
+domain=$(ynh_app_setting_get --app synapse__$synapsenumber --key domain)
 fi
 
 
@@ -230,6 +232,7 @@ ynh_add_systemd_config --service=$app
 cd $final_path
 #echo 'export PATH=$PATH:/usr/lib/go-1.11/bin/' >> /etc/profile
 #source /etc/profile
+export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
 go build
 #Copy example-config.yaml to config.yaml
 cp example-config.yaml config.yaml
