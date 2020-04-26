@@ -317,7 +317,8 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
 if [ $botusers -eq "domain" ]
 then
 ynh_replace_string --match_string="example.com" --replace_string="$server_name" --target_file="$final_path/config.yaml"
-else if [ $botusers -eq "admin" ]
+elif [ $botusers -eq "admin" ]
+then
 ynh_replace_string --match_string="example.com" --replace_string="" --target_file="$final_path/config.yaml"
 else
 ynh_replace_string --match_string="example.com" --replace_string="$botusers" --target_file="$final_path/config.yaml"
