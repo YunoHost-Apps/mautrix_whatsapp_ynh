@@ -314,10 +314,10 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
 #        "*": relaybot
 #ynh_replace_string --match_string=""*": relaybot" --replace_string=""*": relaybot" --target_file="$final_path/config.yaml"
 #        "example.com": user
-if [ $botusers -eq "domain" ]
+if [ $botusers == "domain" ]
 then
 ynh_replace_string --match_string='"example.com": user' --replace_string='"$server_name": user' --target_file='$final_path/config.yaml'
-elif [ $botusers -eq "admin" ]
+elif [ $botusers == "admin" ]
 then
 ynh_replace_string --match_string='"example.com": user' --replace_string='#"example.com": user' --target_file='$final_path/config.yaml'
 else
