@@ -4,46 +4,37 @@
 # Move this file from check_process.default to check_process when you have filled it.
 
 ;; Test complet
-	auto_remove=1
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
-		#path="/_matrix/static/"	(PATH)
-		#admin="john"	(USER)
-		#language="en"
+		path="/path"	(PATH)
+		admin="john"	(USER)
+		language="fr"
 		is_public=1	(PUBLIC|public=1|private=0)
-		#password="pass"
-		#port="666"	(PORT)
-		
-		whatsappbot="whatsappbot"
-		botadmin="@johndoe:domain.tld"
-		botusers="@johndoe:domain.tld"
-	; pre-install
-		sudo yunohost app fetchlist
-		#sudo yunohost domain add baikaldomain.tld --admin-password $PASSWORD
-		sudo yunohost app install synapse -a "domain=domain.tld&server_name="Same than the domain"&is_public=1"
+		password="pass"
+		port="666"	(PORT)
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
 		setup_root=1
 		setup_nourl=0
-		setup_private=0
+		setup_private=1
 		setup_public=1
-		upgrade=0
-		#upgrade=1	from_commit=CommitHash
-		backup_restore=0
+		upgrade=1
+		upgrade=1	from_commit=CommitHash
+		backup_restore=1
 		multi_instance=1
 		# This test is no longer necessary since the version 2.7 (PR: https://github.com/YunoHost/yunohost/pull/304), you can still do it if your app could be installed with this version.
 		# incorrect_path=1
 		port_already_use=0
-		change_url=0
+		change_url=1
 ;;; Levels
 	# If the level 5 (Package linter) is forced to 1. Please add justifications here.
 	Level 5=auto
 ;;; Options
-#Email=
+Email=
 Notification=none
 ;;; Upgrade options
 	; commit=CommitHash
-		#name=Name and date of the commit.
-		#manifest_arg=domain=DOMAIN&path=PATH&admin=USER&language=fr&is_public=1&password=pass&port=666&
+		name=Name and date of the commit.
+		manifest_arg=domain=DOMAIN&path=PATH&admin=USER&language=fr&is_public=1&password=pass&port=666&
 
