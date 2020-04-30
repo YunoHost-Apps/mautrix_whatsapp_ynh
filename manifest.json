@@ -11,8 +11,8 @@
 	"license": "AGPL3",
 	"maintainer": {
 		"name": "Gredin67",
-		"email": "ghentz@mailz.org",
-		"url": "https://github.com/YunoHost-Apps/mautrix-whatsapp_ynh"
+		"email": "mautrix_whatsapp@neutralite.org",
+		"url": "https://github.com/Gredin67/mautrix_whatsapp_ynh"
 	},
 	"requirements": {
 		"yunohost": ">= 3.5"
@@ -56,8 +56,8 @@
 				},
 				"example": "whatsappbot",
 				"help": {
-					"en": "A system user will be created. Invite @whatsappbot:localsynapse.servername from an authorized Matrix account to start bridging. Give the synapse server name, not the domain.",
-					"fr": "Un utilisateur système sera créé. Inviter @whatsappbot:localsynapse.servername depuis un compte Matrix autorisé pour démarrer une passerelle. Donner le server name, pas le domain"
+					"en": "A system user will be created. Invite @whatsappbot:localsynapse.servername from an authorized Matrix account to start bridging. Give the matrix server_name, not the full domain/url.",
+					"fr": "Un utilisateur système sera créé. Inviter @whatsappbot:localsynapse.servername depuis un compte Matrix autorisé pour démarrer une passerelle. Donner le nom du serveur matrix, pas le domaine/url complet."
 				},
 				"default": "whatsappbot"
 			},
@@ -71,7 +71,7 @@
 				"example": "@johndoe:localsynapse.servername or @johndoe:matrix.org",
 				"help": {
 					"en": "The WhatsApp bot administrator does not need to be a local Matrix/Synapse account.",
-					"fr": "Le compte administrateur du robot WhatsApp peut ne pas être un compte Matrix/Synapse local."
+					"fr": "Le compte administrateur du robot WhatsApp peut ne pas être un compte local Matrix/Synapse."
 				},
 				"default": "Your main Matrix account"
 			},
@@ -85,8 +85,8 @@
 				"example": "admin or local or @johndoe:server.name or server.name or *",
 				"default": "admin",
 				"help": {
-					"en": "Either the administrator only (admin), all local Matrix/Synapse users (local), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the synapse server name, not the domain.",
-					"fr": "On peut autoriser le compte administrateur seul (admin), tous les comptes Matrix/Synapse locaux (local), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le server name, pas le domain."
+					"en": "Either the administrator only (admin), all local Matrix/Synapse users (local), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the matrix server_name, not the full domain/url.",
+					"fr": "On peut autoriser le compte administrateur seul (admin), tous les comptes Matrix/Synapse locaux (local), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur matrix, pas le domaine/url complet."
 				}
 			}
 		]
