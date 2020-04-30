@@ -6,7 +6,7 @@ After=matrix-synapse.service
 Type=simple
 User=__APP__
 WorkingDirectory=/opt/yunohost/__APP__
-ExecStart=/opt/yunohost/__APP__/mautrix-whatsapp -c=/opt/yunohost/__APP__/config.yaml >> /var/log/__APP__/__APP__.log 2>&1
+ExecStart=/opt/yunohost/__APP__/mautrix-whatsapp -c=/opt/yunohost/__APP__/config.yaml >> /var/log/__APP__/log.log 2>&1
 Restart=always
 RestartSec=3
 

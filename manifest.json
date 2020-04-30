@@ -11,8 +11,8 @@
 	"license": "AGPL3",
 	"maintainer": {
 		"name": "Gredin67",
-		"email": "ghentz@mailz.org",
-		"url": "https://github.com/YunoHost-Apps/mautrix-whatsapp_ynh"
+		"email": "mautrix_whatsapp@neutralite.org",
+		"url": "https://github.com/Gredin67/mautrix_whatsapp_ynh"
 	},
 	"requirements": {
 		"yunohost": ">= 3.5"
@@ -23,55 +23,70 @@
   ],
 	"arguments": {
 		"install": [
-      {
-				"name": "domain",
-				"type": "domain",
+      			{
+				"name": "port",
+				"type": "string",
 				"ask": {
-					"en": "Choose the domain name where Synapse is installed.",
-					"fr": "Choisissez le nom de domaine associé à Synapse."
+					"en": "Choose a port for communication between mautrix_whatsapp (app service) and synapse (home server)",
+					"fr": "Choisissez un port pour la communication entre mautrix_whatsapp (app service) et synapse (home server)"
 				},
-				"example": "domain.org"
+				"example": "29318",
+				"default": "8449"
+			},
+			{
+				"name": "synapsenumber",
+				"type": "string",
+				"ask": {
+					"en": "Choose the local synapse instance number to communicate with app service",
+					"fr": "Choisissez le numéro de l'instance synapse qui doit communiquer avec l'app service"
+				},
+				"example": "2 (for instance synapse__2)",
+				"help": {
+					"en": "If you installed synapse only once time, then leave default value 1.",
+					"fr": "Si vous n'avez installé qu'une fois synapse, gardez la valeur par défaut 1."
+				},
+				"default": "1"
 			},
 			{
 				"name": "whatsappbot",
 				"type": "string",
 				"ask": {
-					"en": "Choose the user name of the whatsapp bot for which to create a YunoHost and a local synapse server account.",
-					"fr": "Choisissez le nom d'utilisateur du robot whatsapp pour lequel un compte sera créé sur YunoHost et le serveur local synapse."
+					"en": "Choose a local Matrix/Synapse user name for the WhatsApp bot",
+					"fr": "Choisissez un nom d'utilisateur local Matrix/Synapse pour le robot WhatsApp"
 				},
 				"example": "whatsappbot",
+				"help": {
+					"en": "A system user will be created. Invite @whatsappbot:localsynapse.servername from an authorized Matrix account to start bridging. Give the matrix server_name, not the full domain/url.",
+					"fr": "Un utilisateur système sera créé. Inviter @whatsappbot:localsynapse.servername depuis un compte Matrix autorisé pour démarrer une passerelle. Donner le nom du serveur matrix, pas le domaine/url complet."
+				},
 				"default": "whatsappbot"
 			},
 			{
 				"name": "botadmin",
 				"type": "string",
 				"ask": {
-					"en": "Choose the matrix account administrator of the whatsapp bot.",
-					"fr": "Choisissez le compte matrix administrateur du robot whatsapp."
+					"en": "Choose the Matrix account administrator of the WhatsApp bot",
+					"fr": "Choisissez le compte Matrix administrateur du robot WhatsApp"
 				},
-				"example": "@johndoe:domain.org or @johndoe:matrix.org",
-				"default": "Your main matrix account"
+				"example": "@johndoe:localsynapse.servername or @johndoe:matrix.org",
+				"help": {
+					"en": "The WhatsApp bot administrator does not need to be a local Matrix/Synapse account.",
+					"fr": "Le compte administrateur du robot WhatsApp peut ne pas être un compte local Matrix/Synapse."
+				},
+				"default": "Your main Matrix account"
 			},
 			{
 				"name": "botusers",
 				"type": "string",
 				"ask": {
-					"en": "Choose a matrix server authorized to use the whatsapp bot.",
-					"fr": "Choisissez un serveur matrix dont tous les utilisateurs sont autorisés à utiliser le robot whatsapp."
+					"en": "Choose Matrix user(s) authorized to bridge with the WhatsApp bot",
+					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser le robot WhatsApp"
 				},
-				"example": "matrix.org"
-			},
-			{
-				"name": "is_public",
-				"type": "boolean",
-				"ask": {
-					"en": "Is it a public bot?",
-					"fr": "Est-ce un robot public ?"
-				},
-				"default": true,
+				"example": "admin or local or @johndoe:server.name or server.name or *",
+				"default": "admin",
 				"help": {
-					"en": "A public bot means anyone with a matrix account on the synapse server will be able to use the bot.",
-					"fr": "Un robot public signifie que chaque compte matrix du serveur synapse pourra utiliser le robot."
+					"en": "Either the administrator only (admin), all local Matrix/Synapse users (local), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the matrix server_name, not the full domain/url.",
+					"fr": "On peut autoriser le compte administrateur seul (admin), tous les comptes Matrix/Synapse locaux (local), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur matrix, pas le domaine/url complet."
 				}
 			}
 		]
