@@ -155,7 +155,7 @@ ynh_install_app_dependencies $pkg_dependencies
 #	wget https://dl.google.com/go/go$GO_VERSION.linux-$architecture.tar.gz -q
 #  tar -C /usr/lib -xzf go$GO_VERSION.linux-$architecture.tar.gz
 #}
-export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
+sudo export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -232,9 +232,9 @@ ynh_add_systemd_config --service=$app
 cd $final_path
 #echo 'export PATH=$PATH:/usr/lib/go-1.11/bin/' >> /etc/profile
 #source /etc/profile
-export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
+sudo export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
 go env
-go build
+sudo go build
 #Copy example-config.yaml to config.yaml
 cp example-config.yaml config.yaml
 
