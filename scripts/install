@@ -201,6 +201,7 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path"
+$GO_PATH/go build
 #fi
 
 #=================================================
@@ -239,9 +240,7 @@ ynh_add_systemd_config --service=$app
 #echo 'export PATH=$PATH:/usr/lib/go-1.11/bin/' >> /etc/profile
 #source /etc/profile
 #export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
-$GO_PATH/go build
-#Copy example-config.yaml to config.yaml
-cp $final_path/example-config.yaml $final_path/config.yaml
+#$GO_PATH/go build
 
 
 #=================================================
@@ -249,6 +248,9 @@ cp $final_path/example-config.yaml $final_path/config.yaml
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
+
+#Copy example-config.yaml to config.yaml
+cp $final_path/example-config.yaml $final_path/config.yaml
 
 ### `ynh_replace_string` is used to replace a string in a file.
 ### (It's compatible with sed regular expressions syntax)
