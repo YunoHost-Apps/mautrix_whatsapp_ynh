@@ -5,7 +5,7 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies=""
+pkg_dependencies="golang"
 GO_VERSION="1.11"
 GO_PATH="/usr/lib/go-$GO_VERSION/bin"
 
