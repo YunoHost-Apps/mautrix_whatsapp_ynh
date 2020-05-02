@@ -201,7 +201,9 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path"
-#$GO_PATH/go build
+export GOPATH="$final_path/go"
+export GOCACHE="$final_path/.cache/go-build"
+$GO_PATH/go build
 #fi
 
 #=================================================
@@ -236,11 +238,11 @@ ynh_add_systemd_config --service=$app
 # SPECIFIC SETUP
 #=================================================
 
-cd $final_path
+#cd $final_path
 #echo 'export PATH=$PATH:/usr/lib/go-1.11/bin/' >> /etc/profile
 #source /etc/profile
-export PATH=$PATH:$GO_PATH
-go build
+#export PATH=$PATH:$GO_PATH
+#go build
 #$GO_PATH/go build
 
 
