@@ -312,7 +312,7 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
     then
     ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
     #ynh_psql_connect_as --user=$synapse_db_user --database=$synapse_db_name <<< "UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
-    if
+    fi
     #su --command="psql matrix_synapse" postgres <<< "UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name'"
     
         # Maximum number of connections. Mostly relevant for Postgres.
