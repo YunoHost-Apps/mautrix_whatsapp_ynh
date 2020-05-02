@@ -31,6 +31,7 @@ ynh_abort_if_errors
 port=$YNH_APP_ARG_PORT
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
+bot_is_synapse_admin=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
 #is_public=$YNH_APP_ARG_IS_PUBLIC
@@ -52,13 +53,15 @@ app=$YNH_APP_INSTANCE_NAME
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_whatsapp bridge
 if [ $synapsenumber -eq "1" ]
 then
-server_name=$(ynh_app_setting_get --app synapse --key server_name)
-domain=$(ynh_app_setting_get --app synapse --key domain)
+synapse_instance="synapse"
 else
-server_name=$(ynh_app_setting_get --app synapse__$synapsenumber --key server_name)
-domain=$(ynh_app_setting_get --app synapse__$synapsenumber --key domain)
+synapse_instance="synapse__$synapsenumber"
 fi
-
+server_name=$(ynh_app_setting_get --app synapse_instance --key server_name)
+domain=$(ynh_app_setting_get --app synapse_instance --key domain)
+synapse_user="matrix-$synapse_instance"
+synapse_db_name="matrix_$synapse_instance"
+synapse_db_user="matrix_$synapse_instance"
 
 #=================================================
 # SET CONSTANTS
@@ -103,6 +106,7 @@ ynh_app_setting_set --app=$app --key=server_name --value=$server_name
 ynh_app_setting_set --app=$app --key=port --value=$port
 #ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=whatsappbot --value=$whatsappbot
+ynh_app_setting_set --app=$app --key=bot_is_synapse_admin --value=$bot_is_synapse_admin
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
 ynh_app_setting_set --app=$app --key=botusers --value=$botusers
 ynh_app_setting_set --app=$app --key=mautrix_version --value=$upstream_version
@@ -155,7 +159,7 @@ ynh_install_app_dependencies $pkg_dependencies
 #	wget https://dl.google.com/go/go$GO_VERSION.linux-$architecture.tar.gz -q
 #  tar -C /usr/lib -xzf go$GO_VERSION.linux-$architecture.tar.gz
 #}
-export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
+#export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -229,13 +233,13 @@ ynh_add_systemd_config --service=$app
 # SPECIFIC SETUP
 #=================================================
 
-cd $final_path
+#cd $final_path
 #echo 'export PATH=$PATH:/usr/lib/go-1.11/bin/' >> /etc/profile
 #source /etc/profile
-export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
+#export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
 go build
 #Copy example-config.yaml to config.yaml
-cp example-config.yaml config.yaml
+cp $final_path/example-config.yaml $final_path/config.yaml
 
 
 #=================================================
@@ -295,6 +299,16 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
     # {{.Localpart}} is the MXID localpart and {{.Server}} is the MXID server part of the user.
     #community_template: whatsapp_{{.Localpart}}={{.Server}}
     #ynh_replace_string --match_string="community_template: whatsapp" --replace_string="community_template: $whatsappbot" --target_file="$final_path/config.yaml"
+    # Localpart template for per-user room grouping community IDs.
+    # On startup, the bridge will try to create these communities, add all of the specific user's
+    # portals to the community, and invite the Matrix user to it.
+    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
+    if [$bot_is_synapse_admin]
+    then
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
+    #ynh_psql_connect_as --user=$synapse_db_user --database=$synapse_db_name <<< "UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
+    if
+    #su --command="psql matrix_synapse" postgres <<< "UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name'"
     
         # Maximum number of connections. Mostly relevant for Postgres.
 #ynh_replace_string --match_string="max_open_conns: 20" --replace_string="max_open_conns: 20" --target_file="$final_path/config.yaml"
