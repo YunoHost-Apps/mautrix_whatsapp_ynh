@@ -67,16 +67,16 @@
 			},
 			{
 				"name": "bot_is_synapse_admin",
-				"type": "bool",
+				"type": "string",
 				"ask": {
 					"en": "Give the WhatsApp bot administrator rights to the synapse instance?",
 					"fr": "Donner au robot WhatsApp des droits administrateur à l'instance synapse ?"
 				},
 				"help": {
 					"en": "If Yes, the bot can group WhatsApp chats in a Matrix community. Not required if you set up synapse so that non-admins are authorized to create communities.",
-					"fr": "Si oui, le robot grouppera les conversations WhatsApp dans une communauté Matrix. Pas nécessaire si vous avez réglé synapse pour qu'il autorise les non-admin à créer des communautés."
+					"fr": "Si Yes, le robot grouppera les conversations WhatsApp dans une communauté Matrix. Pas nécessaire si vous avez réglé synapse pour qu'il autorise les non-admin à créer des communautés."
 				},
-				"default": "true"
+				"default": "Yes"
 			},			
 			{
 				"name": "botadmin",
