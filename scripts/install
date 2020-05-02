@@ -207,9 +207,9 @@ base_directory=$PWD
 export GOPATH="$final_path"
 #export GOCACHE="$final_path/.cache/go-build"
 cd $GOPATH
-#go build
-#export PATH=$PATH:$GO_PATH
-$GO_PATH/go build
+export PATH=$PATH:$GO_PATH
+go build
+#$GO_PATH/go build
 cd $base_directory
 #sudo ln -s "$final_path"_src/src/github.com/gogits/gogs $final_path
 
