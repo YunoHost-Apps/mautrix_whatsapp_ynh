@@ -322,7 +322,7 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
     # On startup, the bridge will try to create these communities, add all of the specific user's
     # portals to the community, and invite the Matrix user to it.
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-    if [$bot_is_synapse_admin=true]
+    if ["$bot_is_synapse_admin"="Yes"]
     then
     ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
     #ynh_psql_connect_as --user=$synapse_db_user --database=$synapse_db_name <<< "UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
