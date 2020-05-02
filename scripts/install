@@ -57,8 +57,8 @@ synapse_instance="synapse"
 else
 synapse_instance="synapse__$synapsenumber"
 fi
-server_name=$(ynh_app_setting_get --app synapse_instance --key server_name)
-domain=$(ynh_app_setting_get --app synapse_instance --key domain)
+server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
+domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 synapse_config_path="/etc/matrix-$synapse_instance"
 synapse_name="matrix-$synapse_instance"
 synapse_user="matrix-$synapse_instance"
