@@ -205,7 +205,7 @@ ynh_setup_source --dest_dir="$final_path"
 
 # Build mautrix-whatsapp
 base_directory=$PWD
-#export GOPATH="$final_path"_src
+export GOPATH="$final_path"_src
 #export GOCACHE="$final_path/.cache/go-build"
 cd $final_path
 #export PATH=$PATH:$GO_PATH
