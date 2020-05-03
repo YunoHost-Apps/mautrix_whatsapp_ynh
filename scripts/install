@@ -147,22 +147,10 @@ ynh_script_progression --message="Installing dependencies..." --time --weight=1
 ###		- As well as the section "REINSTALL DEPENDENCIES" in the restore script
 ###		- And the section "UPGRADE DEPENDENCIES" in the upgrade script
 
-#ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian stretch-backports main" --package="golang-1.11"
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian stretch-backports main" --package="golang"
 #ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian $(lsb_release -sc)" --package="golang-1.11"
 
 ynh_install_app_dependencies $pkg_dependencies
-
-#=================================================
-# INSTALL GO
-#=================================================
-
-#type /usr/lib/go-$GO_VERSION/bin/go > /dev/null || {
-#  ynh_script_progression --message="Installing go..." --time --weight=1
-#	wget https://dl.google.com/go/go$GO_VERSION.linux-$architecture.tar.gz -q
-#  tar -C /usr/lib -xzf go$GO_VERSION.linux-$architecture.tar.gz
-#}
-#export PATH=$PATH:/usr/lib/go-$GO_VERSION/bin
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -203,22 +191,17 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path"
 
+#=================================================
+# BUILD GO
+#=================================================
+
 # Build mautrix-whatsapp
 base_directory=$PWD
 export GOPATH="$final_path"_src
-#export GOCACHE="$final_path/.cache/go-build"
+export GOCACHE="$GOPATH"/.cache/go-build
 cd $final_path
-#export PATH=$PATH:$GO_PATH
 go build
-#$GO_PATH/go build
 cd $base_directory
-#sudo ln -s "$final_path"_src $final_path
-
-
-
-
-
-#fi
 
 #=================================================
 # CREATE DEDICATED USER
