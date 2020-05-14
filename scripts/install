@@ -334,7 +334,7 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
 #        "@admin:example.com": admin
 ynh_replace_string --match_string="@admin:example.com" --replace_string="$botadmin" --target_file="$final_path/config.yaml"
 #        "example.com": user
-if [ "$botusers" = "domain" ]
+if [ "$botusers" = "local" ]
 then
 ynh_replace_string --match_string="example.com" --replace_string="$server_name" --target_file="$final_path/config.yaml"
 elif [ "$botusers" = "admin" ]
