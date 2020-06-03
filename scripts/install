@@ -45,6 +45,7 @@ fi
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 synapse_config_path="/etc/matrix-$synapse_instance"
+app_service_registration_path="/etc/matrix-$synapse_instance/app-service"
 synapse_name="matrix-$synapse_instance"
 synapse_user="matrix-$synapse_instance"
 synapse_db_name="matrix_$synapse_instance"
@@ -318,7 +319,7 @@ fi
 cd $final_path
 #Generate the appservice registration file by running ./mautrix-whatsapp -g.
     #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
-$final_path/mautrix-whatsapp -g -r $synapse_config_path/$app-registration.yaml
+$final_path/mautrix-whatsapp -g -r $app_service_registration_path/$app.yaml
 cd $base_directory
 #Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 # A list of application service config files to use
@@ -326,11 +327,16 @@ cd $base_directory
 #app_service_config_files:
 #  - app_service_1.yaml
 #    - "/etc/matrix-synapse/registration.yaml"
-ynh_replace_string --match_string="#app_service_config_files:" --replace_string="app_service_config_files:" --target_file="$synapse_config_path/homeserver.yaml"
-ynh_replace_string --match_string="#  - app_service_1.yaml" --replace_string="  - '$synapse_config_path/$app-registration.yaml'" --target_file="$synapse_config_path/homeserver.yaml"
+if [ynh_replace_string --match_string="#app_service_config_files:" --replace_string="app_service_config_files:" --target_file="$synapse_config_path/homeserver.yaml"]
+then
+ynh_replace_string --match_string="#  - app_service_1.yaml" --replace_string="  - '$app_service_registration_path/$app.yaml'" --target_file="$synapse_config_path/homeserver.yaml"
+else
+ynh_replace_string --match_string="app_service_config_files:" --replace_string="app_service_config_files:\n  - '$app_service_registration_path/$app.yaml'" --target_file="$synapse_config_path/homeserver.yaml"
+fi
+# Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
+
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
 
-  
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
 #=================================================
@@ -341,7 +347,7 @@ ynh_replace_string --match_string="#  - app_service_1.yaml" --replace_string="  
 
 # Calculate and store the config file checksum into the app settings
 ynh_store_file_checksum --file="$final_path/config.yaml"
-ynh_store_file_checksum --file="$synapse_config_path/homeserver.yaml"
+#ynh_store_file_checksum --file="$synapse_config_path/homeserver.yaml"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -368,13 +374,10 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #setfacl -R -m user:turnserver:rX  /etc/matrix-$app
 #setfacl -R -m user:turnserver:rwX  /var/log/matrix-$app
 
-chown $synapse_config_path/$app-registration.yaml --reference="$synapse_config_path/homeserver.yaml"
-chmod u=rwX,g=rX,o= $synapse_config_path/$app-registration.yaml
+chown $synapse_config_path/$app.yaml --reference="$synapse_config_path/homeserver.yaml"
+chmod u=rwX,g=rX,o= $synapse_config_path/$app.yaml
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
 service $synapse_name restart
-#Run the bridge with
-#service mautrix-whatsapp restart
-#./mautrix-whatsapp.
 
 #=================================================
 # SETUP LOGROTATE
