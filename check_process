@@ -6,32 +6,36 @@
 ;; Test complet
 	auto_remove=1
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
+		#domain="synapsedomain.tld"	(DOMAIN)
 		#path="/_matrix/static/"	(PATH)
 		#admin="john"	(USER)
 		#language="en"
-		is_public=1	(PUBLIC|public=1|private=0)
+		#is_public=1	(PUBLIC|public=1|private=0)
 		#password="pass"
 		#port="666"	(PORT)
 		
+		port="8449"
+		synapsenumber="1"
 		whatsappbot="whatsappbot"
-		botadmin="@johndoe:domain.tld"
-		botusers="@johndoe:domain.tld"
+		bot_is_synapse_admin="Yes"
+		botadmin="@johndoe:synapsedomain.tld"
+		botusers="@johndoe:synapsedomain.tld"
 	; pre-install
 		sudo yunohost app fetchlist
-		#sudo yunohost domain add baikaldomain.tld --admin-password $PASSWORD
-		sudo yunohost app install synapse -a "domain=domain.tld&server_name="Same than the domain"&is_public=1"
+		sudo yunohost domain add synapsedomain.tld --admin-password $PASSWORD
+		sudo yunohost domain add domain.tld --admin-password $PASSWORD
+		sudo yunohost app install synapse -a "domain="synapsedomain.tld"&server_name="Same than the domain"&is_public=1&server_name="domain.tld""
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
-		setup_root=1
+		setup_root=0
 		setup_nourl=0
 		setup_private=0
 		setup_public=1
 		upgrade=0
 		#upgrade=1	from_commit=CommitHash
 		backup_restore=0
-		multi_instance=1
+		multi_instance=0
 		# This test is no longer necessary since the version 2.7 (PR: https://github.com/YunoHost/yunohost/pull/304), you can still do it if your app could be installed with this version.
 		# incorrect_path=1
 		port_already_use=0

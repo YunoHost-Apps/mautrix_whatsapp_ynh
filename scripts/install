@@ -26,28 +26,13 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-#domain=$YNH_APP_ARG_DOMAIN
-#path_url=$YNH_APP_ARG_PATH
 port=$YNH_APP_ARG_PORT
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 bot_is_synapse_admin=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
-#is_public=$YNH_APP_ARG_IS_PUBLIC
-#language=$YNH_APP_ARG_LANGUAGE
-#password=$YNH_APP_ARG_PASSWORD
 
-### If it's a multi-instance app, meaning it can be installed several times independently
-### The id of the app as stated in the manifest is available as $YNH_APP_ID
-### The instance number is available as $YNH_APP_INSTANCE_NUMBER (equals "1", "2", ...)
-### The app instance name is available as $YNH_APP_INSTANCE_NAME
-###    - the first time the app is installed, YNH_APP_INSTANCE_NAME = ynhexample
-###    - the second time the app is installed, YNH_APP_INSTANCE_NAME = ynhexample__2
-###    - ynhexample__{N} for the subsequent installations, with N=3,4, ...
-### The app instance name is probably what interests you most, since this is
-### guaranteed to be unique. This is a good unique identifier to define installation path,
-### db names, ...
 app=$YNH_APP_INSTANCE_NAME
 
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_whatsapp bridge
@@ -60,6 +45,7 @@ fi
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 synapse_config_path="/etc/matrix-$synapse_instance"
+app_service_registration_path="/etc/matrix-$synapse_instance/app-service"
 synapse_name="matrix-$synapse_instance"
 synapse_user="matrix-$synapse_instance"
 synapse_db_name="matrix_$synapse_instance"
@@ -73,9 +59,6 @@ mautrix_whatsapp_user=$app
 mautrix_whatsapp_db_name=$app
 mautrix_whatsapp_db_user=$app
 upstream_version=$(ynh_app_upstream_version)
-#report_stats="false"
-#allow_public_rooms="false"
-#default_domain_value="Same than the domain"
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -90,13 +73,8 @@ upstream_version=$(ynh_app_upstream_version)
 ### The execution time is given for the duration since the previous call. So the weight should be applied to this previous call.
 ynh_script_progression --message="Validating installation parameters..." --time --weight=1
 
-### If the app uses nginx as web server (written in HTML/PHP in most cases), the final path should be "/var/www/$app".
-### If the app provides an internal web server (or uses another application server such as uwsgi), the final path should be "/opt/yunohost/$app"
 final_path=/opt/yunohost/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
-
-# Register (book) web path
-#ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -106,33 +84,12 @@ ynh_script_progression --message="Storing installation settings..." --time --wei
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=server_name --value=$server_name
 ynh_app_setting_set --app=$app --key=port --value=$port
-#ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=whatsappbot --value=$whatsappbot
 ynh_app_setting_set --app=$app --key=bot_is_synapse_admin --value=$bot_is_synapse_admin
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
 ynh_app_setting_set --app=$app --key=botusers --value=$botusers
 ynh_app_setting_set --app=$app --key=mautrix_version --value=$upstream_version
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-#ynh_app_setting_set --app=$app --key=is_public --value=$is_public
-#ynh_app_setting_set --app=$app --key=language --value=$language
-
-#=================================================
-# STANDARD MODIFICATIONS
-#=================================================
-## FIND AND OPEN A PORT
-##=================================================
-#ynh_script_progression --message="Configuring firewall..." --time --weight=1
-#
-#### Use these lines if you have to open a port for the application
-#### `ynh_find_port` will find the first available port starting from the given port.
-#### If you're not using these lines:
-####		- Remove the section "CLOSE A PORT" in the remove script
-#
-## Find a free port
-#port=$(ynh_find_port --port=8095)
-## Open this port
-#ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $port
-#ynh_app_setting_set --app=$app --key=port --value=$port
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -194,7 +151,6 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 # BUILD GO
 #=================================================
-
 # Build mautrix-whatsapp
 base_directory=$PWD
 export GOPATH="$final_path"_src
@@ -216,32 +172,9 @@ ynh_system_user_create --username=$mautrix_whatsapp_user
 #=================================================
 ynh_script_progression --message="Configuring a systemd service..." --time --weight=1
 
-### `ynh_systemd_config` is used to configure a systemd script for an app.
-### It can be used for apps that use sysvinit (with adaptation) or systemd.
-### Have a look at the app to be sure this app needs a systemd script.
-### `ynh_systemd_config` will use the file conf/systemd.service
-### If you're not using these lines:
-###		- You can remove those files in conf/.
-###		- Remove the section "BACKUP SYSTEMD" in the backup script
-###		- Remove also the section "STOP AND REMOVE SERVICE" in the remove script
-###		- As well as the section "RESTORE SYSTEMD" in the restore script
-###		- And the section "SETUP SYSTEMD" in the upgrade script
-
 # Create systemd config for mautrix-whatsapp
 #cp ../conf/default_mautrix-whatsapp /etc/default/$app
 ynh_add_systemd_config --service=$app
-
-#=================================================
-# SPECIFIC SETUP
-#=================================================
-
-#cd $final_path
-#echo 'export PATH=$PATH:/usr/lib/go-1.11/bin/' >> /etc/profile
-#source /etc/profile
-#export PATH=$PATH:$GO_PATH
-#go build
-#$GO_PATH/go build
-
 
 #=================================================
 
@@ -251,9 +184,6 @@ ynh_add_systemd_config --service=$app
 
 #Copy example-config.yaml to config.yaml
 cp $final_path/example-config.yaml $final_path/config.yaml
-
-### `ynh_replace_string` is used to replace a string in a file.
-### (It's compatible with sed regular expressions syntax)
 
 #Update the config to your liking.
     #You need to make sure that the address and domain field point to your homeserver.
@@ -309,7 +239,8 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
     if [ "$bot_is_synapse_admin" = "Yes" ]
     then
-    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
+    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
+    #ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
     #ynh_psql_connect_as --user=$synapse_db_user --database=$synapse_db_name <<< "UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
     fi
     #su --command="psql matrix_synapse" postgres <<< "UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name'"
@@ -334,7 +265,7 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
 #        "@admin:example.com": admin
 ynh_replace_string --match_string="@admin:example.com" --replace_string="$botadmin" --target_file="$final_path/config.yaml"
 #        "example.com": user
-if [ "$botusers" = "domain" ]
+if [ "$botusers" = "local" ]
 then
 ynh_replace_string --match_string="example.com" --replace_string="$server_name" --target_file="$final_path/config.yaml"
 elif [ "$botusers" = "admin" ]
@@ -386,22 +317,22 @@ fi
     #print_level: debug
     ynh_replace_string --match_string="print_level: debug" --replace_string="print_level: warn" --target_file="$final_path/config.yaml"
 
-cd $final_path
+#cd $final_path
 #Generate the appservice registration file by running ./mautrix-whatsapp -g.
     #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
-$final_path/mautrix-whatsapp -g -r $synapse_config_path/$app-registration.yaml
-cd $base_directory
+$final_path/mautrix-whatsapp -g -r ../conf/registration.yaml
+#cd $base_directory
 #Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
-# A list of application service config files to use
-#
-#app_service_config_files:
-#  - app_service_1.yaml
-#    - "/etc/matrix-synapse/registration.yaml"
-ynh_replace_string --match_string="#app_service_config_files:" --replace_string="app_service_config_files:" --target_file="$synapse_config_path/homeserver.yaml"
-ynh_replace_string --match_string="#  - app_service_1.yaml" --replace_string="  - '$synapse_config_path/$app-registration.yaml'" --target_file="$synapse_config_path/homeserver.yaml"
-#You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
+cp ../conf/registration.yaml $app_service_registration_path/$app.yaml
 
-  
+#$as_token=;
+#$hs_token=;
+#ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
+#ynh_replace_string --match_string=__HS_TOKEN__ --replace_string="$hs_token" --target_file=$app_service_registration_path/$app.yaml
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
+    || ynh_die "Synapse can't restart with the appservice configuration"
+# Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
+
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
 #=================================================
@@ -412,7 +343,7 @@ ynh_replace_string --match_string="#  - app_service_1.yaml" --replace_string="  
 
 # Calculate and store the config file checksum into the app settings
 ynh_store_file_checksum --file="$final_path/config.yaml"
-ynh_store_file_checksum --file="$synapse_config_path/homeserver.yaml"
+#ynh_store_file_checksum --file="$synapse_config_path/homeserver.yaml"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -439,26 +370,15 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #setfacl -R -m user:turnserver:rX  /etc/matrix-$app
 #setfacl -R -m user:turnserver:rwX  /var/log/matrix-$app
 
-chown $synapse_config_path/$app-registration.yaml --reference="$synapse_config_path/homeserver.yaml"
-chmod u=rwX,g=rX,o= $synapse_config_path/$app-registration.yaml
+chown $synapse_config_path/$app.yaml --reference="$synapse_config_path/homeserver.yaml"
+chmod u=rwX,g=rX,o= $synapse_config_path/$app.yaml
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
 service $synapse_name restart
-#Run the bridge with
-#service mautrix-whatsapp restart
-#./mautrix-whatsapp.
 
 #=================================================
 # SETUP LOGROTATE
 #=================================================
 ynh_script_progression --message="Configuring log rotation..." --time --weight=1
-
-### `ynh_use_logrotate` is used to configure a logrotate configuration for the logs of this app.
-### Use this helper only if there is effectively a log file for this app.
-### If you're not using this helper:
-###		- Remove the section "BACKUP LOGROTATE" in the backup script
-###		- Remove also the section "REMOVE LOGROTATE CONFIGURATION" in the remove script
-###		- As well as the section "RESTORE THE LOGROTATE CONFIGURATION" in the restore script
-###		- And the section "SETUP LOGROTATE" in the upgrade script
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate --logfile "/var/log/$app/log.log"
@@ -467,15 +387,6 @@ chown $mautrix_whatsapp_user:root -R /var/log/$app
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
-
-### `yunohost service add` is a CLI yunohost command to add a service in the admin panel.
-### You'll find the service in the 'services' section of YunoHost admin panel.
-### This CLI command would be useless if the app does not have any services (systemd or sysvinit)
-### If you're not using these lines:
-###		- You can remove these files in conf/.
-###		- Remove the section "REMOVE SERVICE FROM ADMIN PANEL" in the remove script
-###		- As well as the section "ADVERTISE SERVICE IN ADMIN PANEL" in the restore script
-
 yunohost service add $app --log "/var/log/$app/log.log"
 # if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
 #yunohost service add $app --description "$app daemon for XXX" --log "/var/log/$app/$app.log"
@@ -485,44 +396,8 @@ yunohost service add $app --log "/var/log/$app/log.log"
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --time --weight=1
 
-### `ynh_systemd_action` is used to start a systemd service for an app.
-### Only needed if you have configure a systemd service
-### If you're not using these lines:
-###		- Remove the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the backup script
-###		- As well as the section "START SYSTEMD SERVICE" in the restore script
-###		- As well as the section"STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the upgrade script
-###		- And the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the change_url script
-
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
-
-#=================================================
-# SETUP FAIL2BAN
-#=================================================
-#ynh_script_progression --message="Configuring fail2ban..." --time --weight=1
-
-# Create a dedicated fail2ban config
-#ynh_add_fail2ban_config --logpath="/var/log/nginx/${domain}-error.log" --failregex="Regex to match into the log for a failed login"
-#ynh_add_fail2ban_config --use_template
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-#ynh_script_progression --message="Configuring SSOwat..." --time --weight=1
-#
-## Make app public if necessary
-#if [ $is_public -eq 1 ]
-#then
-#	# unprotected_uris allows SSO credentials to be passed anyway.
-#	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
-#fi
-#
-#=================================================
-# RELOAD NGINX
-#=================================================
-#ynh_script_progression --message="Reloading nginx web server..." --time --weight=1
-
-#ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
