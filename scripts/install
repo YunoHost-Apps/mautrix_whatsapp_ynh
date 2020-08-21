@@ -329,10 +329,8 @@ cp ../conf/registration.yaml $app_service_registration_path/$app.yaml
 #$hs_token=;
 #ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
 #ynh_replace_string --match_string=__HS_TOKEN__ --replace_string="$hs_token" --target_file=$app_service_registration_path/$app.yaml
-if ! /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh
-then
-  ynh_die "Synapse can't restart with the appservice configuration"
-fi
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
+    || ynh_die "Synapse can't restart with the appservice configuration"
 # Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
 
 #=================================================
