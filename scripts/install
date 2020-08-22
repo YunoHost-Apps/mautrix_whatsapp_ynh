@@ -341,7 +341,8 @@ cp ../conf/registration.yaml $app_service_registration_path/$app.yaml
 ### you can make a backup of this file before modifying it again if the admin had modified it.
 
 # Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum --file="$final_path/config.yaml"
+ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
+#ynh_store_file_checksum --file="$final_path/config.yaml"
 #ynh_store_file_checksum --file="$synapse_config_path/homeserver.yaml"
 
 #=================================================
@@ -369,8 +370,8 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #setfacl -R -m user:turnserver:rX  /etc/matrix-$app
 #setfacl -R -m user:turnserver:rwX  /var/log/matrix-$app
 
-chown $synapse_config_path/$app.yaml --reference="$synapse_config_path/homeserver.yaml"
-chmod u=rwX,g=rX,o= $synapse_config_path/$app.yaml
+chown $app_service_registration_path/$app.yaml --reference="$synapse_config_path/homeserver.yaml"
+chmod u=rwX,g=rX,o= $app_service_registration_path/$app.yaml
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
 service $synapse_name restart
 
