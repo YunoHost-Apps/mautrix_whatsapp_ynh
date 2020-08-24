@@ -155,7 +155,7 @@ base_directory=$PWD
 export GOPATH="$final_path"_src
 export GOCACHE="$GOPATH"/.cache/go-build
 cd $final_path
-go build
+./build.sh
 cd $base_directory
 
 #=================================================
