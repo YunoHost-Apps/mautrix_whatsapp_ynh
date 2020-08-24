@@ -319,10 +319,10 @@ fi
 #cd $final_path
 #Generate the appservice registration file by running ./mautrix-whatsapp -g.
     #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
-$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r ../conf/registration.yaml
-#cd $base_directory
+$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_registration_path/$app.yaml
 #Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
-cp ../conf/registration.yaml $app_service_registration_path/$app.yaml
+#cd $base_directory
+#cp ../conf/registration.yaml $app_service_registration_path/$app.yaml
 
 #$as_token=;
 #$hs_token=;
