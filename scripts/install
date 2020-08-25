@@ -312,6 +312,7 @@ fi
 #cd $final_path
 #Generate the appservice registration file by running ./mautrix-whatsapp -g.
     #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
+mkdir -p $app_service_registration_path
 $final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_registration_path/$app.yaml
 #Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 #cd $base_directory
@@ -368,12 +369,6 @@ chmod u=rwX,g=rX,o= $app_service_registration_path/$app.yaml
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
 service $synapse_name restart
 
-    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-    if [ "$bot_is_synapse_admin" = "Yes" ]
-    then
-    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
-    fi
-
 #=================================================
 # SETUP LOGROTATE
 #=================================================
@@ -397,6 +392,12 @@ ynh_script_progression --message="Starting a systemd service..." --time --weight
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
+
+# (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
+    if [ "$bot_is_synapse_admin" = "Yes" ]
+    then
+    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
+    fi
 
 #=================================================
 # END OF SCRIPT
