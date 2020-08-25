@@ -236,13 +236,6 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
     # On startup, the bridge will try to create these communities, add all of the specific user's
     # portals to the community, and invite the Matrix user to it.
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-    if [ "$bot_is_synapse_admin" = "Yes" ]
-    then
-    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
-    #ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
-    #ynh_psql_connect_as --user=$synapse_db_user --database=$synapse_db_name <<< "UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
-    fi
-    #su --command="psql matrix_synapse" postgres <<< "UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name'"
     
         # Maximum number of connections. Mostly relevant for Postgres.
 #ynh_replace_string --match_string="max_open_conns: 20" --replace_string="max_open_conns: 20" --target_file="$final_path/config.yaml"
@@ -374,6 +367,12 @@ chown $app_service_registration_path/$app.yaml --reference="$synapse_config_path
 chmod u=rwX,g=rX,o= $app_service_registration_path/$app.yaml
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
 service $synapse_name restart
+
+    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
+    if [ "$bot_is_synapse_admin" = "Yes" ]
+    then
+    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
+    fi
 
 #=================================================
 # SETUP LOGROTATE
