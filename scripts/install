@@ -320,8 +320,8 @@ $final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_regis
 
 #$as_token=;
 #$hs_token=;
-ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
-ynh_replace_string --match_string=__HS_TOKEN__ --replace_string="$hs_token" --target_file=$app_service_registration_path/$app.yaml
+#ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
+#ynh_replace_string --match_string=__HS_TOKEN__ --replace_string="$hs_token" --target_file=$app_service_registration_path/$app.yaml
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
 # Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
@@ -364,10 +364,10 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #setfacl -R -m user:turnserver:rX  /etc/matrix-$app
 #setfacl -R -m user:turnserver:rwX  /var/log/matrix-$app
 
-chown $app_service_registration_path/$app.yaml --reference="$synapse_config_path/homeserver.yaml"
-chmod u=rwX,g=rX,o= $app_service_registration_path/$app.yaml
+#chown $app_service_registration_path/$app.yaml --reference="$synapse_config_path/homeserver.yaml"
+#chmod u=rwX,g=rX,o= $app_service_registration_path/$app.yaml
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
-service $synapse_name restart
+#service $synapse_name restart
 
 #=================================================
 # SETUP LOGROTATE
