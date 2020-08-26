@@ -271,10 +271,12 @@ fi
 #    relaybot:
 #        # Whether or not relaybot support is enabled.
 #        enabled: false
+ynh_replace_string --match_string="enabled: false" --replace_string="enabled: true" --target_file="$final_path/config.yaml"
 #        # The management room for the bot. This is where all status notifications are posted and
 #        # in this room, you can use `!wa <command>` instead of `!wa relaybot <command>`. Omitting
 #        # the command prefix completely like in user management rooms is not possible.
 #        management: !foo:example.com
+ynh_replace_string --match_string="management: !foo:example.com" --replace_string="management: !highway2hell:$server_name" --target_file="$final_path/config.yaml"
 #        # List of users to invite to all created rooms that include the relaybot.
 #        invites: []
 #        # The formats to use when sending messages to WhatsApp via the relaybot.
