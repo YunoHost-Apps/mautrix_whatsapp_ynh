@@ -236,7 +236,11 @@ ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="u
     # On startup, the bridge will try to create these communities, add all of the specific user's
     # portals to the community, and invite the Matrix user to it.
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-    
+    if [ "$bot_is_synapse_admin" = "Yes" ]
+    then
+    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
+    fi
+
         # Maximum number of connections. Mostly relevant for Postgres.
 #ynh_replace_string --match_string="max_open_conns: 20" --replace_string="max_open_conns: 20" --target_file="$final_path/config.yaml"
 #ynh_replace_string --match_string="max_idle_conns: 2" --replace_string="max_idle_conns: 2" --target_file="$final_path/config.yaml"
@@ -392,12 +396,6 @@ ynh_script_progression --message="Starting a systemd service..." --time --weight
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
-
-# (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-    if [ "$bot_is_synapse_admin" = "Yes" ]
-    then
-    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
-    fi
 
 #=================================================
 # END OF SCRIPT
