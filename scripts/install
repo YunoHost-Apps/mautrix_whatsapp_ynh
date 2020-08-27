@@ -276,7 +276,7 @@ ynh_replace_string --match_string="enabled: false" --replace_string="enabled: tr
 #        # in this room, you can use `!wa <command>` instead of `!wa relaybot <command>`. Omitting
 #        # the command prefix completely like in user management rooms is not possible.
 #        management: !foo:example.com
-ynh_replace_string --match_string="management: !foo:example.com" --replace_string="management: !highway2hell:$server_name" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="management: !foo:example.com" --replace_string="management: !highwaytohell:$server_name" --target_file="$final_path/config.yaml"
 #        # List of users to invite to all created rooms that include the relaybot.
 #        invites: []
 #        # The formats to use when sending messages to WhatsApp via the relaybot.
@@ -315,10 +315,10 @@ ynh_replace_string --match_string="management: !foo:example.com" --replace_strin
 #Generate the appservice registration file by running ./mautrix-whatsapp -g.
     #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
 #mkdir -p $app_service_registration_path
-$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r ../conf/$app.yaml
+$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_registration_path/$app.yaml
 #Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 #cd $base_directory
-cp ../conf/$app.yaml $app_service_registration_path
+#cp ../conf/$app.yaml $app_service_registration_path
 
 #$as_token=;
 #$hs_token=;
@@ -366,7 +366,7 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #setfacl -R -m user:turnserver:rX  /etc/matrix-$app
 #setfacl -R -m user:turnserver:rwX  /var/log/matrix-$app
 
-chown matrix-$synapse_instance $app_service_registration_path/$app.yaml
+chown matrix-$synapse_instance -R $app_service_registration_path
 chmod 600 $app_service_registration_path/$app.yaml
 #You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
 #service $synapse_name restart
