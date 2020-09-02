@@ -279,7 +279,7 @@ ynh_replace_string --match_string="enabled: false" --replace_string="enabled: tr
 ynh_replace_string --match_string="management: !foo:example.com" --replace_string="management: !highwaytohell:$server_name" --target_file="$final_path/config.yaml"
 #        # List of users to invite to all created rooms that include the relaybot.
 #        invites: []
-ynh_replace_string --match_string="invites: []" --replace_string="invites: [ $botadmin ]" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string="invites: []" --replace_string="invites: [ ""$botadmin"" ]" --target_file="$final_path/config.yaml"
 #        # The formats to use when sending messages to WhatsApp via the relaybot.
 #        message_formats:
 #            m.text: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"
