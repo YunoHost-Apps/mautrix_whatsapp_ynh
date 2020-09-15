@@ -16,15 +16,19 @@ ynh_script_progression --message="Loading installation settings..." --time --wei
 
 app=$YNH_APP_INSTANCE_NAME
 
-#domain=$(ynh_app_setting_get --app=$app --key=domain)
-#port=$(ynh_app_setting_get --app=$app --key=port)
-#db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-#db_user=$db_name
+synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
+app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
+whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
+botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
+port=$(ynh_app_setting_get --app=$app --key=port)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
 #=================================================
 # SET CONSTANTS
 #=================================================
+
 
 mautrix_whatsapp_user=$app
 #mautrix_whatsapp_db_name=$app
@@ -57,9 +61,9 @@ ynh_remove_systemd_config
 ynh_script_progression --message="Removing the PostgreSQL database..." --time --weight=1
 
 # Remove a database if it exists, along with the associated user
-#ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
 ynh_psql_drop_db $app
 ynh_psql_drop_user $app
+#yunohost app action run $synapse_instance drop_user -a username=$whatsappbot
 
 #=================================================
 # REMOVE DEPENDENCIES
@@ -77,26 +81,10 @@ ynh_script_progression --message="Removing app main directory..." --time --weigh
 # Remove the app directory securely
 ynh_secure_remove --file="$final_path"
 
-ynh_secure_remove --file="/etc/matrix-synapse/$app-registration.yaml"
-ynh_replace_string --match_string="  - '/etc/matrix-synapse/$app-registration.yaml'" --replace_string="#  - app_service_1.yaml" --target_file="/etc/matrix-synapse/homeserver.yaml"
-service matrix-synapse restart
-
-#=================================================
-# REMOVE NGINX CONFIGURATION
-#=================================================
-#ynh_script_progression --message="Removing nginx web server configuration..." --time --weight=1
-
-# Remove the dedicated nginx config
-#ynh_remove_nginx_config
-
-#=================================================
-# REMOVE PHP-FPM CONFIGURATION
-#=================================================
-#ynh_script_progression --message="Removing php-fpm configuration..." --time --weight=1
-
-# Remove the dedicated php-fpm config
-#ynh_remove_fpm_config
-
+ynh_secure_remove --file="$app_service_registration_path/$app.yaml"
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
+    || ynh_die "Synapse can't restart with the appservice configuration"
+    
 #=================================================
 # REMOVE LOGROTATE CONFIGURATION
 #=================================================
@@ -109,19 +97,11 @@ ynh_remove_logrotate
 # CLOSE A PORT
 #=================================================
 
-#if yunohost firewall list | grep -q "\- $port$"
-#then
-#	ynh_script_progression --message="Closing port $port..."
-#	ynh_exec_warn_less yunohost firewall disallow TCP $port
-#fi
-
-#=================================================
-# REMOVE FAIL2BAN CONFIGURATION
-#=================================================
-#ynh_script_progression --message="Removing fail2ban configuration..." --time --weight=1
-
-# Remove the dedicated fail2ban config
-#ynh_remove_fail2ban_config
+if yunohost firewall list | grep -q "\- $port$"
+then
+	ynh_script_progression --message="Closing port $port..."
+	ynh_exec_warn_less yunohost firewall disallow TCP $port
+fi
 
 #=================================================
 # SPECIFIC REMOVE
@@ -136,7 +116,7 @@ ynh_remove_logrotate
 #ynh_secure_remove --file="/etc/$app/"
 
 # Remove the log files
-#ynh_secure_remove --file="/var/log/$app/"
+ynh_secure_remove --file="/var/log/$app/"
 
 #=================================================
 # GENERIC FINALIZATION
