@@ -86,6 +86,7 @@ ynh_app_setting_set --app=$app --key=whatsappbot --value=$whatsappbot
 ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
 ynh_app_setting_set --app=$app --key=app_service_registration_path --value=$app_service_registration_path
 ynh_app_setting_set --app=$app --key=bot_is_synapse_admin --value=$bot_is_synapse_admin
+ynh_app_setting_set --app=$app --key=mautrix_whatsapp_db_name --value=$mautrix_whatsapp_db_name
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
 ynh_app_setting_set --app=$app --key=botusers --value=$botusers
 ynh_app_setting_set --app=$app --key=mautrix_version --value=$upstream_version
