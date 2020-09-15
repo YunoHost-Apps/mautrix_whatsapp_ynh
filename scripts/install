@@ -83,6 +83,8 @@ ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=server_name --value=$server_name
 ynh_app_setting_set --app=$app --key=port --value=$port
 ynh_app_setting_set --app=$app --key=whatsappbot --value=$whatsappbot
+ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
+ynh_app_setting_set --app=$app --key=app_service_registration_path --value=$app_service_registration_path
 ynh_app_setting_set --app=$app --key=bot_is_synapse_admin --value=$bot_is_synapse_admin
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
 ynh_app_setting_set --app=$app --key=botusers --value=$botusers
@@ -358,19 +360,6 @@ ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
 # WARNING : theses command are used in INSTALL, UPGRADE, RESTORE
 # For any update do it in all files
 chown $mautrix_whatsapp_user:root -R $final_path
-#chmod 770 $final_path/Coturn_config_rotate.sh
-#chown $mautrix_whatsapp_user:root -R /var/lib/$app
-#chown $mautrix_whatsapp_user:root -R /var/log/$app
-#chown $mautrix_whatsapp_user:root -R /etc/$app
-#chmod u=rwX,g=rX,o= -R /etc/$app
-#chmod 600 /etc/matrix-$app/$server_name.signing.key
-#setfacl -R -m user:turnserver:rX  /etc/matrix-$app
-#setfacl -R -m user:turnserver:rwX  /var/log/matrix-$app
-
-chown matrix-$synapse_instance -R $app_service_registration_path
-chmod 600 $app_service_registration_path/$app.yaml
-#You will then need to restart the synapse server. Remember to restart it every time the registration file is regenerated.
-#service $synapse_name restart
 
 #=================================================
 # SETUP LOGROTATE
@@ -386,7 +375,7 @@ chown $mautrix_whatsapp_user:root -R /var/log/$app
 #=================================================
 yunohost service add $app --log "/var/log/$app/log.log"
 # if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
-#yunohost service add $app --description "$app daemon for XXX" --log "/var/log/$app/$app.log"
+yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/log.log"
 
 #=================================================
 # START SYSTEMD SERVICE
