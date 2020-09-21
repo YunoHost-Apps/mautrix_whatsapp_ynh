@@ -32,7 +32,7 @@
 		botusers="@johndoe:synapsedomain.tld"
 	; Checks
 		pkg_linter=1
-		setup_sub_dir=1
+		setup_sub_dir=0
 		setup_root=0
 		setup_nourl=1
 		setup_private=1
