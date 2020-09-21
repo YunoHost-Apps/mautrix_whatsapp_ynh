@@ -9,7 +9,7 @@
 		# synapse parameters
         	domain="domain.tld"
         	path="/_matrix/static/"
-        	is_public=1 (PUBLIC|public=1|private=0)
+        	is_public=1
 	  	server_name="domain2.tld"
 		jitsi_server="jitsi.riot.im"
 		#admin="john"	(USER)
