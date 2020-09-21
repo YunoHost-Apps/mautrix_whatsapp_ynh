@@ -5,11 +5,11 @@
 
 ;; Test complet
 	auto_remove=1
-	; Manifest
+	; pre-install
 		# synapse parameters
         	domain="domain.tld"    (DOMAIN)
         	path="/_matrix/static/"	(PATH)
-        	is_public=0 (PRIVATE|public=1|private=0)
+        	is_public=1 (PUBLIC|public=1|private=0)
 	  	server_name="domain2.tld"    (DOMAIN)
 		jitsi_server="jitsi.riot.im"    (DOMAIN)
 		#admin="john"	(USER)
@@ -17,6 +17,12 @@
 		#password="pass"
 		#port="666"	(PORT)
 		
+		sudo yunohost tools update --apps
+		sudo yunohost domain add $domain --admin-password $PASSWORD
+		sudo yunohost domain add $server_name --admin-password $PASSWORD
+		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/tree/testing -a "domain=$domain&server_name=$server_name&is_public=$is_public&jitsi_server=$jitsi_server" --force
+#		sudo yunohost app install https://github.com/tituspijean/zerotier_ynh --force
+	; Manifest
 		# mautrix_whatsapp manifest parameters
 		port="8449"
 		synapsenumber="1"
@@ -24,12 +30,6 @@
 		bot_is_synapse_admin="Yes"
 		botadmin="@johndoe:synapsedomain.tld"
 		botusers="@johndoe:synapsedomain.tld"
-	; pre-install
-		sudo yunohost tools update --apps
-		sudo yunohost domain add "$domain" --admin-password $PASSWORD
-		sudo yunohost domain add "$server_name" --admin-password $PASSWORD
-		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/tree/testing -a "domain="$domain"&server_name="$server_name"&is_public=$is_public&jitsi_server="$jitsi_server"" --force
-#		sudo yunohost app install https://github.com/tituspijean/zerotier_ynh --force
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
