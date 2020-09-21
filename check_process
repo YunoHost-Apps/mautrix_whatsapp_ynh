@@ -26,8 +26,10 @@
 		botusers="@johndoe:synapsedomain.tld"
 	; pre-install
 		sudo yunohost tools update --apps
-		sudo yunohost domain add $domain --admin-password $PASSWORD
-		sudo yunohost domain add $server_name --admin-password $PASSWORD
+		sudo yunohost domain add "$domain"
+		# --admin-password $PASSWORD
+		sudo yunohost domain add "$server_name"
+		# --admin-password $PASSWORD
 		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/tree/testing -a "domain="$domain"&server_name="$server_name"&is_public=$is_public&jitsi_server="$jitsi_server"" --force
 #		sudo yunohost app install https://github.com/tituspijean/zerotier_ynh --force
 	; Checks
