@@ -7,11 +7,11 @@
 	auto_remove=1
 	; pre-install
 		# synapse parameters
-        	domain="domain.tld"    (DOMAIN)
-        	path="/_matrix/static/"	(PATH)
+        	domain="domain.tld"
+        	path="/_matrix/static/"
         	is_public=1 (PUBLIC|public=1|private=0)
-	  	server_name="domain2.tld"    (DOMAIN)
-		jitsi_server="jitsi.riot.im"    (DOMAIN)
+	  	server_name="domain2.tld"
+		jitsi_server="jitsi.riot.im"
 		#admin="john"	(USER)
 		#language="en"
 		#password="pass"
@@ -24,11 +24,11 @@
 #		sudo yunohost app install https://github.com/tituspijean/zerotier_ynh --force
 	; Manifest
 		# mautrix_whatsapp manifest parameters
-		port="8449"
+		port="8449"	(PORT)
 		synapsenumber="1"
 		whatsappbot="whatsappbot"
 		bot_is_synapse_admin="Yes"
-		botadmin="@johndoe:synapsedomain.tld"
+		botadmin="@johndoe:synapsedomain.tld"	(USER)
 		botusers="@johndoe:synapsedomain.tld"
 	; Checks
 		pkg_linter=1
