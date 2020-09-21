@@ -25,6 +25,7 @@
 		sudo yunohost domain add synapsedomain.tld --admin-password $PASSWORD
 		sudo yunohost domain add domain.tld --admin-password $PASSWORD
 		sudo yunohost app install synapse -a "domain="synapsedomain.tld"&server_name="Same than the domain"&is_public=1&server_name="domain.tld""
+#		sudo yunohost app install https://github.com/tituspijean/zerotier_ynh --force
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
