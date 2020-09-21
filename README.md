@@ -1,8 +1,8 @@
 # A Matrix-WhatsApp puppeting bridge for YunoHost
 [![How components fit togeter](https://camo.githubusercontent.com/857d5c90de07312a60e02ce89efe7f8ece86ab6b/68747470733a2f2f67617a697a6f76612e6e65742f7075622f6d6175747269782d77686174736170702e706e67)](https://github.com/tulir/mautrix-whatsapp/wiki)
 
-[![Integration level](https://dash.yunohost.org/integration/mautrix-whatsapp_ynh.svg)](https://dash.yunohost.org/appci/app/mautrix-whatsapp_ynh)  
-[![Install Mautrix-WhatsApp with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=mautrix-whatsapp_ynh)
+[![Integration level](https://dash.yunohost.org/integration/mautrix_whatsapp_ynh.svg)](https://dash.yunohost.org/appci/app/mautrix_whatsapp_ynh)  
+[![Install Mautrix-WhatsApp with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=mautrix_whatsapp_ynh)
 
 *[Lire ce readme en français.](./README_fr.md)*
 
@@ -12,7 +12,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 ## Overview
 A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. Messages, media and notifications are bridged between a whatsapp user and a matrix user. The matrix user can invite other matrix user in a bridged whatsapp room, such that even people without a whatsapp account can participate to whatsapp group conversations. The ["mautrix-whatsapp"](https://github.com/tulir/mautrix-whatsapp/wiki) bridge consists in a synapse app service and relies on postgresql (mysql also available). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
-**Shipped version:** 1.0
+**Shipped version:** 0.1.3
 
 ## Screenshots
 
@@ -20,7 +20,7 @@ A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. M
 
 ## Demo
 
-* If you want to test the bridge, send an email to the App maintainer with the matrix user account you want to bridge to WhatsApp.
+* A demo bridge will be provided by arn-fai.net .
 
 ## Bridging usage
 ### Bridge a WhatsApp user and a Matrix user
@@ -31,10 +31,10 @@ A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. M
 * Send ``help`` to the bot in the created room to know how to control the bot.
 See also [upstream wiki Authentication page](https://github.com/tulir/mautrix-whatsapp/wiki/Authentication)
 
-** Note that several WhatsApp and Matrix users can be bridge, each users has its own bot administration room. If they are in a same WhatsApp group, only one matrix room will be created. **
+** Note that several WhatsApp and Matrix users can be bridged, each whatsapp account has its own bot administration room. If they are in a same WhatsApp group, only one matrix room will be created. **
 
 ### Bridge a WhatsApp group in Matrix "Relaybot"
-* First Relaybot option should be enabled in the bridge configuration (default=disabled, see below) 
+* First Relaybot option should be enabled in the bridge configuration (default=disabled, see below) and room ID of the relaybot administration room added.
 * Once the bot administration room is setup, you can also bridge all messages between a Matrix room and a WhatsApp room/group. 
 In whatsapp all messages will be sent by the account who is logged in with a prefix for the source matrix user. On the matrix side the bridge will still create matrix users corresponding to the whatsapp users when they send a message.
 See also [upstream wiki Relaybot page](https://github.com/tulir/mautrix-whatsapp/wiki/Relaybot)
@@ -49,11 +49,12 @@ and then restarting the mautrix_whatsapp service.
 ## Documentation
 
  * Official "mautrix-whatsapp" documentation: https://github.com/tulir/mautrix-whatsapp/wiki
- * Matrix room: #whatsapp:maunium.net
+ * Matrix room (matrix bridges in Yunohost): #mautrix_yunohost:matrix.fdn.fr
+ * Matrix room (upstream app): #whatsapp:maunium.net
 In case you need to upload your logs somewhere, be aware that they contain your contacts' and your phone numbers. Strip them out with 
 ``| sed -r 's/[0-9]{10,}/📞/g' ``
  * "mautrix-whatsapp" bridge is based on the [Rhymen/go-whatsapp](https://github.com/Rhymen/go-whatsapp) implementation of the [sigalor/whatsapp-web-reveng](https://github.com/sigalor/whatsapp-web-reveng) project.
- * YunoHost documentation: If specific documentation is needed, feel free to contribute.
+ * YunoHost documentation: If more specific documentation is needed, feel free to contribute.
 
 ## YunoHost specific features
 
@@ -69,9 +70,9 @@ Multi-instance installation should work, but was not tested yet. A priori it mak
 #### Supported architectures
 
 * Tested on ARMv7 in April 2020
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/mautrix-whatsapp_ynh%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix-whatsapp_ynh/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/mautrix-whatsapp_ynh%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/mautrix-whatsapp_ynh/)
-* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/mautrix-whatsapp_ynh%20%28Apps%29.svg)](https://ci-stretch.nohost.me/ci/apps/mautrix-whatsapp_ynh/)
+* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/mautrix_whatsapp_ynh%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix_whatsapp_ynh/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/mautrix_whatsapp_ynh%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/mautrix_whatsapp_ynh/)
+* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/mautrix_whatsapp_ynh%20%28Apps%29.svg)](https://ci-stretch.nohost.me/ci/apps/mautrix_whatsapp_ynh/)
 
 ## Limitations
 
@@ -88,7 +89,7 @@ https://github.com/tulir/mautrix-whatsapp/wiki
 ## Links
 
  * Report a bug: https://github.com/YunoHost-Apps/mautrix-whatsapp_ynh/issues
- * App website: https://github.com/Gredin67/mautrix-whatsapp_ynh
+ * App website: https://github.com/YunoHost-Apps/mautrix-whatsapp_ynh
  * Upstream app repository: https://github.com/tulir/mautrix-whatsapp
  * Up-Upstream repository: https://github.com/Rhymen/go-whatsapp
  * Up-Up-Upstream repository: https://github.com/sigalor/whatsapp-web-reveng
