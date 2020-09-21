@@ -35,7 +35,7 @@
 		setup_sub_dir=0
 		setup_root=0
 		setup_nourl=1
-		setup_private=1
+		setup_private=0
 		setup_public=1
 		upgrade=1
 		#upgrade=1	from_commit=CommitHash
