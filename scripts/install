@@ -356,7 +356,7 @@ ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
 ### that really need such authorization.
 
 # Set permissions to app files
-#chown -R root: $final_path
+chown -R root: $final_path
 
 # WARNING : theses command are used in INSTALL, UPGRADE, RESTORE
 # For any update do it in all files
