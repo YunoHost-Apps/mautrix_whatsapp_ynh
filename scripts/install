@@ -342,8 +342,7 @@ $final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_regis
 
 # Calculate and store the config file checksum into the app settings
 ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
-#ynh_store_file_checksum --file="$final_path/config.yaml"
-#ynh_store_file_checksum --file="$synapse_config_path/homeserver.yaml"
+ynh_store_file_checksum --file="$final_path/config.yaml"
 
 #=================================================
 # GENERIC FINALIZATION
