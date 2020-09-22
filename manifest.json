@@ -12,15 +12,12 @@
 	"maintainer": {
 		"name": "Gredin67",
 		"email": "mautrix_whatsapp@neutralite.org",
-		"url": "https://github.com/Gredin67/mautrix_whatsapp_ynh"
+		"url": "https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh"
 	},
 	"requirements": {
 		"yunohost": ">= 4.0"
 	},
 	"multi_instance": true,
-	"services": [
-    "matrix-synapse"
-  ],
 	"arguments": {
 		"install": [
       			{
