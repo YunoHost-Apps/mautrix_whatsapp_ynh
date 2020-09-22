@@ -69,7 +69,7 @@ ynh_backup --src_path="/var/log/$app"
 #=================================================
 ynh_script_progression --message="Backing up systemd configuration..." --time --weight=1
 
-ynh_backup --src_path="/etc/default/$app"
+#ynh_backup --src_path="/etc/default/$app"
 ynh_backup --src_path="/etc/systemd/system/$app.service"
 
 #=================================================
