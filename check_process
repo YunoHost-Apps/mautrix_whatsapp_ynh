@@ -9,8 +9,8 @@
 		# Optional?
 		sudo yunohost tools update --apps
 		# Next line may be clashing with package_check
-		sudo yunohost domain add domain.tld
-		sudo yunohost domain add synapse.domain.tld
+		sudo yunohost domain add "domain.tld"
+		sudo yunohost domain add "synapse.domain.tld"
 		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/tree/testing -a "domain="synapse.domain.tld"&server_name="domain.tld"&path=/_matrix/static/&is_public=$is_public&jitsi_server="jitsi.riot.im"" --force
 	; Manifest
 		# mautrix_whatsapp manifest parameters
