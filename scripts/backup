@@ -62,7 +62,7 @@ ynh_psql_dump_db --database="$mautrix_whatsapp_db_name" > ${YNH_CWD}/dump.sql
 #=================================================
 ynh_script_progression --message="Backing up logrotate configuration..." --time --weight=1
 
-ynh_backup --src_path="/etc/logrotate.d/$app"
+ynh_backup --src_path="/var/log/$app"
 
 #=================================================
 # BACKUP SYSTEMD
