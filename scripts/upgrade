@@ -122,6 +122,8 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..." --time --weight=1
 
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang"
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
 ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
