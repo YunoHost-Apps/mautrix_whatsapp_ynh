@@ -31,7 +31,7 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
 
 mautrix_whatsapp_user=$app
-#mautrix_whatsapp_db_name=$app
+mautrix_whatsapp_db_name=$app
 #mautrix_whatsapp_db_user=$app
 
 #=================================================
@@ -56,13 +56,12 @@ ynh_script_progression --message="Stopping and removing the systemd service..." 
 ynh_remove_systemd_config
 
 #=================================================
-# REMOVE THE MYSQL DATABASE
+# REMOVE THE POSTGRESQL DATABASE
 #=================================================
 ynh_script_progression --message="Removing the PostgreSQL database..." --time --weight=1
 
 # Remove a database if it exists, along with the associated user
-ynh_psql_drop_db $app
-ynh_psql_drop_user $app
+ynh_psql_remove_db --db_user=$mautrix_whatsapp_db_name --db_name=$mautrix_whatsapp_db_user
 #yunohost app action run $synapse_instance drop_user -a username=$whatsappbot
 
 #=================================================
@@ -94,23 +93,8 @@ ynh_script_progression --message="Removing logrotate configuration..." --time --
 ynh_remove_logrotate
 
 #=================================================
-# CLOSE A PORT
-#=================================================
-
-if yunohost firewall list | grep -q "\- $port$"
-then
-	ynh_script_progression --message="Closing port $port..."
-	ynh_exec_warn_less yunohost firewall disallow TCP $port
-fi
-
-#=================================================
 # SPECIFIC REMOVE
 #=================================================
-# REMOVE THE CRON FILE
-#=================================================
-
-# Remove a cron file
-#ynh_secure_remove --file="/etc/cron.d/$app"
 
 # Remove a directory securely
 #ynh_secure_remove --file="/etc/$app/"
