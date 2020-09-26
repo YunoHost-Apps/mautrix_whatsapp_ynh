@@ -28,6 +28,7 @@ port=$YNH_APP_ARG_PORT
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 bot_is_synapse_admin=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
+encryption=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
 
@@ -86,6 +87,7 @@ ynh_app_setting_set --app=$app --key=whatsappbot --value=$whatsappbot
 ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
 ynh_app_setting_set --app=$app --key=app_service_registration_path --value=$app_service_registration_path
 ynh_app_setting_set --app=$app --key=bot_is_synapse_admin --value=$bot_is_synapse_admin
+ynh_app_setting_set --app=$app --key=encryption --value=$encryption
 ynh_app_setting_set --app=$app --key=mautrix_whatsapp_db_name --value=$mautrix_whatsapp_db_name
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
 ynh_app_setting_set --app=$app --key=botusers --value=$botusers
@@ -158,7 +160,18 @@ base_directory=$PWD
 export GOPATH="$final_path"_src
 export GOCACHE="$GOPATH"/.cache/go-build
 cd $final_path
+
+if [ $encryption = true ]
+then
+# build with libolm3 end-to-bridge encryption
 ./build.sh
+else
+# build without end-to-bridge encryption
+./build.sh -tags nocrypto
+fi
+# build with libolm2 encryption
+# ./build.sh -tags nosas
+
 cd $base_directory
 
 #=================================================
