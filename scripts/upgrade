@@ -22,6 +22,7 @@ whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
 bot_is_synapse_admin=$(ynh_app_setting_get --app=$app --key=bot_is_synapse_admin)
+encryption=$(ynh_app_setting_get --app=$app --key=encryption)
 botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
@@ -117,7 +118,16 @@ base_directory=$PWD
 export GOPATH="$final_path"_src
 export GOCACHE="$GOPATH"/.cache/go-build
 cd $final_path
+if [ $encryption = true ]
+then
+# build with libolm3 end-to-bridge encryption
 ./build.sh
+else
+# build without end-to-bridge encryption
+./build.sh -tags nocrypto
+fi
+# build with libolm2 encryption
+# ./build.sh -tags nosas
 cd $base_directory
 
 #=================================================
