@@ -76,6 +76,15 @@
 				"default": "Yes"
 			},			
 			{
+				"name": "encryption",
+				"type": "bool",
+				"ask": {
+					"en": "Enable end-to-bridge encryption ?",
+					"fr": "Activer le chiffrement entre synapse et le bridge ?"
+				},
+				"default": "false"
+			},			
+			{
 				"name": "botadmin",
 				"type": "string",
 				"ask": {
