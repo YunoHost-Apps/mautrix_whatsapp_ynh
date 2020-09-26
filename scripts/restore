@@ -34,7 +34,6 @@ whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
 bot_is_synapse_admin=$(ynh_app_setting_get --app=$app --key=bot_is_synapse_admin)
-mautrix_whatsapp_db_name=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_name)
 botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
@@ -48,6 +47,7 @@ ynh_print_ON
 # SET CONSTANTS
 #=================================================
 
+synapse_db_name="matrix_$synapse_instance"
 mautrix_whatsapp_user=$app
 mautrix_whatsapp_db_name=$app
 mautrix_whatsapp_db_user=$app
