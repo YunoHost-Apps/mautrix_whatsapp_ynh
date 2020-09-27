@@ -189,7 +189,7 @@ ynh_script_progression --message="Configuring a systemd service..." --time --wei
 
 # Create systemd config for mautrix-whatsapp
 #cp ../conf/default_mautrix-whatsapp /etc/default/$app
-ynh_add_systemd_config --service=$app --log "/var/log/$app/log.log"
+ynh_add_systemd_config --service=$app
 
 #=================================================
 
