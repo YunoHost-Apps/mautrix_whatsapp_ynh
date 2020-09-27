@@ -16,6 +16,8 @@ ynh_script_progression --message="Loading installation settings..." --time --wei
 
 app=$YNH_APP_INSTANCE_NAME
 
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
 whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
@@ -43,7 +45,7 @@ mautrix_whatsapp_db_user=$app
 # Remove a service from the admin panel, added by `yunohost service add`
 if ynh_exec_warn_less yunohost service status $app >/dev/null
 then
-	ynh_script_progression --message="Removing $app service..." --time --weight=1
+	ynh_script_progression --message="Removing $app service..." --time --weight=3
 	yunohost service remove $app
 fi
 
@@ -58,7 +60,7 @@ ynh_remove_systemd_config
 #=================================================
 # REMOVE THE POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Removing the PostgreSQL database..." --time --weight=1
+ynh_script_progression --message="Removing the PostgreSQL database..." --time --weight=3
 
 # Remove a database if it exists, along with the associated user
 ynh_psql_remove_db --db_user=$mautrix_whatsapp_db_name --db_name=$mautrix_whatsapp_db_user
@@ -69,7 +71,7 @@ ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER '@$whatsap
 #=================================================
 # REMOVE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Removing dependencies..." --time --weight=1
+ynh_script_progression --message="Removing dependencies..." --time --weight=4
 
 # Remove metapackage and its dependencies
 ynh_remove_app_dependencies
@@ -77,9 +79,10 @@ ynh_remove_app_dependencies
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
-ynh_script_progression --message="Removing app main directory..." --time --weight=1
+ynh_script_progression --message="Removing app main directory..." --time --weight=10
 
 # Remove the app directory securely
+#ynh_secure_remove --file="/etc/$app/"
 ynh_secure_remove --file="$final_path"
     
 #=================================================
@@ -93,9 +96,9 @@ ynh_remove_logrotate
 #=================================================
 # SPECIFIC REMOVE
 #=================================================
+ynh_script_progression --message="Removing synapse app service..." --time --weight=1
 
 # Remove a directory securely
-#ynh_secure_remove --file="/etc/$app/"
 ynh_secure_remove --file="$src_path"
 
 ynh_secure_remove --file="$app_service_registration_path/$app.yaml"
@@ -110,7 +113,7 @@ ynh_secure_remove --file="/var/log/$app"
 #=================================================
 # REMOVE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Removing the dedicated system user..." --time --weight=1
+ynh_script_progression --message="Removing the dedicated system user..." --time --weight=5
 
 # Delete a system user
 ynh_system_user_delete --username=$mautrix_whatsapp_user
