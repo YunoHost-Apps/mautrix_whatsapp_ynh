@@ -62,6 +62,8 @@ ynh_script_progression --message="Removing the PostgreSQL database..." --time --
 
 # Remove a database if it exists, along with the associated user
 ynh_psql_remove_db --db_user=$mautrix_whatsapp_db_name --db_name=$mautrix_whatsapp_db_user
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY '@$whatsappbot:$server_name';"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER '@$whatsappbot:$server_name';"
 #yunohost app action run $synapse_instance drop_user -a username=$whatsappbot
 
 #=================================================
@@ -79,11 +81,6 @@ ynh_script_progression --message="Removing app main directory..." --time --weigh
 
 # Remove the app directory securely
 ynh_secure_remove --file="$final_path"
-ynh_secure_remove --file="$src_path"
-
-ynh_secure_remove --file="$app_service_registration_path/$app.yaml"
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
-    || ynh_die "Synapse can't restart with the appservice configuration"
     
 #=================================================
 # REMOVE LOGROTATE CONFIGURATION
@@ -99,6 +96,11 @@ ynh_remove_logrotate
 
 # Remove a directory securely
 #ynh_secure_remove --file="/etc/$app/"
+ynh_secure_remove --file="$src_path"
+
+ynh_secure_remove --file="$app_service_registration_path/$app.yaml"
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
+    || ynh_die "Synapse can't restart with the appservice configuration"
 
 # Remove the log files
 ynh_secure_remove --file="/var/log/$app"
