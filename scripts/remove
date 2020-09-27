@@ -29,7 +29,7 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 # SET CONSTANTS
 #=================================================
 
-src_path="$final_path'_src'"
+src_path=$final_path"_src"
 mautrix_whatsapp_user=$app
 mautrix_whatsapp_db_name=$app
 #mautrix_whatsapp_db_user=$app
