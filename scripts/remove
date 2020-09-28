@@ -64,8 +64,8 @@ ynh_script_progression --message="Removing the PostgreSQL database..." --time --
 
 # Remove a database if it exists, along with the associated user
 ynh_psql_remove_db --db_user=$mautrix_whatsapp_db_name --db_name=$mautrix_whatsapp_db_user
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY '@$whatsappbot:$server_name';"
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER '@$whatsappbot:$server_name';"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY @$whatsappbot:$server_name;"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER @$whatsappbot:$server_name;"
 #yunohost app action run $synapse_instance drop_user -a username=$whatsappbot
 
 #=================================================
