@@ -5,36 +5,45 @@
 
 ;; Test complet
 	auto_remove=1
-	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		#path="/_matrix/static/"	(PATH)
+	; pre-install
+		# synapse parameters
+        	domain="domain.tld"
+        	path="/_matrix/static/"
+        	is_public=1
+	  	server_name="domain2.tld"
+		jitsi_server="jitsi.riot.im"
 		#admin="john"	(USER)
 		#language="en"
-		is_public=1	(PUBLIC|public=1|private=0)
 		#password="pass"
 		#port="666"	(PORT)
 		
+		sudo yunohost tools update --apps
+		sudo yunohost domain add $domain --admin-password $PASSWORD
+		sudo yunohost domain add $server_name --admin-password $PASSWORD
+		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/tree/testing -a "domain=$domain&server_name=$server_name&is_public=$is_public&jitsi_server=$jitsi_server" --force
+#		sudo yunohost app install https://github.com/tituspijean/zerotier_ynh --force
+	; Manifest
+		# mautrix_whatsapp manifest parameters
+		port="8449"	(PORT)
+		synapsenumber="1"
 		whatsappbot="whatsappbot"
-		botadmin="@johndoe:domain.tld"
-		botusers="@johndoe:domain.tld"
-	; pre-install
-		sudo yunohost app fetchlist
-		#sudo yunohost domain add baikaldomain.tld --admin-password $PASSWORD
-		sudo yunohost app install synapse -a "domain=domain.tld&server_name="Same than the domain"&is_public=1"
+		bot_is_synapse_admin="Yes"
+		botadmin="@johndoe:synapsedomain.tld"	(USER)
+		botusers="@johndoe:synapsedomain.tld"
 	; Checks
 		pkg_linter=1
-		setup_sub_dir=1
-		setup_root=1
-		setup_nourl=0
+		setup_sub_dir=0
+		setup_root=0
+		setup_nourl=1
 		setup_private=0
 		setup_public=1
-		upgrade=0
+		upgrade=1
 		#upgrade=1	from_commit=CommitHash
-		backup_restore=0
+		backup_restore=1
 		multi_instance=1
 		# This test is no longer necessary since the version 2.7 (PR: https://github.com/YunoHost/yunohost/pull/304), you can still do it if your app could be installed with this version.
 		# incorrect_path=1
-		port_already_use=0
+		port_already_use=1
 		change_url=0
 ;;; Levels
 	# If the level 5 (Package linter) is forced to 1. Please add justifications here.

@@ -5,8 +5,8 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies=""
-GO_VERSION="1.11"
+pkg_dependencies="ffmpeg,g++"
+GO_VERSION="1.14"
 GO_PATH="/usr/lib/go-$GO_VERSION/bin"
 
 #=================================================

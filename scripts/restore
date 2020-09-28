@@ -29,29 +29,41 @@ ynh_script_progression --message="Loading settings..." --time --weight=1
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
+server_name=$(ynh_app_setting_get --app=$app --key=server_name)
+whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
+synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
+app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
+bot_is_synapse_admin=$(ynh_app_setting_get --app=$app --key=bot_is_synapse_admin)
+botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
+botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_user=$db_name
+mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+ynh_print_OFF
+mautrix_whatsapp_db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
+ynh_print_ON
+
+#=================================================
+# SET CONSTANTS
+#=================================================
+
+synapse_db_name="matrix_$synapse_instance"
+mautrix_whatsapp_user=$app
+mautrix_whatsapp_db_name=$app
+mautrix_whatsapp_db_user=$app
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
 ynh_script_progression --message="Validating restoration parameters..." --time --weight=1
 
-ynh_webpath_available --domain=$domain --path_url=$path_url \
-	|| ynh_die --message="Path not available: ${domain}${path_url}"
+#ynh_webpath_available --domain=$domain --path_url=$path_url \
+#	|| ynh_die --message="Path not available: ${domain}${path_url}"
 test ! -d $final_path \
 	|| ynh_die --message="There is already a directory: $final_path "
 
 #=================================================
 # STANDARD RESTORATION STEPS
-#=================================================
-# RESTORE THE NGINX CONFIGURATION
-#=================================================
-
-ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-
 #=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
@@ -73,21 +85,7 @@ ynh_system_user_create --username=$app
 
 # Restore permissions on app files
 chown -R root: $final_path
-
-#=================================================
-# RESTORE THE PHP-FPM CONFIGURATION
-#=================================================
-
-ynh_restore_file --origin_path="/etc/php/7.0/fpm/pool.d/$app.conf"
-
-#=================================================
-# RESTORE FAIL2BAN CONFIGURATION
-#=================================================
-ynh_script_progression --message="Restoring the fail2ban configuration..." --time --weight=1
-
-ynh_restore_file "/etc/fail2ban/jail.d/$app.conf"
-ynh_restore_file "/etc/fail2ban/filter.d/$app.conf"
-ynh_systemd_action --action=restart --service_name=fail2ban
+chown $mautrix_whatsapp_user:root -R $final_path
 
 #=================================================
 # SPECIFIC RESTORATION
@@ -96,17 +94,45 @@ ynh_systemd_action --action=restart --service_name=fail2ban
 #=================================================
 ynh_script_progression --message="Reinstalling dependencies..." --time --weight=1
 
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang"
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
 # Define and install dependencies
 ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
-# RESTORE THE MYSQL DATABASE
+# RESTORE THE POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Restoring the MySQL database..." --time --weight=1
+ynh_script_progression --message="Restoring the PostgreSQL database..." --time --weight=1
 
-db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
-ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
-ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./db.sql
+ynh_print_OFF
+mautrix_whatsapp_db_pwd=$(ynh_string_random --length=30)
+ynh_app_setting_set --app=$app --key=mautrix_whatsapp_db_pwd --value=$mautrix_whatsapp_db_pwd
+ynh_print_ON
+
+ynh_psql_test_if_first_run
+ynh_print_OFF
+ynh_psql_create_user $mautrix_whatsapp_db_user $mautrix_whatsapp_db_pwd
+ynh_print_ON
+ynh_psql_execute_as_root \
+--sql="CREATE DATABASE $mautrix_whatsapp_db_name
+ ENCODING 'UTF8'
+ LC_COLLATE='C'
+ LC_CTYPE='C'
+ template=template0
+ OWNER $mautrix_whatsapp_db_user;"
+ynh_psql_execute_file_as_root --file="${YNH_CWD}/dump.sql" --database="$mautrix_whatsapp_db_name"
+
+#=================================================
+# REGISTER SYNAPSE APP-SERVICE
+#=================================================
+$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_registration_path/$app.yaml
+#$as_token=;
+#$hs_token=;
+#ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
+#ynh_replace_string --match_string=__HS_TOKEN__ --replace_string="$hs_token" --target_file=$app_service_registration_path/$app.yaml
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
+    || ynh_die "Synapse can't restart with the appservice configuration"
+# Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
 
 #=================================================
 # RESTORE SYSTEMD
@@ -120,36 +146,34 @@ systemctl enable $app.service
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app/$app.log"
+yunohost service add $app --log "/var/log/$app/log.log"
+# if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
+yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/log.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --time --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
-
-#=================================================
-# RESTORE THE CRON FILE
-#=================================================
-
-ynh_restore_file --origin_path="/etc/cron.d/$app"
+ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/log.log"
+    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
+    if [ "$bot_is_synapse_admin" = "Yes" ]
+    then
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
+#    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
+    fi
+ynh_systemd_action --service_name=$app --action="restart"
 
 #=================================================
 # RESTORE THE LOGROTATE CONFIGURATION
 #=================================================
 
-ynh_restore_file --origin_path="/etc/logrotate.d/$app"
+ynh_use_logrotate --logfile "/var/log/$app/log.log"
+chown $mautrix_whatsapp_user:root -R /var/log/$app
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
-# RELOAD NGINX AND PHP-FPM
-#=================================================
-ynh_script_progression --message="Reloading nginx web server and php-fpm..." --time --weight=1
-
-ynh_systemd_action --service_name=php7.0-fpm --action=reload
-ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT

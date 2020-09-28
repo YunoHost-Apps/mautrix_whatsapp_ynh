@@ -16,8 +16,13 @@ ynh_script_progression --message="Loading installation settings..." --time --wei
 
 app=$YNH_APP_INSTANCE_NAME
 
-#domain=$(ynh_app_setting_get --app=$app --key=domain)
-#port=$(ynh_app_setting_get --app=$app --key=port)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+server_name=$(ynh_app_setting_get --app=$app --key=server_name)
+synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
+app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
+whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
+botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
+port=$(ynh_app_setting_get --app=$app --key=port)
 #db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 #db_user=$db_name
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
@@ -26,9 +31,10 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 # SET CONSTANTS
 #=================================================
 
+src_path=$final_path"_src"
 mautrix_whatsapp_user=$app
-#mautrix_whatsapp_db_name=$app
-#mautrix_whatsapp_db_user=$app
+mautrix_whatsapp_db_name=$app
+mautrix_whatsapp_db_user=$app
 
 #=================================================
 # STANDARD REMOVE
@@ -39,7 +45,7 @@ mautrix_whatsapp_user=$app
 # Remove a service from the admin panel, added by `yunohost service add`
 if ynh_exec_warn_less yunohost service status $app >/dev/null
 then
-	ynh_script_progression --message="Removing $app service..." --time --weight=1
+	ynh_script_progression --message="Removing $app service..." --time --weight=3
 	yunohost service remove $app
 fi
 
@@ -52,19 +58,20 @@ ynh_script_progression --message="Stopping and removing the systemd service..." 
 ynh_remove_systemd_config
 
 #=================================================
-# REMOVE THE MYSQL DATABASE
+# REMOVE THE POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Removing the PostgreSQL database..." --time --weight=1
+ynh_script_progression --message="Removing the PostgreSQL database..." --time --weight=3
 
 # Remove a database if it exists, along with the associated user
-#ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
-ynh_psql_drop_db $app
-ynh_psql_drop_user $app
+ynh_psql_remove_db --db_user=$mautrix_whatsapp_db_name --db_name=$mautrix_whatsapp_db_user
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY @$whatsappbot:$server_name;"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER @$whatsappbot:$server_name;"
+#yunohost app action run $synapse_instance drop_user -a username=$whatsappbot
 
 #=================================================
 # REMOVE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Removing dependencies..." --time --weight=1
+ynh_script_progression --message="Removing dependencies..." --time --weight=4
 
 # Remove metapackage and its dependencies
 ynh_remove_app_dependencies
@@ -72,31 +79,12 @@ ynh_remove_app_dependencies
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
-ynh_script_progression --message="Removing app main directory..." --time --weight=1
+ynh_script_progression --message="Removing app main directory..." --time --weight=10
 
 # Remove the app directory securely
+#ynh_secure_remove --file="/etc/$app/"
 ynh_secure_remove --file="$final_path"
-
-ynh_secure_remove --file="/etc/matrix-synapse/$app-registration.yaml"
-ynh_replace_string --match_string="  - '/etc/matrix-synapse/$app-registration.yaml'" --replace_string="#  - app_service_1.yaml" --target_file="/etc/matrix-synapse/homeserver.yaml"
-service matrix-synapse restart
-
-#=================================================
-# REMOVE NGINX CONFIGURATION
-#=================================================
-#ynh_script_progression --message="Removing nginx web server configuration..." --time --weight=1
-
-# Remove the dedicated nginx config
-#ynh_remove_nginx_config
-
-#=================================================
-# REMOVE PHP-FPM CONFIGURATION
-#=================================================
-#ynh_script_progression --message="Removing php-fpm configuration..." --time --weight=1
-
-# Remove the dedicated php-fpm config
-#ynh_remove_fpm_config
-
+    
 #=================================================
 # REMOVE LOGROTATE CONFIGURATION
 #=================================================
@@ -106,44 +94,26 @@ ynh_script_progression --message="Removing logrotate configuration..." --time --
 ynh_remove_logrotate
 
 #=================================================
-# CLOSE A PORT
-#=================================================
-
-#if yunohost firewall list | grep -q "\- $port$"
-#then
-#	ynh_script_progression --message="Closing port $port..."
-#	ynh_exec_warn_less yunohost firewall disallow TCP $port
-#fi
-
-#=================================================
-# REMOVE FAIL2BAN CONFIGURATION
-#=================================================
-#ynh_script_progression --message="Removing fail2ban configuration..." --time --weight=1
-
-# Remove the dedicated fail2ban config
-#ynh_remove_fail2ban_config
-
-#=================================================
 # SPECIFIC REMOVE
 #=================================================
-# REMOVE THE CRON FILE
-#=================================================
-
-# Remove a cron file
-#ynh_secure_remove --file="/etc/cron.d/$app"
+ynh_script_progression --message="Removing synapse app service..." --time --weight=1
 
 # Remove a directory securely
-#ynh_secure_remove --file="/etc/$app/"
+ynh_secure_remove --file="$src_path"
+
+ynh_secure_remove --file="$app_service_registration_path/$app.yaml"
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
+    || ynh_die "Synapse can't restart with the appservice configuration"
 
 # Remove the log files
-#ynh_secure_remove --file="/var/log/$app/"
+ynh_secure_remove --file="/var/log/$app"
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
 # REMOVE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Removing the dedicated system user..." --time --weight=1
+ynh_script_progression --message="Removing the dedicated system user..." --time --weight=5
 
 # Delete a system user
 ynh_system_user_delete --username=$mautrix_whatsapp_user

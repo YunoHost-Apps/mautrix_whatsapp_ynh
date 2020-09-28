@@ -17,12 +17,25 @@ ynh_script_progression --message="Loading installation settings..." --time --wei
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-admin=$(ynh_app_setting_get --app=$app --key=admin)
-is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+server_name=$(ynh_app_setting_get --app=$app --key=server_name)
+whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
+synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
+app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
+bot_is_synapse_admin=$(ynh_app_setting_get --app=$app --key=bot_is_synapse_admin)
+encryption=$(ynh_app_setting_get --app=$app --key=encryption)
+botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
+botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-language=$(ynh_app_setting_get --app=$app --key=language)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
+
+#=================================================
+# SET CONSTANTS
+#=================================================
+
+synapse_db_name="matrix_$synapse_instance"
+mautrix_whatsapp_user=$app
+mautrix_whatsapp_db_name=$app
+mautrix_whatsapp_db_user=$app
 
 #=================================================
 # CHECK VERSION
@@ -41,24 +54,15 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --time --weight=1
 
-# Fix is_public as a boolean value
-if [ "$is_public" = "Yes" ]; then
-	ynh_app_setting_set --app=$app --key=is_public --value=1
-	is_public=1
-elif [ "$is_public" = "No" ]; then
-	ynh_app_setting_set --app=$app --key=is_public --value=0
-	is_public=0
-fi
-
 # If db_name doesn't exist, create it
-if [ -z "$db_name" ]; then
-	db_name=$(ynh_sanitize_dbid --db_name=$app)
-	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+if [ -z "$mautrix_whatsapp_db_name" ]; then
+	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
+	ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
 fi
 
 # If final_path doesn't exist, create it
 if [ -z "$final_path" ]; then
-	final_path=/var/www/$app
+	final_path=/opt/yunohost/$app
 	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 fi
 
@@ -77,25 +81,13 @@ ynh_clean_setup () {
 ynh_abort_if_errors
 
 #=================================================
-# CHECK THE PATH
-#=================================================
-
-# Normalize the URL path syntax
-# N.B. : this is for app installations before YunoHost 2.7
-# where this value might be something like /foo/ or foo/
-# instead of /foo ....
-# If nobody installed your app before 2.7, then you may
-# safely remove this line
-path_url=$(ynh_normalize_url_path --path_url=$path_url)
-
-#=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..." --time --weight=1
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/log.log"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -110,19 +102,33 @@ then
 fi
 
 #=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Upgrading nginx web server configuration..." --time --weight=1
-
-# Create a dedicated nginx config
-ynh_add_nginx_config
-
-#=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..." --time --weight=1
 
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang"
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
 ynh_install_app_dependencies $pkg_dependencies
+
+#=================================================
+# BUILD GO
+#=================================================
+# Build mautrix-whatsapp
+base_directory=$PWD
+export GOPATH="$final_path"_src
+export GOCACHE="$GOPATH"/.cache/go-build
+cd $final_path
+if [ $encryption = true ]
+then
+# build with libolm3 end-to-bridge encryption
+./build.sh
+else
+# build without end-to-bridge encryption
+./build.sh -tags nocrypto
+fi
+# build with libolm2 encryption
+# ./build.sh -tags nosas
+cd $base_directory
 
 #=================================================
 # CREATE DEDICATED USER
@@ -130,15 +136,7 @@ ynh_install_app_dependencies $pkg_dependencies
 ynh_script_progression --message="Making sure dedicated system user exists..." --time --weight=1
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app
-
-#=================================================
-# PHP-FPM CONFIGURATION
-#=================================================
-ynh_script_progression --message="Upgrading php-fpm configuration..." --time --weight=1
-
-# Create a dedicated php-fpm config
-ynh_add_fpm_config
+ynh_system_user_create --username=$mautrix_whatsapp_user
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -152,15 +150,33 @@ ynh_add_fpm_config
 
 ### Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
 ### And create a backup of this file if the checksum is different. So the file will be backed up if the admin had modified it.
-ynh_backup_if_checksum_is_different --file="$final_path/CONFIG_FILE"
+ynh_backup_if_checksum_is_different --file="$final_path/config.yaml"
+ynh_backup_if_checksum_is_different --file="$app_service_registration_path/$app.yaml"
+
+#=================================================
+# REGISTER SYNAPSE APP-SERVICE
+#=================================================
+$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_registration_path/$app.yaml
+#$as_token=;
+#$hs_token=;
+#ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
+#ynh_replace_string --match_string=__HS_TOKEN__ --replace_string="$hs_token" --target_file=$app_service_registration_path/$app.yaml
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
+    || ynh_die "Synapse can't restart with the appservice configuration"
+# Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
+
 # Recalculate and store the checksum of the file for the next upgrade.
-ynh_store_file_checksum --file="$final_path/CONFIG_FILE"
+ynh_store_file_checksum --file="$final_path/config.yaml"
+ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
 
 #=================================================
 # SETUP LOGROTATE
 #=================================================
 ynh_script_progression --message="Upgrading logrotate configuration..." --time --weight=1
 
+# Use logrotate to manage application logfile(s)
+#ynh_use_logrotate --logfile "/var/log/$app/log.log"
+#chown $mautrix_whatsapp_user:root -R /var/log/$app
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --non-append
 
@@ -175,45 +191,20 @@ ynh_add_systemd_config
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
-# UPGRADE FAIL2BAN
-#=================================================
-ynh_script_progression --message="Reconfiguring fail2ban..." --time --weight=1
-
-# Create a dedicated fail2ban config
-ynh_add_fail2ban_config --logpath="/var/log/nginx/${domain}-error.log" --failregex="Regex to match into the log for a failed login"
-
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
 # Set permissions on app files
 chown -R root: $final_path
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Upgrading SSOwat configuration..." --time --weight=1
-
-# Make app public if necessary
-if [ $is_public -eq 1 ]
-then
-	# unprotected_uris allows SSO credentials to be passed anyway
-	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
-fi
+chown $mautrix_whatsapp_user:root -R $final_path
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --time --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading nginx web server..." --time --weight=1
-
-ynh_systemd_action --service_name=nginx --action=reload
+ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/log.log"
 
 #=================================================
 # END OF SCRIPT
