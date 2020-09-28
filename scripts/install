@@ -62,15 +62,7 @@ upstream_version=$(ynh_app_upstream_version)
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-### About --weight and --time
-### ynh_script_progression will show to your final users the progression of each scripts.
-### In order to do that, --weight will represent the relative time of execution compared to the other steps in the script.
-### --time is a packager option, it will show you the execution time since the previous call.
-### This option should be removed before releasing your app.
-### Use the execution time, given by --time, to estimate the weight of a step.
-### A common way to do it is to set a weight equal to the execution time in second +1.
-### The execution time is given for the duration since the previous call. So the weight should be applied to this previous call.
-ynh_script_progression --message="Validating installation parameters..." --time --weight=2
+ynh_script_progression --message="Validating installation parameters..." --weight=1
 
 final_path=/opt/yunohost/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
@@ -78,7 +70,7 @@ test ! -e "$final_path" || ynh_die --message="This path already contains a folde
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..." --time --weight=0
+ynh_script_progression --message="Storing installation settings..." --weight=7
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=server_name --value=$server_name
@@ -97,7 +89,7 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..." --time --weight=7
+ynh_script_progression --message="Installing dependencies..." --weight=97
 
 ### `ynh_install_app_dependencies` allows you to add any "apt" dependencies to the package.
 ### Those deb packages will be installed as dependencies of this package.
@@ -116,7 +108,7 @@ ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Creating a PostgreSQL database..." --time --weight=0
+ynh_script_progression --message="Creating a PostgreSQL database..." --weight=3
 
 ynh_print_OFF
 mautrix_whatsapp_db_pwd=$(ynh_string_random --length=30)
@@ -134,7 +126,7 @@ ynh_psql_execute_as_root \
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..." --time --weight=2
+ynh_script_progression --message="Setting up source files..." --weight=3
 
 ### `ynh_setup_source` is used to install an app from a zip or tar.gz file,
 ### downloaded from an upstream source, like a git repository.
@@ -155,7 +147,7 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 # BUILD GO
 #=================================================
-ynh_script_progression --message="Build with golang..." --time --weight=20
+ynh_script_progression --message="Build with golang..." --time --weight=194
 
 # Build mautrix-whatsapp
 base_directory=$PWD
@@ -179,7 +171,7 @@ cd $base_directory
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..." --time --weight=13
+ynh_script_progression --message="Configuring system user..." --time --weight=1
 
 # Create a system user
 ynh_system_user_create --username=$mautrix_whatsapp_user
@@ -187,7 +179,7 @@ ynh_system_user_create --username=$mautrix_whatsapp_user
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..." --time --weight=0
+ynh_script_progression --message="Configuring a systemd service..." --time --weight=20
 
 # Create systemd config for mautrix-whatsapp
 #cp ../conf/default_mautrix-whatsapp /etc/default/$app
@@ -379,7 +371,7 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..." --time --weight=14
+ynh_script_progression --message="Configuring log rotation..." --time --weight=3
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate --logfile "/var/log/$app/log.log"
@@ -395,7 +387,7 @@ yunohost service add $app --description "$app daemon for bridging Whatsapp and M
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --time --weight=3
+ynh_script_progression --message="Starting a systemd service..." --time --weight=1
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
