@@ -102,6 +102,7 @@ ynh_script_progression --message="Removing synapse app service..." --time --weig
 ynh_secure_remove --file="$src_path"
 
 ynh_secure_remove --file="$app_service_registration_path/$app.yaml"
+
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
 
