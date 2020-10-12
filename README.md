@@ -12,7 +12,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 ## Overview
 A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. Messages, media and notifications are bridged between a whatsapp user and a matrix user. The matrix user can invite other matrix user in a bridged whatsapp room, such that even people without a whatsapp account can participate to whatsapp group conversations. The ["mautrix-whatsapp"](https://github.com/tulir/mautrix-whatsapp/wiki) bridge consists in a synapse app service and relies on postgresql (mysql also available). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
-**Shipped version:** 0.1.3
+**Shipped version:** 0.1.4
 
 ## Screenshots
 

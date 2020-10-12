@@ -36,7 +36,7 @@
 		setup_root=0
 		setup_nourl=1
 		setup_private=0
-		setup_public=1
+		setup_public=0
 		upgrade=1
 		#upgrade=1	from_commit=CommitHash
 		backup_restore=1
