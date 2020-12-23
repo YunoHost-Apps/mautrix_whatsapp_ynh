@@ -101,7 +101,7 @@ ynh_script_progression --message="Installing dependencies..." --weight=97
 
 ynh_install_app_dependencies $pkg_dependencies
 
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-$GO_VERSION"
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
 #ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian $(lsb_release -sc)" --package="golang-1.11"
 
@@ -393,7 +393,7 @@ ynh_script_progression --message="Starting a systemd service..." --time --weight
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
 # Wait until the synapse user is created
-sleep 30
+sleep 60
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
     if [ "$bot_is_synapse_admin" = "Yes" ]
     then
