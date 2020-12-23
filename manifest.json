@@ -8,7 +8,7 @@
 	},
 	"version": "0.1.4~ynh1",
 	"url": "https://github.com/tulir/mautrix-whatsapp",
-	"license": "AGPL3",
+	"license": "AGPL-3.0-or-later",
 	"maintainer": {
 		"name": "Gredin67",
 		"email": "mautrix_whatsapp@neutralite.org",
@@ -18,6 +18,9 @@
 		"yunohost": ">= 4.0"
 	},
 	"multi_instance": true,
+	"services": [
+        "postgresql"
+    	],
 	"arguments": {
 		"install": [
       			{
