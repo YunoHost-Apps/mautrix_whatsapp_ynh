@@ -20,8 +20,7 @@
 		sudo yunohost tools update --apps
 		sudo yunohost domain add $domain
 		sudo yunohost domain add $server_name
-		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/tree/testing -a "domain=$domain&server_name=$server_name&is_public=$is_public&jitsi_server=$jitsi_server" --force
-#		sudo yunohost app install https://github.com/tituspijean/zerotier_ynh --force
+		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/ -a "domain=$domain&server_name=$server_name&is_public=$is_public&jitsi_server=$jitsi_server" --force
 	; Manifest
 		# mautrix_whatsapp manifest parameters
 		port="8449"	(PORT)

@@ -99,11 +99,12 @@ ynh_script_progression --message="Installing dependencies..." --weight=97
 ###		- As well as the section "REINSTALL DEPENDENCIES" in the restore script
 ###		- And the section "UPGRADE DEPENDENCIES" in the upgrade script
 
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang"
+ynh_install_app_dependencies $pkg_dependencies
+
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
 #ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian $(lsb_release -sc)" --package="golang-1.11"
 
-ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -396,8 +397,8 @@ sleep 30
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
     if [ "$bot_is_synapse_admin" = "Yes" ]
     then
-#    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
-    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
+    #yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
     fi
 ynh_systemd_action --service_name=$app --action="restart"
 
