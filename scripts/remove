@@ -12,7 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..." --time --weight=1
+ynh_script_progression --message="Loading installation settings..." --weight=5
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -45,14 +45,14 @@ mautrix_whatsapp_db_user=$app
 # Remove a service from the admin panel, added by `yunohost service add`
 if ynh_exec_warn_less yunohost service status $app >/dev/null
 then
-	ynh_script_progression --message="Removing $app service..." --time --weight=3
+	ynh_script_progression --message="Removing $app service..." --weight=3
 	yunohost service remove $app
 fi
 
 #=================================================
 # STOP AND REMOVE SERVICE
 #=================================================
-ynh_script_progression --message="Stopping and removing the systemd service..." --time --weight=1
+ynh_script_progression --message="Stopping and removing the systemd service..." --weight=1
 
 # Remove the dedicated systemd config
 ynh_remove_systemd_config
@@ -60,18 +60,18 @@ ynh_remove_systemd_config
 #=================================================
 # REMOVE THE POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Removing the PostgreSQL database..." --time --weight=3
+ynh_script_progression --message="Removing the PostgreSQL database..." --weight=4
 
 # Remove a database if it exists, along with the associated user
 ynh_psql_remove_db --db_user=$mautrix_whatsapp_db_name --db_name=$mautrix_whatsapp_db_user
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY @$whatsappbot:$server_name;"
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER @$whatsappbot:$server_name;"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY '@$whatsappbot:$server_name';"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER '@$whatsappbot:$server_name';"
 #yunohost app action run $synapse_instance drop_user -a username=$whatsappbot
 
 #=================================================
 # REMOVE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Removing dependencies..." --time --weight=4
+ynh_script_progression --message="Removing dependencies..." --weight=8
 
 # Remove metapackage and its dependencies
 ynh_remove_app_dependencies
@@ -79,7 +79,7 @@ ynh_remove_app_dependencies
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
-ynh_script_progression --message="Removing app main directory..." --time --weight=10
+ynh_script_progression --message="Removing app main directory..." --weight=1
 
 # Remove the app directory securely
 #ynh_secure_remove --file="/etc/$app/"
@@ -88,7 +88,7 @@ ynh_secure_remove --file="$final_path"
 #=================================================
 # REMOVE LOGROTATE CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing logrotate configuration..." --time --weight=1
+ynh_script_progression --message="Removing logrotate configuration..." --weight=1
 
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
@@ -96,7 +96,7 @@ ynh_remove_logrotate
 #=================================================
 # SPECIFIC REMOVE
 #=================================================
-ynh_script_progression --message="Removing synapse app service..." --time --weight=1
+ynh_script_progression --message="Removing synapse app service..." --time --weight=6
 
 # Remove a directory securely
 ynh_secure_remove --file="$src_path"
