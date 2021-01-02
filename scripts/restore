@@ -48,6 +48,7 @@ ynh_print_ON
 #=================================================
 
 synapse_db_name="matrix_$synapse_instance"
+whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
 mautrix_whatsapp_user=$app
 mautrix_whatsapp_db_name=$app
 mautrix_whatsapp_db_user=$app
@@ -154,7 +155,7 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$ap
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
     if [ "$bot_is_synapse_admin" = "Yes" ]
     then
-    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '$whatsappbot_synapse_db_user';"
 #    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
     fi
 ynh_systemd_action --service_name=$app --action="restart"
