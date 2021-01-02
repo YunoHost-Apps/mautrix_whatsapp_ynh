@@ -148,7 +148,7 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 # BUILD GO
 #=================================================
-ynh_script_progression --message="Build with golang..." --time --weight=194
+ynh_script_progression --message="Build with golang..." --weight=194
 
 # Build mautrix-whatsapp
 base_directory=$PWD
@@ -172,7 +172,7 @@ cd $base_directory
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..." --time --weight=1
+ynh_script_progression --message="Configuring system user..." --weight=1
 
 # Create a system user
 ynh_system_user_create --username=$mautrix_whatsapp_user
@@ -180,7 +180,7 @@ ynh_system_user_create --username=$mautrix_whatsapp_user
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..." --time --weight=20
+ynh_script_progression --message="Configuring a systemd service..." --weight=20
 
 # Create systemd config for mautrix-whatsapp
 #cp ../conf/default_mautrix-whatsapp /etc/default/$app
@@ -372,7 +372,7 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..." --time --weight=3
+ynh_script_progression --message="Configuring log rotation..." --weight=3
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate --logfile "/var/log/$app/log.log"
@@ -388,7 +388,7 @@ yunohost service add $app --description "$app daemon for bridging Whatsapp and M
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --time --weight=1
+ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
@@ -397,7 +397,7 @@ sleep 30
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
     if [ "$bot_is_synapse_admin" = "Yes" ]
     then
-    ynh_psql_execute_as_root --database=$synapse_db_name --sql='UPDATE users SET admin = 1 WHERE name = "'$whatsappbot'";'
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$whatsappbot"";"
     #yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
     fi
 ynh_systemd_action --service_name=$app --action="restart"
@@ -406,4 +406,4 @@ ynh_systemd_action --service_name=$app --action="restart"
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --time --last
+ynh_script_progression --message="Installation of $app completed" --last
