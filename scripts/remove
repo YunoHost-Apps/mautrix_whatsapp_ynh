@@ -99,7 +99,7 @@ ynh_remove_logrotate
 #=================================================
 # SPECIFIC REMOVE
 #=================================================
-ynh_script_progression --message="Removing synapse app service..." --time --weight=6
+ynh_script_progression --message="Removing synapse app service..." --weight=6
 
 # Remove a directory securely
 ynh_secure_remove --file="$src_path"
@@ -117,7 +117,7 @@ ynh_secure_remove --file="/var/log/$app"
 #=================================================
 # REMOVE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Removing the dedicated system user..." --time --weight=5
+ynh_script_progression --message="Removing the dedicated system user..." --weight=5
 
 # Delete a system user
 ynh_system_user_delete --username=$mautrix_whatsapp_user
