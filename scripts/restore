@@ -24,7 +24,7 @@ ynh_abort_if_errors
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading settings..." --time --weight=1
+ynh_script_progression --message="Loading settings..." --weight=5
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -55,7 +55,7 @@ mautrix_whatsapp_db_user=$app
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
-ynh_script_progression --message="Validating restoration parameters..." --time --weight=1
+ynh_script_progression --message="Validating restoration parameters..." --weight=1
 
 #ynh_webpath_available --domain=$domain --path_url=$path_url \
 #	|| ynh_die --message="Path not available: ${domain}${path_url}"
@@ -67,14 +67,14 @@ test ! -d $final_path \
 #=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
-ynh_script_progression --message="Restoring the app main directory..." --time --weight=1
+ynh_script_progression --message="Restoring the app main directory..." --weight=1
 
 ynh_restore_file --origin_path="$final_path"
 
 #=================================================
 # RECREATE THE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Recreating the dedicated system user..." --time --weight=1
+ynh_script_progression --message="Recreating the dedicated system user..." --weight=1
 
 # Create the dedicated user (if not existing)
 ynh_system_user_create --username=$app
@@ -92,7 +92,7 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #=================================================
 # REINSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Reinstalling dependencies..." --time --weight=1
+ynh_script_progression --message="Reinstalling dependencies..." --weight=100
 
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang"
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
@@ -102,12 +102,7 @@ ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 # RESTORE THE POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Restoring the PostgreSQL database..." --time --weight=1
-
-ynh_print_OFF
-mautrix_whatsapp_db_pwd=$(ynh_string_random --length=30)
-ynh_app_setting_set --app=$app --key=mautrix_whatsapp_db_pwd --value=$mautrix_whatsapp_db_pwd
-ynh_print_ON
+ynh_script_progression --message="Restoring the PostgreSQL database..." --weight=8
 
 ynh_psql_test_if_first_run
 ynh_print_OFF
@@ -137,7 +132,7 @@ $final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_regis
 #=================================================
 # RESTORE SYSTEMD
 #=================================================
-ynh_script_progression --message="Restoring the systemd configuration..." --time --weight=1
+ynh_script_progression --message="Restoring the systemd configuration..." --weight=3
 
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
 systemctl enable $app.service
