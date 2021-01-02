@@ -95,10 +95,10 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #=================================================
 ynh_script_progression --message="Reinstalling dependencies..." --weight=100
 
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang"
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
-# Define and install dependencies
 ynh_install_app_dependencies $pkg_dependencies
+
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
 
 #=================================================
 # RESTORE THE POSTGRESQL DATABASE
@@ -110,12 +110,7 @@ ynh_print_OFF
 ynh_psql_create_user $mautrix_whatsapp_db_user $mautrix_whatsapp_db_pwd
 ynh_print_ON
 ynh_psql_execute_as_root \
---sql="CREATE DATABASE $mautrix_whatsapp_db_name
- ENCODING 'UTF8'
- LC_COLLATE='C'
- LC_CTYPE='C'
- template=template0
- OWNER $mautrix_whatsapp_db_user;"
+--sql="CREATE DATABASE ""$mautrix_whatsapp_db_name"" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER ""$mautrix_whatsapp_db_user"";"
 ynh_psql_execute_file_as_root --file="${YNH_CWD}/dump.sql" --database="$mautrix_whatsapp_db_name"
 
 #=================================================
@@ -155,7 +150,7 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$ap
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
     if [ "$bot_is_synapse_admin" = "Yes" ]
     then
-    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '$whatsappbot_synapse_db_user';"
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$whatsappbot_synapse_db_user";"
 #    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
     fi
 ynh_systemd_action --service_name=$app --action="restart"
