@@ -23,20 +23,6 @@
     	],
 	"arguments": {
 		"install": [
-      			{
-				"name": "port",
-				"type": "string",
-				"ask": {
-					"en": "Choose a port for the app service mautrix_whatsapp",
-					"fr": "Choisissez un port pour le service d'application mautrix_whatsapp"
-				},
-				"example": "29318",
-				"help": {
-					"en": "Choose a port for communication between your local synapse instance (home server) and its app service mautrix_whatsapp.",
-					"fr": "Choisissez un port pour la communication entre votre instance synapse locale (home server) et son service d'application mautrix_whatsapp."
-				},
-				"default": "8449"
-			},
 			{
 				"name": "synapsenumber",
 				"type": "string",
@@ -67,16 +53,16 @@
 			},
 			{
 				"name": "bot_is_synapse_admin",
-				"type": "string",
+				"type": "boolean",
 				"ask": {
 					"en": "Give the WhatsApp bot administrator rights to the synapse instance?",
 					"fr": "Donner au robot WhatsApp des droits administrateur à l'instance synapse ?"
 				},
 				"help": {
-					"en": "If Yes, the bot can group WhatsApp chats in a Matrix community. Not required if you set up synapse so that non-admins are authorized to create communities.",
-					"fr": "Si Yes, le robot grouppera les conversations WhatsApp dans une communauté Matrix. Pas nécessaire si vous avez réglé synapse pour qu'il autorise les non-admin à créer des communautés."
+					"en": "If true, the bot can group WhatsApp chats in a Matrix community. Not required if you set up synapse so that non-admins are authorized to create communities.",
+					"fr": "Si true, le robot groupera les conversations WhatsApp dans une communauté Matrix. Pas nécessaire si vous avez réglé synapse pour qu'il autorise les non-admin à créer des communautés."
 				},
-				"default": "Yes"
+				"default": true
 			},			
 			{
 				"name": "encryption",
