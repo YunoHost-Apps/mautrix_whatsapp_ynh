@@ -85,7 +85,7 @@
 					"en": "Enable end-to-bridge encryption ?",
 					"fr": "Activer le chiffrement entre synapse et le bridge ?"
 				},
-				"default": "false"
+				"default": false
 			},			
 			{
 				"name": "botadmin",
