@@ -26,6 +26,7 @@ encryption=$(ynh_app_setting_get --app=$app --key=encryption)
 botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+mautrix_config_path="$final_path/config.yaml"
 mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 
 #=================================================
@@ -33,9 +34,11 @@ mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 #=================================================
 
 synapse_db_name="matrix_$synapse_instance"
+whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
 mautrix_whatsapp_user=$app
 mautrix_whatsapp_db_name=$app
 mautrix_whatsapp_db_user=$app
+upstream_version=$(ynh_app_upstream_version)
 
 #=================================================
 # CHECK VERSION
@@ -87,7 +90,7 @@ ynh_abort_if_errors
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/log.log"
+ynh_systemd_action --service_name=$app --action="stop"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -151,13 +154,13 @@ ynh_system_user_create --username=$mautrix_whatsapp_user
 
 ### Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
 ### And create a backup of this file if the checksum is different. So the file will be backed up if the admin had modified it.
-ynh_backup_if_checksum_is_different --file="$final_path/config.yaml"
+ynh_backup_if_checksum_is_different --file="$mautrix_config_path"
 ynh_backup_if_checksum_is_different --file="$app_service_registration_path/$app.yaml"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
-$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_registration_path/$app.yaml
+$final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
 #$as_token=;
 #$hs_token=;
 #ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
@@ -167,7 +170,7 @@ $final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_regis
 # Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
 
 # Recalculate and store the checksum of the file for the next upgrade.
-ynh_store_file_checksum --file="$final_path/config.yaml"
+ynh_store_file_checksum --file="$mautrix_config_path"
 ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
 
 #=================================================
@@ -205,7 +208,7 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/log.log"
+ynh_systemd_action --service_name=$app --action="start"
 
 #=================================================
 # END OF SCRIPT
