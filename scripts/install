@@ -24,7 +24,6 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-port=$YNH_APP_ARG_PORT
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 bot_is_synapse_admin=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
@@ -33,6 +32,7 @@ botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
 
 app=$YNH_APP_INSTANCE_NAME
+final_path=/opt/yunohost/$app
 
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_whatsapp bridge
 if [ $synapsenumber -eq "1" ]
@@ -54,7 +54,8 @@ synapse_db_user="matrix_$synapse_instance"
 # SET CONSTANTS
 #=================================================
 
-whatsappbot_synapse_db_user="@$whatsappbot:$server_name"mautrix_whatsapp_user=$app
+whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
+mautrix_whatsapp_user=$app
 mautrix_whatsapp_db_name=$app
 mautrix_whatsapp_db_user=$app
 upstream_version=$(ynh_app_upstream_version)
@@ -64,8 +65,17 @@ upstream_version=$(ynh_app_upstream_version)
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=1
 
-final_path=/opt/yunohost/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
+
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# FIND AND OPEN A PORT
+#=================================================
+ynh_script_progression --message="Configuring firewall..." --weight=1
+
+# Find a free port for communication between your local synapse instance (home server) and its app service mautrix_whatsapp.
+port=$(ynh_find_port --port=8449)
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
