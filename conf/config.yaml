@@ -242,7 +242,8 @@ bridge:
         management: "!__RELAYBOT_MANAGEMENT_ROOM__:__SERVER_NAME__"
         # List of users to invite to all created rooms that include the relaybot.
         #invites: []
-        invites: [__RELAYBOT_INVITE__]
+        invites: 
+        - "__RELAYBOT_INVITE__"
         # The formats to use when sending messages to WhatsApp via the relaybot.
         message_formats:
             m.text: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"
@@ -261,7 +262,7 @@ logging:
     directory: /var/log/__APP__
     # Available variables: .Date for the file date and .Index for different log files on the same day.
     #file_name_format: "{{.Date}}-{{.Index}}.log"
-    file_name_format: __LOG_FORMAT__
+    file_name_format: "__LOG_FORMAT__"
     # Date format for file names in the Go time format: https://golang.org/pkg/time/#pkg-constants
     #file_date_format: 2006-01-02
     # Log file permissions.
