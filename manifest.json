@@ -11,8 +11,8 @@
 	"license": "AGPL-3.0-or-later",
 	"maintainer": {
 		"name": "Gredin67",
-		"email": "mautrix_whatsapp@neutralite.org",
-		"url": "https://github.com/Gredin67/mautrix_whatsapp_ynh"
+		"email": "mautrix_whatsapp_ynh@sans-nuage.fr",
+		"url": "https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh"
 	},
 	"requirements": {
 		"yunohost": ">= 4.0"
@@ -80,7 +80,7 @@
 			},			
 			{
 				"name": "encryption",
-				"type": "bool",
+				"type": "boolean",
 				"ask": {
 					"en": "Enable end-to-bridge encryption ?",
 					"fr": "Activer le chiffrement entre synapse et le bridge ?"
