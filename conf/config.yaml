@@ -242,7 +242,7 @@ bridge:
         management: "!__RELAYBOT_MANAGEMENT_ROOM__:__SERVER_NAME__"
         # List of users to invite to all created rooms that include the relaybot.
         #invites: []
-        invites: [@__RELAYBOT_INVITE__:__SERVER_NAME__]
+        invites: [__RELAYBOT_INVITE__]
         # The formats to use when sending messages to WhatsApp via the relaybot.
         message_formats:
             m.text: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"
