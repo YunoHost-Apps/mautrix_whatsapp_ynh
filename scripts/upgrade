@@ -204,6 +204,13 @@ chown -R root: $final_path
 chown $mautrix_whatsapp_user:root -R $final_path
 
 #=================================================
+# ADVERTISE SERVICE IN ADMIN PANEL
+#=================================================
+#yunohost service add $app --log "/var/log/$app/log.log"
+# if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
+yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/log.log"
+
+#=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
