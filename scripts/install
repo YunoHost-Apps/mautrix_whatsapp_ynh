@@ -24,7 +24,6 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-port=$YNH_APP_ARG_PORT
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 bot_is_synapse_admin=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
@@ -33,6 +32,7 @@ botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
 
 app=$YNH_APP_INSTANCE_NAME
+final_path=/opt/yunohost/$app
 
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_whatsapp bridge
 if [ $synapsenumber -eq "1" ]
@@ -54,6 +54,7 @@ synapse_db_user="matrix_$synapse_instance"
 # SET CONSTANTS
 #=================================================
 
+whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
 mautrix_whatsapp_user=$app
 mautrix_whatsapp_db_name=$app
 mautrix_whatsapp_db_user=$app
@@ -64,8 +65,17 @@ upstream_version=$(ynh_app_upstream_version)
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=1
 
-final_path=/opt/yunohost/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
+
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# FIND AND OPEN A PORT
+#=================================================
+ynh_script_progression --message="Configuring firewall..." --weight=1
+
+# Find a free port for communication between your local synapse instance (home server) and its app service mautrix_whatsapp.
+port=$(ynh_find_port --port=8449)
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -148,7 +158,7 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 # BUILD GO
 #=================================================
-ynh_script_progression --message="Build with golang..." --time --weight=194
+ynh_script_progression --message="Build with golang..." --weight=194
 
 # Build mautrix-whatsapp
 base_directory=$PWD
@@ -172,7 +182,7 @@ cd $base_directory
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..." --time --weight=1
+ynh_script_progression --message="Configuring system user..." --weight=1
 
 # Create a system user
 ynh_system_user_create --username=$mautrix_whatsapp_user
@@ -180,7 +190,7 @@ ynh_system_user_create --username=$mautrix_whatsapp_user
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..." --time --weight=20
+ynh_script_progression --message="Configuring a systemd service..." --weight=20
 
 # Create systemd config for mautrix-whatsapp
 #cp ../conf/default_mautrix-whatsapp /etc/default/$app
@@ -189,145 +199,50 @@ ynh_add_systemd_config --service=$app
 #=================================================
 
 #=================================================
-# MODIFY A CONFIG FILE
+# SET MAUTRIX-WHATSAPP CONFIG
 #=================================================
+ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
+
+# Configure Mautrix-WhatsApp
+
+# WARNING : theses command are used in INSTALL, UPGRADE, CONFIG, CHANGE-URL (4 times)
+# For any update do it in all files
+
+mautrix_config_path="$final_path/config.yaml"
 
 #Copy example-config.yaml to config.yaml
-cp $final_path/example-config.yaml $final_path/config.yaml
+cp ../conf/config.yaml "$mautrix_config_path"
 
-#Update the config to your liking.
-    #You need to make sure that the address and domain field point to your homeserver.
-
-# Homeserver details.
-#homeserver:
-    # The address that this appservice can use to connect to the homeserver.
-    #"address: https://example.com"
-ynh_replace_string --match_string="address: https://example.com" --replace_string="address: https://$domain" --target_file="$final_path/config.yaml"
-    # The domain of the homeserver (for MXIDs, etc).
-    #"domain: example.com"
-ynh_replace_string --match_string="domain: example.com" --replace_string="domain: $server_name" --target_file="$final_path/config.yaml"
-
-# Application service host/registration related details.
-# Changing these values requires regeneration of the registration.
-#appservice:
-    # The address that the homeserver can use to connect to this appservice.
-ynh_replace_string --match_string="address: http://localhost:29318" --replace_string="address: http://localhost:$port" --target_file="$final_path/config.yaml"
-
-    # The hostname and port where this appservice should listen.
-#ynh_replace_string --match_string="hostname: 0.0.0.0" --replace_string="hostname: 0.0.0.0" --target_file="$final_path/config.yaml"
-ynh_replace_string --match_string="port: 29318" --replace_string="port: $port" --target_file="$final_path/config.yaml"
-
-    # Database config.
-    #database:
-        # The database type. "sqlite3" and "postgres" are supported.
-ynh_replace_string --match_string="type: sqlite3" --replace_string="type: postgres" --target_file="$final_path/config.yaml"
-        # The database URI.
-        #   SQLite: File name is enough. https://github.com/mattn/go-sqlite3#connection-string
-        #   Postgres: Connection string. For example, postgres://user:password@host/database
-ynh_replace_string --match_string="uri: mautrix-whatsapp.db" --replace_string="uri: postgres://$mautrix_whatsapp_user:$mautrix_whatsapp_db_pwd@localhost:5432/$mautrix_whatsapp_db_name" --target_file="$final_path/config.yaml"
-
-    # The unique ID of this appservice.
-    #id: whatsapp
-    ynh_replace_string --match_string="id: whatsapp" --replace_string="id: $whatsappbot" --target_file="$final_path/config.yaml"
-    # Appservice bot details.
-    #bot:
-        # Username of the appservice bot.
-        #username: whatsappbot
-	ynh_replace_string --match_string="username: whatsappbot" --replace_string="username: $whatsappbot" --target_file="$final_path/config.yaml"
-# Bridge config
-#bridge:
-    # Localpart template of MXIDs for WhatsApp users.
-    # {{.}} is replaced with the phone number of the WhatsApp user.
-    #username_template: whatsapp_{{.}}
-    #ynh_replace_string --match_string="username_template: whatsapp" --replace_string="username_template: $whatsappbot" --target_file="$final_path/config.yaml"
-    # {{.Localpart}} is the MXID localpart and {{.Server}} is the MXID server part of the user.
-    #community_template: whatsapp_{{.Localpart}}={{.Server}}
-    #ynh_replace_string --match_string="community_template: whatsapp" --replace_string="community_template: $whatsappbot" --target_file="$final_path/config.yaml"
-    # Localpart template for per-user room grouping community IDs.
-    # On startup, the bridge will try to create these communities, add all of the specific user's
-    # portals to the community, and invite the Matrix user to it.
-    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-
-        # Maximum number of connections. Mostly relevant for Postgres.
-#ynh_replace_string --match_string="max_open_conns: 20" --replace_string="max_open_conns: 20" --target_file="$final_path/config.yaml"
-#ynh_replace_string --match_string="max_idle_conns: 2" --replace_string="max_idle_conns: 2" --target_file="$final_path/config.yaml"
-
-    #You will also need to add your user of admin user under the permissions section.
-    # Permissions for using the bridge.
-    # Permitted values:
-    # relaybot - Talk through the relaybot (if enabled), no access otherwise
-    #     user - Access to use the bridge to chat with a WhatsApp account.
-    #    admin - User level and some additional administration tools
-    # Permitted keys:
-    #        * - All Matrix users
-    #   domain - All users on that homeserver
-    #     mxid - Specific user
-    #permissions:
-#        "*": relaybot
-#ynh_replace_string --match_string="'*': relaybot" --replace_string="'': relaybot" --target_file="$final_path/config.yaml"
-#        "@admin:example.com": admin
-ynh_replace_string --match_string="@admin:example.com" --replace_string="$botadmin" --target_file="$final_path/config.yaml"
-#        "example.com": user
+ynh_replace_string --match_string=__DOMAIN__ --replace_string="https://$domain" --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__SERVER_NAME__ --replace_string=$server_name --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__PORT__ --replace_string=$port --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_USER__ --replace_string=$mautrix_whatsapp_user --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_NAME__ --replace_string=$mautrix_whatsapp_db_name --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__WHATSAPPBOT__ --replace_string=$whatsappbot --target_file="$mautrix_config_path"
 if [ "$botusers" = "local" ]
 then
-ynh_replace_string --match_string="example.com" --replace_string="$server_name" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$server_name --target_file="$mautrix_config_path"
 elif [ "$botusers" = "admin" ]
 then
-ynh_replace_string --match_string="'example.com': user" --replace_string="#'example.com': user" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botadmin --target_file="$mautrix_config_path"
 else
-ynh_replace_string --match_string="example.com" --replace_string="$botusers" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botusers --target_file="$mautrix_config_path"
 fi
-
-
-#    relaybot:
-#        # Whether or not relaybot support is enabled.
-#        enabled: false
-ynh_replace_string --match_string="enabled: false" --replace_string="enabled: true" --target_file="$final_path/config.yaml"
-#        # The management room for the bot. This is where all status notifications are posted and
-#        # in this room, you can use `!wa <command>` instead of `!wa relaybot <command>`. Omitting
-#        # the command prefix completely like in user management rooms is not possible.
-#        management: !foo:example.com
-ynh_replace_string --match_string="management: !foo:example.com" --replace_string="management: !highwaytohell:$server_name" --target_file="$final_path/config.yaml"
-#        # List of users to invite to all created rooms that include the relaybot.
-#        invites: []
-#ynh_replace_string --match_string="invites: []" --replace_string='invites: ['"$botadmin"']' --target_file="$final_path/config.yaml"
-#        # The formats to use when sending messages to WhatsApp via the relaybot.
-#        message_formats:
-#            m.text: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"
-#            m.notice: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"
-#            m.emote: "* <b>{{ .Sender.Displayname }}</b> {{ .Message }}"
-#            m.file: "<b>{{ .Sender.Displayname }}</b> sent a file"
-#            m.image: "<b>{{ .Sender.Displayname }}</b> sent an image"
-#            m.audio: "<b>{{ .Sender.Displayname }}</b> sent an audio file"
-#            m.video: "<b>{{ .Sender.Displayname }}</b> sent a video"
-#            m.location: "<b>{{ .Sender.Displayname }}</b> sent a location"
-
-# Logging config.
-#logging:
-    # The directory for log files. Will be created if not found.
-    #directory: ./logs
-    ynh_replace_string --match_string="directory: ./logs" --replace_string="directory: /var/log/$app" --target_file="$final_path/config.yaml"
-    # Available variables: .Date for the file date and .Index for different log files on the same day.
-    #file_name_format: "{{.Date}}-{{.Index}}.log"
-    ynh_replace_string --match_string="{{.Date}}-{{.Index}}.log" --replace_string="log.log" --target_file="$final_path/config.yaml"
-    # Date format for file names in the Go time format: https://golang.org/pkg/time/#pkg-constants
-    #file_date_format: 2006-01-02
-    ynh_replace_string --match_string="file_date_format: 2006-01-02" --replace_string="#file_date_format: 2006-01-02" --target_file="$final_path/config.yaml"
-    # Log file permissions.
-    #file_mode: 0600
-    #ynh_replace_string --match_string="file_mode: 0600" --replace_string="file_mode: 384" --target_file="$final_path/config.yaml"
-    # Timestamp format for log entries in the Go time format.
-    #timestamp_format: Jan _2, 2006 15:04:05
-    # Minimum severity for log messages.
+ynh_replace_string --match_string=__BOTADMIN__ --replace_string=$botadmin --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__ENABLE_RELAYBOT__ --replace_string="true" --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__RELAYBOT_MANAGEMENT_ROOM__ --replace_string="highwaytohell" --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__RELAYBOT_INVITE__ --replace_string=$botadmin --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__APP__ --replace_string=$app --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__LOG_FORMAT__ --replace_string="log.log" --target_file="$mautrix_config_path"
     # Options: debug, info, warn, error, fatal
-    #print_level: debug
-    ynh_replace_string --match_string="print_level: debug" --replace_string="print_level: warn" --target_file="$final_path/config.yaml"
+ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --target_file="$mautrix_config_path"
 
 #cd $final_path
 #Generate the appservice registration file by running ./mautrix-whatsapp -g.
     #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
 #mkdir -p $app_service_registration_path
-$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_registration_path/$app.yaml
+$final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
 #Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 #cd $base_directory
 #cp ../conf/$app.yaml $app_service_registration_path
@@ -350,7 +265,7 @@ $final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_regis
 
 # Calculate and store the config file checksum into the app settings
 ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
-ynh_store_file_checksum --file="$final_path/config.yaml"
+ynh_store_file_checksum --file="$mautrix_config_path"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -372,7 +287,7 @@ chown $mautrix_whatsapp_user:root -R $final_path
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..." --time --weight=3
+ynh_script_progression --message="Configuring log rotation..." --weight=3
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate --logfile "/var/log/$app/log.log"
@@ -388,16 +303,16 @@ yunohost service add $app --description "$app daemon for bridging Whatsapp and M
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --time --weight=1
+ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
 # Wait until the synapse user is created
 sleep 30
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-    if [ "$bot_is_synapse_admin" = "Yes" ]
+    if [ "$bot_is_synapse_admin" = true ]
     then
-    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = '@$whatsappbot:$server_name';"
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$whatsappbot"";"
     #yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
     fi
 ynh_systemd_action --service_name=$app --action="restart"
@@ -406,4 +321,4 @@ ynh_systemd_action --service_name=$app --action="restart"
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --time --last
+ynh_script_progression --message="Installation of $app completed" --last

@@ -5,7 +5,7 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies="g++ postgresql"
+pkg_dependencies="g++ postgresql ffmpeg"
 GO_VERSION="1.14"
 GO_PATH="/usr/lib/go-$GO_VERSION/bin"
 
