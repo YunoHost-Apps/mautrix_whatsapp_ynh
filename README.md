@@ -1,8 +1,8 @@
 # A Matrix-WhatsApp puppeting bridge for YunoHost
 [![How components fit togeter](https://camo.githubusercontent.com/857d5c90de07312a60e02ce89efe7f8ece86ab6b/68747470733a2f2f67617a697a6f76612e6e65742f7075622f6d6175747269782d77686174736170702e706e67)](https://github.com/tulir/mautrix-whatsapp/wiki)
 
-[![Integration level](https://dash.yunohost.org/integration/mautrix_whatsapp_ynh.svg)](https://dash.yunohost.org/appci/app/mautrix_whatsapp_ynh)  
-[![Install Mautrix-WhatsApp with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=mautrix_whatsapp_ynh)
+[![Integration level](https://dash.yunohost.org/integration/mautrix_whatsapp.svg)](https://dash.yunohost.org/appci/app/mautrix_whatsapp)  
+[![Install Mautrix-WhatsApp with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_whatsapp)
 
 *[Lire ce readme en français.](./README_fr.md)*
 
@@ -12,7 +12,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 ## Overview
 A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. Messages, media and notifications are bridged between a whatsapp user and a matrix user. The matrix user can invite other matrix user in a bridged whatsapp room, such that even people without a whatsapp account can participate to whatsapp group conversations. The ["mautrix-whatsapp"](https://github.com/tulir/mautrix-whatsapp/wiki) bridge consists in a synapse app service and relies on postgresql (mysql also available). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
-**Shipped version:** 0.1.4
+**Shipped version:** 0.1.5
 
 ## Screenshots
 
@@ -20,7 +20,7 @@ A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. M
 
 ## Demo
 
-* A demo bridge will be provided by arn-fai.net .
+* Contact mautrix_whatsapp@sans-nuage.fr.
 
 ## Bridging usage
 ### Bridge a WhatsApp user and a Matrix user
@@ -70,9 +70,8 @@ Multi-instance installation should work, but was not tested yet. A priori it mak
 #### Supported architectures
 
 * Tested on ARMv7 in April 2020
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/mautrix_whatsapp_ynh%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix_whatsapp_ynh/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/mautrix_whatsapp_ynh%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/mautrix_whatsapp_ynh/)
-* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/mautrix_whatsapp_ynh%20%28Apps%29.svg)](https://ci-stretch.nohost.me/ci/apps/mautrix_whatsapp_ynh/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/mautrix_whatsapp%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix_whatsapp/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/mautrix_whatsapp%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/mautrix_whatsapp/)
 
 ## Limitations
 
@@ -108,7 +107,7 @@ or
 sudo yunohost app upgrade synapse -u https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing --debug
 ```
 
-To test communication between the app service and synapse on a VM, you must install a certificate:
+To test communication between the app service and synapse on a VM, you must install a certificate (as root):
 ```
 echo | openssl s_client -showcerts -servername synapse.vm -connect synapse.vm:443 2>/dev/null | awk '/-----BEGIN CERTIFICATE-----/, /-----END CERTIFICATE-----/' >> /usr/local/share/ca-certificates/synapse.vm.crt
 update-ca-certificates
