@@ -30,6 +30,10 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 mautrix_config_path="$final_path/config.yaml"
 mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 
+ynh_print_OFF
+mautrix_whatsapp_db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
+ynh_print_ON
+
 #=================================================
 # SET CONSTANTS
 #=================================================
@@ -177,7 +181,9 @@ ynh_replace_string --match_string=__DOMAIN__ --replace_string="https://$domain" 
 ynh_replace_string --match_string=__SERVER_NAME__ --replace_string=$server_name --target_file="$mautrix_config_path"
 ynh_replace_string --match_string=__PORT__ --replace_string=$port --target_file="$mautrix_config_path"
 ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_USER__ --replace_string=$mautrix_whatsapp_user --target_file="$mautrix_config_path"
+ynh_print_OFF
 ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
+ynh_print_ON
 ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_NAME__ --replace_string=$mautrix_whatsapp_db_name --target_file="$mautrix_config_path"
 ynh_replace_string --match_string=__WHATSAPPBOT__ --replace_string=$whatsappbot --target_file="$mautrix_config_path"
 if [ "$botusers" = "local" ]
