@@ -26,7 +26,7 @@
 		port="8449"	(PORT)
 		synapsenumber="1"
 		whatsappbot="whatsappbot"
-		bot_is_synapse_admin="Yes"
+		bot_is_synapse_admin="yes"
 		botadmin="@johndoe:synapsedomain.tld"	(USER)
 		botusers="@johndoe:synapsedomain.tld"
 	; Checks
