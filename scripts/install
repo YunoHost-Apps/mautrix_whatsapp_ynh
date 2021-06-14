@@ -27,9 +27,6 @@ ynh_abort_if_errors
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 bot_is_synapse_admin=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
-encryption=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
-botadmin=$YNH_APP_ARG_BOTADMIN
-botusers=$YNH_APP_ARG_BOTUSERS
 
 app=$YNH_APP_INSTANCE_NAME
 final_path=/opt/yunohost/$app
@@ -49,6 +46,19 @@ synapse_name="matrix-$synapse_instance"
 synapse_user="matrix-$synapse_instance"
 synapse_db_name="matrix_$synapse_instance"
 synapse_db_user="matrix_$synapse_instance"
+
+botname=$YNH_APP_ARG_BOTNAME
+encryption=$YNH_APP_ARG_ENCRYPTION
+botadmin=$YNH_APP_ARG_BOTADMIN
+if [ "$YNH_APP_ARG_BOTUSERS" = "local" ]
+then
+botusers=$server_name
+elif [ "$YNH_APP_ARG_BOTUSERS" = "admin" ]
+then
+botusers=$botadmin
+else
+botusers=$YNH_APP_ARG_BOTUSERS
+fi
 
 #=================================================
 # SET CONSTANTS
@@ -205,54 +215,30 @@ ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
 
 # Configure Mautrix-WhatsApp
 
-# WARNING : theses command are used in INSTALL, UPGRADE, CONFIG, CHANGE-URL (4 times)
-# For any update do it in all files
-
 mautrix_config_path="$final_path/config.yaml"
 
-#Copy example-config.yaml to config.yaml
-cp ../conf/config.yaml "$mautrix_config_path"
+domain="https://$domain"
+#verify_server_ssl_certificates="true"
+#matrix_server_supports_asmux="false"
+#log_filename="/var/log/$app/$app.log"
 
-ynh_replace_string --match_string=__DOMAIN__ --replace_string="https://$domain" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__SERVER_NAME__ --replace_string=$server_name --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__PORT__ --replace_string=$port --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_USER__ --replace_string=$mautrix_whatsapp_user --target_file="$mautrix_config_path"
-ynh_print_OFF
-ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
-ynh_print_ON
-ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_NAME__ --replace_string=$mautrix_whatsapp_db_name --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__WHATSAPPBOT__ --replace_string=$whatsappbot --target_file="$mautrix_config_path"
-if [ "$botusers" = "local" ]
-then
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$server_name --target_file="$mautrix_config_path"
-elif [ "$botusers" = "admin" ]
-then
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-else
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botusers --target_file="$mautrix_config_path"
-fi
-ynh_replace_string --match_string=__BOTADMIN__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__ENABLE_RELAYBOT__ --replace_string="true" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__RELAYBOT_MANAGEMENT_ROOM__ --replace_string="highwaytohell" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__RELAYBOT_INVITE__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__APP__ --replace_string=$app --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__LOG_FORMAT__ --replace_string="log.log" --target_file="$mautrix_config_path"
-    # Options: debug, info, warn, error, fatal
-ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --target_file="$mautrix_config_path"
+#ynh_print_OFF
+#ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
+#ynh_print_ON
+enable_relaybot="true"
+relaybot_management_room="highwaytohell"
+relaybot_invite="$botadmin"
+log_format="log.log"
+# Options: debug, info, warn, error, fatal
+log_level="error"
 
-#cd $final_path
+ynh_add_config --template="../conf/config.yaml" --destination="mautrix_config_path"
+
 #Generate the appservice registration file by running ./mautrix-whatsapp -g.
     #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
-#mkdir -p $app_service_registration_path
 $final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
-#Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
-#cd $base_directory
-#cp ../conf/$app.yaml $app_service_registration_path
 
-#$as_token=;
-#$hs_token=;
-#ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
-#ynh_replace_string --match_string=__HS_TOKEN__ --replace_string="$hs_token" --target_file=$app_service_registration_path/$app.yaml
+#Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
 # Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
