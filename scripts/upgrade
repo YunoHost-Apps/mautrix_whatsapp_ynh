@@ -34,7 +34,7 @@ ynh_print_OFF
 mautrix_whatsapp_db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
 ynh_print_ON
 
-#=================================================
+#=================================================botname
 # SET CONSTANTS
 #=================================================
 
@@ -174,35 +174,11 @@ ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
 
 mautrix_config_path="$final_path/config.yaml"
 
-#Copy example-config.yaml to config.yaml
-cp ../conf/config.yaml "$mautrix_config_path"
-
-ynh_replace_string --match_string=__DOMAIN__ --replace_string="https://$domain" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__SERVER_NAME__ --replace_string=$server_name --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__PORT__ --replace_string=$port --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_USER__ --replace_string=$mautrix_whatsapp_user --target_file="$mautrix_config_path"
 ynh_print_OFF
 ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
 ynh_print_ON
-ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_NAME__ --replace_string=$mautrix_whatsapp_db_name --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__WHATSAPPBOT__ --replace_string=$whatsappbot --target_file="$mautrix_config_path"
-if [ "$botusers" = "local" ]
-then
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$server_name --target_file="$mautrix_config_path"
-elif [ "$botusers" = "admin" ]
-then
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-else
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botusers --target_file="$mautrix_config_path"
-fi
-ynh_replace_string --match_string=__BOTADMIN__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__ENABLE_RELAYBOT__ --replace_string="true" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__RELAYBOT_MANAGEMENT_ROOM__ --replace_string="highwaytohell" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__RELAYBOT_INVITE__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__APP__ --replace_string=$app --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__LOG_FORMAT__ --replace_string="log.log" --target_file="$mautrix_config_path"
-    # Options: debug, info, warn, error, fatal
-ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --target_file="$mautrix_config_path"
+
+ynh_add_config --template="../conf/config.yaml" --destination="mautrix_config_path"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
