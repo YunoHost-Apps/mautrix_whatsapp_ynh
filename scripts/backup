@@ -24,7 +24,7 @@ ynh_abort_if_errors
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..." --weight=1
+ynh_print_info --message="Loading installation settings..." 
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -39,14 +39,14 @@ mautrix_whatsapp_db_name=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp
 #=================================================
 # BACKUP THE APP MAIN DIR
 #=================================================
-ynh_script_progression --message="Backing up the main app directory..." --weight=1
+ynh_print_info --message="Backing up the main app directory..." 
 
 ynh_backup --src_path="$final_path"
 
 #=================================================
 # BACKUP THE POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Backing up the PostgreSQL database..." --weight=1
+ynh_print_info --message="Backing up the PostgreSQL database..."
 
 ynh_psql_dump_db --database="$mautrix_whatsapp_db_name" > ${YNH_CWD}/dump.sql
 
@@ -55,14 +55,14 @@ ynh_psql_dump_db --database="$mautrix_whatsapp_db_name" > ${YNH_CWD}/dump.sql
 #=================================================
 # BACKUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Backing up logrotate configuration..." --weight=1
+ynh_print_info --message="Backing up logrotate configuration..." 
 
 ynh_backup --src_path="/var/log/$app"
 
 #=================================================
 # BACKUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Backing up systemd configuration..." --weight=1
+ynh_print_info --message="Backing up systemd configuration..."
 
 #ynh_backup --src_path="/etc/default/$app"
 ynh_backup --src_path="/etc/systemd/system/$app.service"
@@ -71,4 +71,4 @@ ynh_backup --src_path="/etc/systemd/system/$app.service"
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Backup script completed for $app. (YunoHost will then actually copy those files to the archive)." --last
+ynh_print_info --message="Backup script completed for $app. (YunoHost will then actually copy those files to the archive)." --last
