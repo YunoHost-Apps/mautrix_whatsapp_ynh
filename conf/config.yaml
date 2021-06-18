@@ -1,4 +1,4 @@
-# From v0.1.5 https://github.com/tulir/mautrix-whatsapp/blob/master/example-config.yaml
+# From v0.1.7 https://github.com/tulir/mautrix-whatsapp/blob/master/example-config.yaml
 # Homeserver details.
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
@@ -96,6 +96,8 @@ bridge:
     # (Note that, by default, non-admins might not have your homeserver's permission to create
     #  communities.)
     # {{.Localpart}} is the MXID localpart and {{.Server}} is the MXID server part of the user.
+    # whatsapp_{{.Localpart}}={{.Server}} is a good value that should work for any user.
+    #community_template: null
     community_template: whatsapp_{{.Localpart}}={{.Server}}
 
     # WhatsApp connection timeout in seconds.
@@ -144,10 +146,6 @@ bridge:
     recovery_chat_sync_limit: -1
     # Whether or not to sync history when recovering from downtime.
     recovery_history_backfill: true
-    # Maximum number of seconds since last message in chat to skip
-    # syncing the chat in any case. This setting will take priority
-    # over both recovery_chat_sync_limit and initial_chat_sync_count.
-    # Default is 3 days = 259200 seconds
     # Whether or not portal info should be fetched from the server when syncing,
     # instead of relying on finding any changes in the message history.
     # If you get 599 errors often, you should try disabling this.
