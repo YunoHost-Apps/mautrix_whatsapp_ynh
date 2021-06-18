@@ -47,7 +47,6 @@ synapse_user="matrix-$synapse_instance"
 synapse_db_name="matrix_$synapse_instance"
 synapse_db_user="matrix_$synapse_instance"
 
-botname=$YNH_APP_ARG_BOTNAME
 encryption=$YNH_APP_ARG_ENCRYPTION
 botadmin=$YNH_APP_ARG_BOTADMIN
 if [ "$YNH_APP_ARG_BOTUSERS" = "local" ]
