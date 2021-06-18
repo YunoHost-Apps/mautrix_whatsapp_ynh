@@ -34,7 +34,7 @@ ynh_print_OFF
 mautrix_whatsapp_db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
 ynh_print_ON
 
-#=================================================botname
+#=================================================
 # SET CONSTANTS
 #=================================================
 
