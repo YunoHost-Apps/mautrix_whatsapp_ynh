@@ -3,7 +3,7 @@
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
     #address: https://example.com
-    address: __DOMAIN__
+    address: https://__DOMAIN__
     # The domain of the homeserver (for MXIDs, etc).
     #domain: example.com
     domain: __SERVER_NAME__
