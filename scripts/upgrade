@@ -63,16 +63,16 @@ upgrade_type=$(ynh_check_app_version_changed)
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
 # If db_name doesn't exist, create it
-if [ -z "$mautrix_whatsapp_db_name" ]; then
-	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
-	ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
-fi
+#if [ -z "$mautrix_whatsapp_db_name" ]; then
+#	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
+#	ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
+#fi
 
 # If final_path doesn't exist, create it
-if [ -z "$final_path" ]; then
-	final_path=/opt/yunohost/$app
-	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-fi
+#if [ -z "$final_path" ]; then
+#	final_path=/opt/yunohost/$app
+#	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+#fi
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
@@ -122,9 +122,14 @@ ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-
 #=================================================
 # BUILD GO
 #=================================================
+
+src_path="$final_path"_src
+# Remove a directory securely
+ynh_secure_remove --file="$src_path"
+
 # Build mautrix-whatsapp
 base_directory=$PWD
-export GOPATH="$final_path"_src
+export GOPATH="$src_path"
 export GOCACHE="$GOPATH"/.cache/go-build
 cd $final_path
 if [ $encryption = true ]
