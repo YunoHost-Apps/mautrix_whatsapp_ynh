@@ -34,7 +34,7 @@ ynh_print_OFF
 mautrix_whatsapp_db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
 ynh_print_ON
 
-#=================================================botname
+#=================================================
 # SET CONSTANTS
 #=================================================
 
@@ -174,9 +174,18 @@ ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
 
 mautrix_config_path="$final_path/config.yaml"
 
-ynh_print_OFF
-ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
-ynh_print_ON
+domain="https://$domain"
+
+#ynh_print_OFF
+#ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
+#ynh_print_ON
+
+enable_relaybot="true"
+relaybot_management_room="highwaytohell"
+relaybot_invite="$botadmin"
+log_format="log.log"
+# Options: debug, info, warn, error, fatal
+log_level="error"
 
 ynh_add_config --template="../conf/config.yaml" --destination="mautrix_config_path"
 

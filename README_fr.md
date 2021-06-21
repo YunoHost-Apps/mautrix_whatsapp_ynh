@@ -13,7 +13,7 @@ Une passerelle entre Matrix et WhatsApp empaquetée comme un service YunoHost. L
 
 ** Attention : sauvegardez et restaurez toujours les deux applications Yunohost matrix_synapse et mautrix_whatsapp en même temps!**
 
-**Version incluse:** 0.1.6
+**Version incluse:** 0.1.7
 
 ## Captures d'écran
 
