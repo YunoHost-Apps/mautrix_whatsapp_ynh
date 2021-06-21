@@ -148,12 +148,6 @@ ynh_psql_execute_as_root \
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=3
 
-### `ynh_setup_source` is used to install an app from a zip or tar.gz file,
-### downloaded from an upstream source, like a git repository.
-### `ynh_setup_source` use the file conf/app.src
-
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-
 # WARNING : theses command are used in INSTALL, UPGRADE (2 times)
 # For any update do it in all files
 #if [ -n "$(uname -m | grep 64)" ]
@@ -216,7 +210,6 @@ ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
 
 mautrix_config_path="$final_path/config.yaml"
 
-domain="https://$domain"
 #verify_server_ssl_certificates="true"
 #matrix_server_supports_asmux="false"
 #log_filename="/var/log/$app/$app.log"
@@ -246,10 +239,6 @@ $final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registra
 # STORE THE CONFIG FILE CHECKSUM
 #=================================================
 
-### `ynh_store_file_checksum` is used to store the checksum of a file.
-### That way, during the upgrade script, by using `ynh_backup_if_checksum_is_different`,
-### you can make a backup of this file before modifying it again if the admin had modified it.
-
 # Calculate and store the config file checksum into the app settings
 ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
 ynh_store_file_checksum --file="$mautrix_config_path"
@@ -259,10 +248,6 @@ ynh_store_file_checksum --file="$mautrix_config_path"
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
-
-### For security reason, any app should set the permissions to root: before anything else.
-### Then, if write authorization is needed, any access should be given only to directories
-### that really need such authorization.
 
 # Set permissions to app files
 chown -R root: $final_path
