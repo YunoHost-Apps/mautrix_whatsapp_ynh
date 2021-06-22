@@ -1,17 +1,15 @@
 # See here for more information
-# https://github.com/YunoHost/package_check#syntax-check_process-file
-
-# Move this file from check_process.default to check_process when you have filled it.
+# https://github.com/YunoHost/package_check#syntax-of-check_process
 
 ;; Test complet
-	auto_remove=1
+#	auto_remove=1
 	; pre-install
 		# synapse parameters
-        	domain="domain.tld"
-        	path="/_matrix/static/"
-        	is_public=1
-	  	server_name="domain2.tld"
-		jitsi_server="jitsi.riot.im"
+        	sy_domain="domain.tld"
+        	sy_path="/_matrix/static/"
+        	sy_is_public=1
+	  	sy_server_name="domain2.tld"
+		sy_jitsi_server="jitsi.riot.im"
 		#admin="john"	(USER)
 		#language="en"
 		#password="pass"
@@ -20,7 +18,7 @@
 		sudo yunohost tools update --apps
 		sudo yunohost domain add $domain
 		sudo yunohost domain add $server_name
-		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/ -a "domain=$domain&server_name=$server_name&is_public=$is_public&jitsi_server=$jitsi_server" --force
+		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/ -a "domain=$sy_domain&server_name=$sy_server_name&is_public=$sy_is_public&jitsi_server=$sy_jitsi_server" --force
 	; Manifest
 		# mautrix_whatsapp manifest parameters
 		port="8449"	(PORT)
@@ -41,18 +39,15 @@
 		#upgrade=1	from_commit=CommitHash
 		backup_restore=1
 		multi_instance=1
-		# This test is no longer necessary since the version 2.7 (PR: https://github.com/YunoHost/yunohost/pull/304), you can still do it if your app could be installed with this version.
-		# incorrect_path=1
 		port_already_use=1
 		change_url=0
-;;; Levels
+		actions=0
+		config_panel=0
+#;;; Levels
 	# If the level 5 (Package linter) is forced to 1. Please add justifications here.
-	Level 5=auto
-;;; Options
-#Email=
-Notification=none
-;;; Upgrade options
-	; commit=CommitHash
+#	Level 5=auto
+#;;; Upgrade options
+	#; commit=CommitHash
 		#name=Name and date of the commit.
 		#manifest_arg=domain=DOMAIN&path=PATH&admin=USER&language=fr&is_public=1&password=pass&port=666&
 
