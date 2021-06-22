@@ -225,7 +225,7 @@ log_format="log.log"
 log_level="error"
 
 ynh_add_config --template="../conf/config.yaml" --destination="mautrix_config_path"
-
+sleep 5
 #Generate the appservice registration file by running ./mautrix-whatsapp -g.
     #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
 $final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
