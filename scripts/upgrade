@@ -126,8 +126,9 @@ ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-
 src_path="$final_path"_src
 # Remove a directory securely
 #ynh_secure_remove --file="$src_path"
-cd $src_path
-git pull
+#mkdir -p $src_path
+#cd $src_path
+#git pull
 # Build mautrix-whatsapp
 base_directory=$PWD
 export GOPATH="$src_path"
