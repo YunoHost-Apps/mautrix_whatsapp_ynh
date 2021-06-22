@@ -110,9 +110,9 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=2
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	base_directory=$PWD
-	cd $final_path
-	git pull
+	#base_directory=$PWD
+	#cd $final_path
+	#git pull
 	#ynh_setup_source --dest_dir="$final_path"
 fi
 
@@ -130,14 +130,16 @@ ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-
 # BUILD GO
 #=================================================
 
+base_directory=$PWD
+cd $base_directory
+
 src_path="$final_path"_src
 # Remove a directory securely
 #ynh_secure_remove --file="$src_path"
 #mkdir -p $src_path
-#cd $src_path
-#git pull
+cd $src_path
+git pull
 # Build mautrix-whatsapp
-base_directory=$PWD
 export GOPATH="$src_path"
 export GOCACHE="$GOPATH"/.cache/go-build
 #git pull
