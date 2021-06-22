@@ -192,7 +192,7 @@ log_format="log.log"
 # Options: debug, info, warn, error, fatal
 log_level="error"
 
-ynh_add_config --template="../conf/config.yaml" --destination="mautrix_config_path"
+ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
