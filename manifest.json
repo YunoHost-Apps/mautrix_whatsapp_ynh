@@ -62,7 +62,7 @@
 					"en": "If true, the bot can group WhatsApp chats in a Matrix community. Not required if you set up synapse so that non-admins are authorized to create communities.",
 					"fr": "Si true, le robot groupera les conversations WhatsApp dans une communauté Matrix. Pas nécessaire si vous avez réglé synapse pour qu'il autorise les non-admin à créer des communautés."
 				},
-				"default": true
+				"default": 1
 			},			
 			{
 				"name": "encryption",
@@ -71,7 +71,7 @@
 					"en": "Enable end-to-bridge encryption ?",
 					"fr": "Activer le chiffrement entre synapse et le bridge ?"
 				},
-				"default": false
+				"default": 0
 			},			
 			{
 				"name": "botadmin",
