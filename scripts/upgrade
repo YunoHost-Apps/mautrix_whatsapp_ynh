@@ -125,15 +125,16 @@ ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-
 
 src_path="$final_path"_src
 # Remove a directory securely
-ynh_secure_remove --file="$src_path"
-
+#ynh_secure_remove --file="$src_path"
+cd $src_path
+git pull
 # Build mautrix-whatsapp
 base_directory=$PWD
 export GOPATH="$src_path"
 export GOCACHE="$GOPATH"/.cache/go-build
-git pull
+#git pull
 cd $final_path
-git pull
+#git pull
 if [ $encryption = true ]
 then
 # build with libolm3 end-to-bridge encryption
