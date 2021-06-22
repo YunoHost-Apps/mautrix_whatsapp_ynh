@@ -131,7 +131,9 @@ ynh_secure_remove --file="$src_path"
 base_directory=$PWD
 export GOPATH="$src_path"
 export GOCACHE="$GOPATH"/.cache/go-build
+git pull
 cd $final_path
+git pull
 if [ $encryption = true ]
 then
 # build with libolm3 end-to-bridge encryption
