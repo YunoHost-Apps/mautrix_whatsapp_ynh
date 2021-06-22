@@ -110,7 +110,10 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=2
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path"
+	base_directory=$PWD
+	cd $final_path
+	git pull
+	#ynh_setup_source --dest_dir="$final_path"
 fi
 
 #=================================================
