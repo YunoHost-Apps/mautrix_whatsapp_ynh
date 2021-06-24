@@ -1,13 +1,8 @@
-# See here for more information
-# https://github.com/YunoHost/package_check#syntax-of-check_process
-
-;; Test complet
-#	auto_remove=1
+;; Default test serie
 	; pre-install
 		sudo yunohost tools update apps
 		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/ -a "domain=$domain&server_name=$server_name&is_public=$is_public&jitsi_server=$jitsi_server" --force
 	; Manifest
-		# mautrix_whatsapp manifest parameters
 		port="8449"	(PORT)
 		synapsenumber="1"
 		whatsappbot="whatsappbot"
@@ -30,11 +25,3 @@
 		change_url=0
 		actions=0
 		config_panel=0
-#;;; Levels
-	# If the level 5 (Package linter) is forced to 1. Please add justifications here.
-#	Level 5=auto
-#;;; Upgrade options
-	#; commit=CommitHash
-		#name=Name and date of the commit.
-		#manifest_arg=domain=DOMAIN&path=PATH&admin=USER&language=fr&is_public=1&password=pass&port=666&
-
