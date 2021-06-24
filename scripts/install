@@ -118,11 +118,18 @@ ynh_script_progression --message="Installing dependencies..." --weight=97
 
 ynh_install_app_dependencies $pkg_dependencies
 
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
 if [ $encryption = true ]
 then
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
 fi
+
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
+
+#export GOPATH="$final_path"
+#export GOCACHE="$GOPATH"/.cache/go-build
+
+export PATH=$PATH:$GO_PATH
+env_path=$PATH
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -155,8 +162,6 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 ynh_script_progression --message="Build with golang..." --weight=194
 
-export GOPATH="$final_path"
-export GOCACHE="$GOPATH"/.cache/go-build
 pushd "$final_path" || ynh_die
         ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
 	if [ $encryption = true ]
