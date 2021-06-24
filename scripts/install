@@ -155,9 +155,9 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 ynh_script_progression --message="Build with golang..." --weight=194
 
+export GOPATH="$final_path"
+export GOCACHE="$GOPATH"/.cache/go-build
 pushd "$final_path" || ynh_die
-	export GOPATH="$final_path"
-	export GOCACHE="$GOPATH"/.cache/go-build
         ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
 	if [ $encryption = true ]
 	then
