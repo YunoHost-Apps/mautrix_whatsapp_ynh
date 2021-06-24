@@ -52,7 +52,7 @@
 				"default": "whatsappbot"
 			},
 			{
-				"name": "bot_is_synapse_admin",
+				"name": "bot_synapse_adm",
 				"type": "boolean",
 				"ask": {
 					"en": "Give the WhatsApp bot administrator rights to the synapse instance?",
