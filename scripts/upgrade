@@ -26,7 +26,6 @@ encryption=$(ynh_app_setting_get --app=$app --key=encryption)
 botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-mautrix_config_path="$final_path/config.yaml"
 mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 
 ynh_print_OFF
@@ -42,6 +41,7 @@ whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
 mautrix_whatsapp_user=$app
 mautrix_whatsapp_db_name=$app
 mautrix_whatsapp_db_user=$app
+mautrix_config_path="$final_path/config.yaml"
 upstream_version=$(ynh_app_upstream_version)
 
 #=================================================
@@ -186,11 +186,6 @@ ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
 
 # Configure Mautrix-WhatsApp
 
-# WARNING : theses command are used in INSTALL, UPGRADE, CONFIG, CHANGE-URL (4 times)
-# For any update do it in all files
-
-mautrix_config_path="$final_path/config.yaml"
-
 #ynh_print_OFF
 #ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
 #ynh_print_ON
@@ -209,9 +204,14 @@ ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_p
 #=================================================
 $final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
 
+#Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
 # Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
+
+#=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
 
 # Recalculate and store the checksum of the file for the next upgrade.
 ynh_store_file_checksum --file="$mautrix_config_path"
