@@ -26,7 +26,7 @@ ynh_abort_if_errors
 
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
-bot_is_synapse_admin=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
+bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
 
 app=$YNH_APP_INSTANCE_NAME
 final_path=/opt/yunohost/$app
@@ -97,7 +97,7 @@ ynh_app_setting_set --app=$app --key=port --value=$port
 ynh_app_setting_set --app=$app --key=whatsappbot --value=$whatsappbot
 ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
 ynh_app_setting_set --app=$app --key=app_service_registration_path --value=$app_service_registration_path
-ynh_app_setting_set --app=$app --key=bot_is_synapse_admin --value=$bot_is_synapse_admin
+ynh_app_setting_set --app=$app --key=bot_synapse_adm --value=$bot_synapse_adm
 ynh_app_setting_set --app=$app --key=encryption --value=$encryption
 ynh_app_setting_set --app=$app --key=mautrix_whatsapp_db_name --value=$mautrix_whatsapp_db_name
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
@@ -282,7 +282,7 @@ ynh_systemd_action --service_name=$app --action="start"
 # Wait until the synapse user is created
 sleep 30
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-    if [ "$bot_is_synapse_admin" = true ]
+    if [ "$bot_synapse_adm" = true ]
     then
     ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$whatsappbot"";"
     #yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
