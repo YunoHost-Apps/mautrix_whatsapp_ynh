@@ -119,16 +119,19 @@ ynh_script_progression --message="Upgrading dependencies..." --weight=100
 
 ynh_install_app_dependencies $pkg_dependencies
 
+if [ $encryption = true ]
+then
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
+fi
+
 # TODO: check Go version and upgrade if needed
 #if ! command -v /usr/local/go/bin/go &> /dev/null
 #then
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
 #if
 
-if [ $encryption = true ]
-then
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
-fi
+export PATH=$PATH:$GO_PATH
+env_path=$PATH
 
 #=================================================
 # BUILD GO
@@ -137,8 +140,6 @@ fi
 # Build mautrix-whatsapp
 
 pushd "$final_path" || ynh_die
-	export GOPATH="$final_path"
-	export GOCACHE="$GOPATH"/.cache/go-build
         ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
 	if [ $encryption = true ]
 	then
