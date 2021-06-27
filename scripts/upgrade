@@ -131,9 +131,9 @@ ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-
 #if
 
 # Migration from 1.5.0
-src_path="$final_path"_src
-export GOPATH=$src_path
-export GOCACHE="$GOPATH"/.cache/go-build
+#src_path="$final_path"_src
+#export GOPATH=$src_path
+#export GOCACHE="$GOPATH"/.cache/go-build
 # Remove a directory securely
 #ynh_secure_remove --file="$src_path"
 #mkdir -p $src_path
@@ -148,19 +148,19 @@ export GOCACHE="$GOPATH"/.cache/go-build
 # Build mautrix-whatsapp
 
 pushd "$final_path" || ynh_die
-        ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
-	src_path="$final_path"_src
-	export GOPATH=$src_path
-	export GOCACHE="$GOPATH"/.cache/go-build
-	go build
-	#if [ $encryption = true ]
-	#then
+       ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
+	#src_path="$final_path"_src
+	#export GOPATH=$src_path
+	#export GOCACHE="$GOPATH"/.cache/go-build
+	#go build
+	if [ $encryption = true ]
+	then
 	# Build with libolm3 end-to-bridge encryption
-	#ynh_exec_warn_less ./build.sh
-	#else
+	ynh_exec_warn_less ./build.sh
+	else
 	# Build without end-to-bridge encryption
-	#ynh_exec_warn_less ./build.sh -tags nocrypto
-	#fi
+	ynh_exec_warn_less ./build.sh -tags nocrypto
+	fi
 popd || ynh_die
 
 #=================================================
