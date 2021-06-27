@@ -64,7 +64,7 @@ ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 # If db_name doesn't exist, create it
 if [ -z "$mautrix_whatsapp_db_name" ]; then
 	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
-	#ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
+	ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
 fi
 
 # If final_path doesn't exist, create it
@@ -147,21 +147,37 @@ ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-
 
 # Build mautrix-whatsapp
 
-pushd "$final_path" || ynh_die
-       ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
+base_directory=$PWD
+export GOPATH="$final_path"_src
+export GOCACHE="$GOPATH"/.cache/go-build
+cd $final_path
+if [ $encryption = true ]
+then
+# build with libolm3 end-to-bridge encryption
+./build.sh
+else
+# build without end-to-bridge encryption
+./build.sh -tags nocrypto
+fi
+# build with libolm2 encryption
+# ./build.sh -tags nosas
+cd $base_directory
+
+#pushd "$final_path" || ynh_die
+#       ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
 	#src_path="$final_path"_src
 	#export GOPATH=$src_path
 	#export GOCACHE="$GOPATH"/.cache/go-build
 	#go build
-	if [ $encryption = true ]
-	then
+#	if [ $encryption = true ]
+#	then
 	# Build with libolm3 end-to-bridge encryption
-	ynh_exec_warn_less ./build.sh
-	else
+#	ynh_exec_warn_less ./build.sh
+#	else
 	# Build without end-to-bridge encryption
-	ynh_exec_warn_less ./build.sh -tags nocrypto
-	fi
-popd || ynh_die
+#	ynh_exec_warn_less ./build.sh -tags nocrypto
+#	fi
+#popd || ynh_die
 
 #=================================================
 # CREATE DEDICATED USER
