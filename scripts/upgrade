@@ -151,6 +151,7 @@ base_directory=$PWD
 export GOPATH="$final_path"_src
 export GOCACHE="$GOPATH"/.cache/go-build
 cd $final_path
+go clean
 if [ $encryption = true ]
 then
 # build with libolm3 end-to-bridge encryption
