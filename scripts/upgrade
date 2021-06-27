@@ -149,14 +149,18 @@ export GOCACHE="$GOPATH"/.cache/go-build
 
 pushd "$final_path" || ynh_die
         ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
-	if [ $encryption = true ]
-	then
+	src_path="$final_path"_src
+	export GOPATH=$src_path
+	export GOCACHE="$GOPATH"/.cache/go-build
+	go build
+	#if [ $encryption = true ]
+	#then
 	# Build with libolm3 end-to-bridge encryption
-	ynh_exec_warn_less ./build.sh
-	else
+	#ynh_exec_warn_less ./build.sh
+	#else
 	# Build without end-to-bridge encryption
-	ynh_exec_warn_less ./build.sh -tags nocrypto
-	fi
+	#ynh_exec_warn_less ./build.sh -tags nocrypto
+	#fi
 popd || ynh_die
 
 #=================================================
