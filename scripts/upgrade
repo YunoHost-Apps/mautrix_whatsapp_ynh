@@ -62,20 +62,20 @@ upgrade_type=$(ynh_check_app_version_changed)
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
 # If db_name doesn't exist, create it
-if [ -z "$mautrix_whatsapp_db_name" ]; then
-	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
-	ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
-fi
+#if [ -z "$mautrix_whatsapp_db_name" ]; then
+#	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
+#	ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
+#fi
 
 # If final_path doesn't exist, create it
-if [ -z "$final_path" ]; then
-	final_path=/opt/yunohost/$app
-	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-fi
+#if [ -z "$final_path" ]; then
+#	final_path=/opt/yunohost/$app
+#	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+#fi
 
 #Migration from 0.1.5
-domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
-ynh_app_setting_set --app=$app --key=domain --value=$domain
+#domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
+#ynh_app_setting_set --app=$app --key=domain --value=$domain
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
@@ -130,14 +130,13 @@ fi
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
 #if
 
-# Migration from 1.5.0
-#src_path="$final_path"_src
+# Migration from 1.6.0
+ynh_secure_remove --file="$final_path"/asmux.go
+src_path="$final_path"_src
 #export GOPATH=$src_path
 #export GOCACHE="$GOPATH"/.cache/go-build
 # Remove a directory securely
-#ynh_secure_remove --file="$src_path"
-#mkdir -p $src_path
-#cd $src_path
+ynh_secure_remove --file="$src_path"
 #export PATH=$PATH:$GO_PATH
 #env_path=$PATH
 
@@ -147,38 +146,17 @@ ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-
 
 # Build mautrix-whatsapp
 
-base_directory=$PWD
-export GOPATH="$final_path"_src
-export GOCACHE="$GOPATH"/.cache/go-build
-cd $final_path
-go clean
-if [ $encryption = true ]
-then
-# build with libolm3 end-to-bridge encryption
-./build.sh
-else
-# build without end-to-bridge encryption
-./build.sh -tags nocrypto
-fi
-# build with libolm2 encryption
-# ./build.sh -tags nosas
-cd $base_directory
-
-#pushd "$final_path" || ynh_die
-#       ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
-	#src_path="$final_path"_src
-	#export GOPATH=$src_path
-	#export GOCACHE="$GOPATH"/.cache/go-build
-	#go build
-#	if [ $encryption = true ]
-#	then
+pushd "$final_path" || ynh_die
+       ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
+	if [ $encryption = true ]
+	then
 	# Build with libolm3 end-to-bridge encryption
-#	ynh_exec_warn_less ./build.sh
-#	else
+	ynh_exec_warn_less ./build.sh
+	else
 	# Build without end-to-bridge encryption
-#	ynh_exec_warn_less ./build.sh -tags nocrypto
-#	fi
-#popd || ynh_die
+	ynh_exec_warn_less ./build.sh -tags nocrypto
+	fi
+popd || ynh_die
 
 #=================================================
 # CREATE DEDICATED USER
