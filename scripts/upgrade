@@ -22,12 +22,10 @@ port=$(ynh_app_setting_get --app=$app --key=port)
 whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
-bot_is_synapse_admin=$(ynh_app_setting_get --app=$app --key=bot_is_synapse_admin)
 encryption=$(ynh_app_setting_get --app=$app --key=encryption)
 botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-mautrix_config_path="$final_path/config.yaml"
 mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 
 ynh_print_OFF
@@ -43,6 +41,7 @@ whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
 mautrix_whatsapp_user=$app
 mautrix_whatsapp_db_name=$app
 mautrix_whatsapp_db_user=$app
+mautrix_config_path="$final_path/config.yaml"
 upstream_version=$(ynh_app_upstream_version)
 
 #=================================================
@@ -63,16 +62,20 @@ upgrade_type=$(ynh_check_app_version_changed)
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
 # If db_name doesn't exist, create it
-if [ -z "$mautrix_whatsapp_db_name" ]; then
-	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
-	ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
-fi
+#if [ -z "$mautrix_whatsapp_db_name" ]; then
+#	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
+#	ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
+#fi
 
 # If final_path doesn't exist, create it
-if [ -z "$final_path" ]; then
-	final_path=/opt/yunohost/$app
-	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-fi
+#if [ -z "$final_path" ]; then
+#	final_path=/opt/yunohost/$app
+#	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+#fi
+
+#Migration from 0.1.5
+#domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
+#ynh_app_setting_set --app=$app --key=domain --value=$domain
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
@@ -116,28 +119,44 @@ ynh_script_progression --message="Upgrading dependencies..." --weight=100
 
 ynh_install_app_dependencies $pkg_dependencies
 
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
+if [ $encryption = true ]
+then
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
+fi
+
+# TODO: check Go version and upgrade if needed
+#if ! command -v /usr/local/go/bin/go &> /dev/null
+#then
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
+#if
+
+# Migration from 1.6.0
+ynh_secure_remove --file="$final_path"/asmux.go
+src_path="$final_path"_src
+#export GOPATH=$src_path
+#export GOCACHE="$GOPATH"/.cache/go-build
+# Remove a directory securely
+ynh_secure_remove --file="$src_path"
+#export PATH=$PATH:$GO_PATH
+#env_path=$PATH
 
 #=================================================
 # BUILD GO
 #=================================================
+
 # Build mautrix-whatsapp
-base_directory=$PWD
-export GOPATH="$final_path"_src
-export GOCACHE="$GOPATH"/.cache/go-build
-cd $final_path
-if [ $encryption = true ]
-then
-# build with libolm3 end-to-bridge encryption
-./build.sh
-else
-# build without end-to-bridge encryption
-./build.sh -tags nocrypto
-fi
-# build with libolm2 encryption
-# ./build.sh -tags nosas
-cd $base_directory
+
+pushd "$final_path" || ynh_die
+       ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
+	if [ $encryption = true ]
+	then
+	# Build with libolm3 end-to-bridge encryption
+	ynh_exec_warn_less ./build.sh
+	else
+	# Build without end-to-bridge encryption
+	ynh_exec_warn_less ./build.sh -tags nocrypto
+	fi
+popd || ynh_die
 
 #=================================================
 # CREATE DEDICATED USER
@@ -169,49 +188,33 @@ ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
 
 # Configure Mautrix-WhatsApp
 
-# WARNING : theses command are used in INSTALL, UPGRADE, CONFIG, CHANGE-URL (4 times)
-# For any update do it in all files
+#ynh_print_OFF
+#ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
+#ynh_print_ON
 
-mautrix_config_path="$final_path/config.yaml"
+enable_relaybot="true"
+relaybot_management_room="highwaytohell"
+relaybot_invite="$botadmin"
+log_format="log.log"
+# Options: debug, info, warn, error, fatal
+log_level="error"
 
-#Copy example-config.yaml to config.yaml
-cp ../conf/config.yaml "$mautrix_config_path"
+ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
 
-ynh_replace_string --match_string=__DOMAIN__ --replace_string="https://$domain" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__SERVER_NAME__ --replace_string=$server_name --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__PORT__ --replace_string=$port --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_USER__ --replace_string=$mautrix_whatsapp_user --target_file="$mautrix_config_path"
-ynh_print_OFF
-ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
-ynh_print_ON
-ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_NAME__ --replace_string=$mautrix_whatsapp_db_name --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__WHATSAPPBOT__ --replace_string=$whatsappbot --target_file="$mautrix_config_path"
-if [ "$botusers" = "local" ]
-then
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$server_name --target_file="$mautrix_config_path"
-elif [ "$botusers" = "admin" ]
-then
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-else
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botusers --target_file="$mautrix_config_path"
-fi
-ynh_replace_string --match_string=__BOTADMIN__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__ENABLE_RELAYBOT__ --replace_string="true" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__RELAYBOT_MANAGEMENT_ROOM__ --replace_string="highwaytohell" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__RELAYBOT_INVITE__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__APP__ --replace_string=$app --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__LOG_FORMAT__ --replace_string="log.log" --target_file="$mautrix_config_path"
-    # Options: debug, info, warn, error, fatal
-ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --target_file="$mautrix_config_path"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 $final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
 
+#Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
 # Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
+
+#=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
 
 # Recalculate and store the checksum of the file for the next upgrade.
 ynh_store_file_checksum --file="$mautrix_config_path"

@@ -6,7 +6,7 @@
 		"en": "A WhatsApp puppeting bridge for Matrix/Synapse.",
 		"fr": "Passerelle WhatsApp pour Matrix/Synapse."
 	},
-	"version": "0.1.6~ynh1",
+	"version": "0.1.7~ynh1",
 	"url": "https://github.com/tulir/mautrix-whatsapp",
 	"license": "AGPL-3.0-or-later",
 	"maintainer": {
@@ -15,7 +15,7 @@
 		"url": "https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh"
 	},
 	"requirements": {
-		"yunohost": ">= 4.0"
+		"yunohost": ">= 4.1.0"
 	},
 	"multi_instance": true,
 	"services": [
@@ -52,7 +52,7 @@
 				"default": "whatsappbot"
 			},
 			{
-				"name": "bot_is_synapse_admin",
+				"name": "bot_synapse_adm",
 				"type": "boolean",
 				"ask": {
 					"en": "Give the WhatsApp bot administrator rights to the synapse instance?",
@@ -62,7 +62,7 @@
 					"en": "If true, the bot can group WhatsApp chats in a Matrix community. Not required if you set up synapse so that non-admins are authorized to create communities.",
 					"fr": "Si true, le robot groupera les conversations WhatsApp dans une communauté Matrix. Pas nécessaire si vous avez réglé synapse pour qu'il autorise les non-admin à créer des communautés."
 				},
-				"default": true
+				"default": 1
 			},			
 			{
 				"name": "encryption",
@@ -71,7 +71,7 @@
 					"en": "Enable end-to-bridge encryption ?",
 					"fr": "Activer le chiffrement entre synapse et le bridge ?"
 				},
-				"default": false
+				"default": 0
 			},			
 			{
 				"name": "botadmin",

@@ -1,32 +1,13 @@
-# See here for more information
-# https://github.com/YunoHost/package_check#syntax-check_process-file
-
-# Move this file from check_process.default to check_process when you have filled it.
-
-;; Test complet
-	auto_remove=1
+;; Default test serie
 	; pre-install
-		# synapse parameters
-        	domain="domain.tld"
-        	path="/_matrix/static/"
-        	is_public=1
-	  	server_name="domain2.tld"
-		jitsi_server="jitsi.riot.im"
-		#admin="john"	(USER)
-		#language="en"
-		#password="pass"
-		#port="666"	(PORT)
-		
-		sudo yunohost tools update --apps
-		sudo yunohost domain add $domain
-		sudo yunohost domain add $server_name
+		sudo yunohost tools update apps
 		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/ -a "domain=$domain&server_name=$server_name&is_public=$is_public&jitsi_server=$jitsi_server" --force
 	; Manifest
-		# mautrix_whatsapp manifest parameters
 		port="8449"	(PORT)
 		synapsenumber="1"
 		whatsappbot="whatsappbot"
-		bot_is_synapse_admin="yes"
+		bot_synapse_adm=0
+		encryption=0
 		botadmin="@johndoe:synapsedomain.tld"	(USER)
 		botusers="@johndoe:synapsedomain.tld"
 	; Checks
@@ -37,21 +18,13 @@
 		setup_private=0
 		setup_public=0
 		upgrade=1
-		#upgrade=1	from_commit=CommitHash
+		upgrade=1	from_commit=636be2f9f900e578d9aa26ee887dcec2ef8d4e71
 		backup_restore=1
 		multi_instance=1
-		# This test is no longer necessary since the version 2.7 (PR: https://github.com/YunoHost/yunohost/pull/304), you can still do it if your app could be installed with this version.
-		# incorrect_path=1
 		port_already_use=1
 		change_url=0
-;;; Levels
-	# If the level 5 (Package linter) is forced to 1. Please add justifications here.
-	Level 5=auto
-;;; Options
-#Email=
-Notification=none
+		actions=0
+		config_panel=0
 ;;; Upgrade options
-	; commit=CommitHash
-		#name=Name and date of the commit.
-		#manifest_arg=domain=DOMAIN&path=PATH&admin=USER&language=fr&is_public=1&password=pass&port=666&
-
+	; commit=636be2f9f900e578d9aa26ee887dcec2ef8d4e71
+		name=0.1.6

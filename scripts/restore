@@ -27,8 +27,6 @@ ynh_abort_if_errors
 ynh_script_progression --message="Loading settings..." --weight=5
 
 app=$YNH_APP_INSTANCE_NAME
-final_path=/opt/yunohost/$app
-mautrix_config_path="$final_path/config.yaml"
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
@@ -36,12 +34,12 @@ port=$(ynh_app_setting_get --app=$app --key=port)
 whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
-bot_is_synapse_admin=$(ynh_app_setting_get --app=$app --key=bot_is_synapse_admin)
+encryption=$(ynh_app_setting_get --app=$app --key=encryption)
 botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+
 ynh_print_OFF
 mautrix_whatsapp_db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
 ynh_print_ON
@@ -55,7 +53,7 @@ whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
 mautrix_whatsapp_user=$app
 mautrix_whatsapp_db_name=$app
 mautrix_whatsapp_db_user=$app
-upstream_version=$(ynh_app_upstream_version)
+mautrix_config_path="$final_path/config.yaml"
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -100,7 +98,10 @@ ynh_script_progression --message="Reinstalling dependencies..." --weight=100
 ynh_install_app_dependencies $pkg_dependencies
 
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
+if [ $encryption = true ]
+then
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
+fi
 
 #=================================================
 # RESTORE THE POSTGRESQL DATABASE
@@ -119,10 +120,6 @@ ynh_psql_execute_file_as_root --file="${YNH_CWD}/dump.sql" --database="$mautrix_
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 $final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
-#$as_token=;
-#$hs_token=;
-#ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
-#ynh_replace_string --match_string=__HS_TOKEN__ --replace_string="$hs_token" --target_file=$app_service_registration_path/$app.yaml
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
 # Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
@@ -155,14 +152,14 @@ yunohost service add $app --description "$app daemon for bridging Whatsapp and M
 ynh_script_progression --message="Starting a systemd service..." --weight=30
 
 ynh_systemd_action --service_name=$app --action="start"
-sleep 30
+#sleep 30
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-    if [ "$bot_is_synapse_admin" = true ]
-    then
-    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$whatsappbot"";"
+#    if [ "$bot_is_synapse_admin" = true ]
+#    then
+#    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$whatsappbot"";"
 #    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
-    fi
-ynh_systemd_action --service_name=$app --action="restart"
+#    fi
+#ynh_systemd_action --service_name=$app --action="restart"
 
 
 #=================================================
