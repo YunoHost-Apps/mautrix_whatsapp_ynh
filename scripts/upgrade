@@ -201,6 +201,7 @@ log_level="error"
 
 ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
 
+
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================

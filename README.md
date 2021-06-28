@@ -16,6 +16,7 @@ A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. M
 
 **Shipped version:** 0.1.7
 
+
 ## Screenshots
 
 ![](Link to an screenshot for this app)
