@@ -25,6 +25,16 @@ ynh_abort_if_errors
 #=================================================
 
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
+# ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_whatsapp bridge
+if [ $synapsenumber -eq "1" ]
+then
+synapse_instance="synapse"
+else
+synapse_instance="synapse__$synapsenumber"
+fi
+server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
+domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
+
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
 mautrix_version=$(ynh_app_upstream_version)
@@ -40,16 +50,6 @@ elif [ "$botusers" = "admin" ]
 then
 botusers=$botadmin
 fi
-
-# ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_whatsapp bridge
-if [ $synapsenumber -eq "1" ]
-then
-synapse_instance="synapse"
-else
-synapse_instance="synapse__$synapsenumber"
-fi
-server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
-domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 
 #=================================================
 # SET CONSTANTS
