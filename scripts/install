@@ -125,7 +125,9 @@ fi
 
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
 
-export GOPATH="$final_path"
+src_path="$final_path"/src
+mkdir -p $src_path
+export GOPATH="$src_path"
 export GOCACHE="$GOPATH"/.cache/go-build
 
 export PATH=$PATH:$GO_PATH
