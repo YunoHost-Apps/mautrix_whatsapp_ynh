@@ -133,12 +133,15 @@ ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-
 # Migration from 1.6.0
 ynh_secure_remove --file="$final_path"/asmux.go
 src_path="$final_path"_src
-#export GOPATH=$src_path
-#export GOCACHE="$GOPATH"/.cache/go-build
 # Remove a directory securely
 ynh_secure_remove --file="$src_path"
 #export PATH=$PATH:$GO_PATH
 #env_path=$PATH
+
+src_path="$final_path"/src
+mkdir -p $src_path
+export GOPATH="$src_path"
+export GOCACHE="$GOPATH"/.cache/go-build
 
 #=================================================
 # BUILD GO
