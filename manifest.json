@@ -6,8 +6,8 @@
 		"en": "A WhatsApp puppeting bridge for Matrix/Synapse.",
 		"fr": "Passerelle WhatsApp pour Matrix/Synapse."
 	},
-	"version": "0.1.7~ynh3",
-	"url": "https://github.com/tulir/mautrix-whatsapp",
+	"version": "0.1.8~ynh1",
+	"url": "https://github.com/mautrix/whatsapp",
 	"license": "AGPL-3.0-or-later",
 	"maintainer": {
 		"name": "Gredin67",
