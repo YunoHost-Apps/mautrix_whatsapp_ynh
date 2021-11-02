@@ -13,7 +13,7 @@ Une passerelle entre Matrix et WhatsApp empaquetée comme un service YunoHost. L
 
 ** Attention : sauvegardez et restaurez toujours les deux applications Yunohost matrix_synapse et mautrix_whatsapp en même temps!**
 
-**Version incluse:** 0.1.7
+**Version incluse:** 0.1.10
 
 ## Captures d'écran
 
@@ -100,7 +100,7 @@ Si vous devez téléverser vos fichiers log quelque-part, soyez avertis qu'ils c
  * Signaler un bug:  https://github.com/YunoHost-Apps/mautrix-whatsapp_ynh/issues
  * Site de l'application: https://github.com/YunoHost-Apps/mautrix-whatsapp_ynh
  * Documentation de l'application principale: https://docs.mau.fi/bridges/go/whatsapp/index.html
- * Dépôt de l'application principale: https://github.com/tulir/mautrix-whatsapp
+ * Dépôt de l'application principale: https://github.com/mautrix/whatsapp
  * Up-Upstream repository: https://github.com/Rhymen/go-whatsapp
  * Up-Up-Upstream repository: https://github.com/sigalor/whatsapp-web-reveng
  * Site web YunoHost: https://yunohost.org/
