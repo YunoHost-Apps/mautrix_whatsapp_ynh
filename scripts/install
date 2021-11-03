@@ -120,10 +120,10 @@ ynh_install_app_dependencies $pkg_dependencies
 
 if [ $encryption = true ]
 then
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev" --key="https://keyserver.ubuntu.com"
 fi
 
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go" --key="https://keyserver.ubuntu.com"
 
 src_path="$final_path"/src
 mkdir -p $src_path
