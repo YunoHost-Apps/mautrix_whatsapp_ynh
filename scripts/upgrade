@@ -127,11 +127,13 @@ fi
 # TODO: check Go version and upgrade if needed
 #if ! command -v /usr/local/go/bin/go &> /dev/null
 #then
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian bullseye-backports main" --package="golang-go"
 #if
 
-# Migration from 1.6.0
-ynh_secure_remove --file="$final_path"/asmux.go
+# Migration from <=1.10.0 to >0.2.1
+ynh_secure_remove --file="$final_path"/community.go
+ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-23-protoupgrade.go
+ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-16-message-delete-cascade.go
 src_path="$final_path"_src
 # Remove a directory securely
 ynh_secure_remove --file="$src_path"
