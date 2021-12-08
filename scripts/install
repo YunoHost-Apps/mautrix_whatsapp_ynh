@@ -118,21 +118,6 @@ ynh_script_progression --message="Installing dependencies..." --weight=97
 
 ynh_install_app_dependencies $pkg_dependencies
 
-if [ $encryption = true ]
-then
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev" --key="https://keyserver.ubuntu.com/pks/lookup?search=0x0E98404D386FA1D9&op=get"
-fi
-
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go" --key="https://keyserver.ubuntu.com/pks/lookup?search=0x0E98404D386FA1D9&op=get"
-
-src_path="$final_path"/src
-mkdir -p $src_path
-export GOPATH="$src_path"
-export GOCACHE="$GOPATH"/.cache/go-build
-
-export PATH=$PATH:$GO_PATH
-env_path=$PATH
-
 #=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
@@ -151,31 +136,8 @@ ynh_psql_execute_as_root \
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=3
 
-#if [ -n "$(uname -m | grep 64)" ]
-#then
-#    ynh_setup_source --dest_dir=$final_path/ --source_id="amd64_$(lsb_release --codename --short)"
-#else
-
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$final_path"
-
-#=================================================
-# BUILD GO
-#=================================================
-ynh_script_progression --message="Build with golang..." --weight=194
-
-pushd "$final_path" || ynh_die
-        ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
-	if [ $encryption = true ]
-	then
-	# Build with libolm3 end-to-bridge encryption
-	ynh_exec_warn_less ./build.sh
-	else
-	# Build without end-to-bridge encryption
-	ynh_exec_warn_less ./build.sh -tags nocrypto
-	fi
-popd || ynh_die
-
+ynh_setup_source --dest_dir="$final_path" --source_id=architecture
 
 #=================================================
 # CREATE DEDICATED USER

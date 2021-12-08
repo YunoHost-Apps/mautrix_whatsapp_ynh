@@ -1,6 +1,0 @@
-SOURCE_URL=https://github.com/mautrix/whatsapp/archive/v0.2.1.tar.gz
-SOURCE_SUM=395d7634565f174d3d81c2ed0f22328107297e1d8aed9311a424a2da424a25b5
-SOURCE_SUM_PRG=sha256sum
-SOURCE_FORMAT=tar.gz
-SOURCE_IN_SUBDIR=true
-#SOURCE_FILENAME=

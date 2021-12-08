@@ -1,0 +1,6 @@
+SOURCE_URL=https://mau.dev/mautrix/whatsapp/-/jobs/artifacts/v0.2.1/download?job=build+amd64
+SOURCE_SUM=aaa5822d0ae0b247b461976489373808a061b6dfd2818087946c037b44475c62
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=zip
+SOURCE_IN_SUBDIR=false
+#SOURCE_FILENAME=
