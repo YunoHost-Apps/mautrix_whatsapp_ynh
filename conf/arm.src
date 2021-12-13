@@ -1,0 +1,6 @@
+SOURCE_URL=https://mau.dev/mautrix/whatsapp/-/jobs/artifacts/v0.2.1/download?job=build+arm
+SOURCE_SUM=8183e7236d6568f35c2276a74187e75d706c6479ef08a49b929d4bfa0c59c0b5
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=zip
+SOURCE_IN_SUBDIR=false
+#SOURCE_FILENAME=

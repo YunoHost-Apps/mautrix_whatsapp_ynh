@@ -61,6 +61,17 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
+# Migration from <=1.10.0 to >0.2.1
+ynh_secure_remove --file="$final_path"/community.go
+ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-23-protoupgrade.go
+ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-16-message-delete-cascade.go
+
+# Remove a directory securely
+src_path="$final_path"_src
+ynh_secure_remove --file="$src_path"
+src_path="$final_path"/src
+ynh_secure_remove --file="$src_path"
+
 # If db_name doesn't exist, create it
 #if [ -z "$mautrix_whatsapp_db_name" ]; then
 #	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
@@ -72,10 +83,6 @@ ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 #	final_path=/opt/yunohost/$app
 #	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 #fi
-
-#Migration from 0.1.5
-#domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
-#ynh_app_setting_set --app=$app --key=domain --value=$domain
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
@@ -109,7 +116,7 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=2
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path"
+    ynh_setup_source --dest_dir="$final_path" --source_id=$architecture
 fi
 
 #=================================================
@@ -118,50 +125,6 @@ fi
 ynh_script_progression --message="Upgrading dependencies..." --weight=100
 
 ynh_install_app_dependencies $pkg_dependencies
-
-if [ $encryption = true ]
-then
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
-fi
-
-# TODO: check Go version and upgrade if needed
-#if ! command -v /usr/local/go/bin/go &> /dev/null
-#then
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian bullseye-backports main" --package="golang-go"
-#if
-
-# Migration from <=1.10.0 to >0.2.1
-ynh_secure_remove --file="$final_path"/community.go
-ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-23-protoupgrade.go
-ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-16-message-delete-cascade.go
-src_path="$final_path"_src
-# Remove a directory securely
-ynh_secure_remove --file="$src_path"
-#export PATH=$PATH:$GO_PATH
-#env_path=$PATH
-
-src_path="$final_path"/src
-mkdir -p $src_path
-export GOPATH="$src_path"
-export GOCACHE="$GOPATH"/.cache/go-build
-
-#=================================================
-# BUILD GO
-#=================================================
-
-# Build mautrix-whatsapp
-
-pushd "$final_path" || ynh_die
-       ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
-	if [ $encryption = true ]
-	then
-	# Build with libolm3 end-to-bridge encryption
-	ynh_exec_warn_less ./build.sh
-	else
-	# Build without end-to-bridge encryption
-	ynh_exec_warn_less ./build.sh -tags nocrypto
-	fi
-popd || ynh_die
 
 #=================================================
 # CREATE DEDICATED USER

@@ -31,7 +31,6 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 # SET CONSTANTS
 #=================================================
 
-src_path=$final_path"_src"
 synapse_db_name="matrix_$synapse_instance"
 whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
 mautrix_whatsapp_user=$app
@@ -101,8 +100,6 @@ ynh_remove_logrotate
 ynh_script_progression --message="Removing synapse app service..." --weight=6
 
 # Remove a directory securely
-ynh_secure_remove --file="$src_path"
-
 ynh_secure_remove --file="$app_service_registration_path/$app.yaml"
 
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
