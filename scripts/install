@@ -45,7 +45,7 @@ botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
 if [ "$botusers" = "local" ]
 then
-botusers=$server_name
+botusers="domain"
 elif [ "$botusers" = "admin" ]
 then
 botusers=$botadmin
