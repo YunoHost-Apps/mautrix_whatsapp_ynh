@@ -147,7 +147,7 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 # Create a system user
 ynh_system_user_create --username=$mautrix_whatsapp_user
 chown $mautrix_whatsapp_user:root -R $final_path
-chmod u=rx $final_path/mautrix-whatsapp
+chmod 755 $final_path/mautrix-whatsapp
 
 #=================================================
 # SETUP SYSTEMD
