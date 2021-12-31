@@ -133,6 +133,8 @@ ynh_script_progression --message="Making sure dedicated system user exists..." -
 
 # Create a dedicated user (if not existing)
 ynh_system_user_create --username=$mautrix_whatsapp_user
+chown $mautrix_whatsapp_user:root -R $final_path
+chmod 755 $final_path/mautrix-whatsapp
 
 #=================================================
 # SPECIFIC UPGRADE
