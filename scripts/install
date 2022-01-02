@@ -38,6 +38,7 @@ domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
 bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
 mautrix_version=$(ynh_app_upstream_version)
+architecture=$YNH_ARCH
 app=$YNH_APP_INSTANCE_NAME
 final_path=/opt/yunohost/$app
 encryption=$YNH_APP_ARG_ENCRYPTION
