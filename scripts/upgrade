@@ -164,8 +164,8 @@ ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
 #ynh_print_ON
 
 enable_relaybot="true"
-relaybot_management_room="highwaytohell"
-relaybot_invite="$botadmin"
+#relaybot_management_room="highwaytohell"
+#relaybot_invite="$botadmin"
 log_format="log.log"
 # Options: debug, info, warn, error, fatal
 log_level="error"
