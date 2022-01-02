@@ -15,6 +15,7 @@ source /usr/share/yunohost/helpers
 ynh_script_progression --message="Loading installation settings..." --weight=5
 
 app=$YNH_APP_INSTANCE_NAME
+architecture=$YNH_ARCH
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
