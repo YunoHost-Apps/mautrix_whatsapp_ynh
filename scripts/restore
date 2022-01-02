@@ -131,7 +131,7 @@ systemctl enable $app.service
 #=================================================
 
 ynh_use_logrotate --logfile "/var/log/$app/log.log"
-chown $mautrix_whatsapp_user:root -R /var/log/$app
+#chown $mautrix_whatsapp_user:root -R /var/log/$app
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
