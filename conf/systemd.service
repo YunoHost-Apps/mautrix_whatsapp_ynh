@@ -2,21 +2,21 @@
 Description=Matrix-Whatsapp Bridge
 After=matrix-synapse.service
 
-[Service]
-Type=simple
-User=__APP__
-WorkingDirectory=/opt/yunohost/__APP__
-ExecStart=/opt/yunohost/__APP__/mautrix-whatsapp -c=/opt/yunohost/__APP__/config.yaml >> /var/log/__APP__/log.log 2>&1
-Restart=always
-RestartSec=3
-
 #[Service]
-#Type=exec
+#Type=simple
 #User=__APP__
 #WorkingDirectory=/opt/yunohost/__APP__
 #ExecStart=/opt/yunohost/__APP__/mautrix-whatsapp -c=/opt/yunohost/__APP__/config.yaml >> /var/log/__APP__/log.log 2>&1
-#Restart=on-failure
-#RestartSec=30s
+#Restart=always
+#RestartSec=3
+
+[Service]
+Type=exec
+User=__APP__
+WorkingDirectory=/opt/yunohost/__APP__
+ExecStart=/opt/yunohost/__APP__/mautrix-whatsapp -c=/opt/yunohost/__APP__/config.yaml
+Restart=on-failure
+RestartSec=30s
 
 # Optional hardening to improve security
 #ReadWritePaths=/opt/yunohost/__APP__ /var/log/__APP__/
