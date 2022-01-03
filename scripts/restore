@@ -40,9 +40,7 @@ botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 
-ynh_print_OFF
 mautrix_whatsapp_db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
-ynh_print_ON
 
 #=================================================
 # SET CONSTANTS
@@ -60,8 +58,7 @@ mautrix_config_path="$final_path/config.yaml"
 #=================================================
 ynh_script_progression --message="Validating restoration parameters..." --weight=1
 
-test ! -d $final_path \
-	|| ynh_die --message="There is already a directory: $final_path "
+test ! -d $final_path || ynh_die --message="There is already a directory: $final_path "
 
 #=================================================
 # STANDARD RESTORATION STEPS
@@ -103,12 +100,10 @@ ynh_install_app_dependencies $pkg_dependencies
 ynh_script_progression --message="Restoring the PostgreSQL database..." --weight=8
 
 ynh_psql_test_if_first_run
-ynh_print_OFF
 ynh_psql_create_user $mautrix_whatsapp_db_user $mautrix_whatsapp_db_pwd
-ynh_print_ON
 ynh_psql_execute_as_root \
 --sql="CREATE DATABASE ""$mautrix_whatsapp_db_name"" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER ""$mautrix_whatsapp_db_user"";"
-ynh_psql_execute_file_as_root --file="${YNH_CWD}/dump.sql" --database="$mautrix_whatsapp_db_name"
+ynh_psql_execute_file_as_root --file="./db.sql" --database="$mautrix_whatsapp_db_name"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
