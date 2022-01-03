@@ -117,7 +117,7 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..." --weight=100
 
-ynh_install_app_dependencies $pkg_dependencies
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # CREATE DEDICATED USER
