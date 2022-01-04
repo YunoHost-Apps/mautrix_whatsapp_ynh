@@ -94,11 +94,11 @@
 					"en": "Choose Matrix user(s) authorized to bridge with the WhatsApp bot.",
 					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser le robot WhatsApp."
 				},
-				"example": "admin or local or @johndoe:server.name or server.name or *",
-				"default": "admin",
+				"example": "admin or domain or @johndoe:server.name or server.name or *",
+				"default": "domain",
 				"help": {
-					"en": "Either the administrator only (admin), all local Synapse users (local), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the Matrix server_name, not the full domain/URL.",
-					"fr": "On peut autoriser le compte administrateur seul (admin), tous les comptes Synapse locaux (local), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur Matrix, pas le domaine/URL complet."
+					"en": "Either the administrator only (admin), all local Synapse users (domain), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the Matrix server_name, not the full domain/URL.",
+					"fr": "On peut autoriser le compte administrateur seul (admin), tous les comptes Synapse locaux (domain), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur Matrix, pas le domaine/URL complet."
 				}
 			}
 		]
