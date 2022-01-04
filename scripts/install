@@ -45,13 +45,18 @@ app=$YNH_APP_INSTANCE_NAME
 encryption=$YNH_APP_ARG_ENCRYPTION
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
-if [ "$botusers" = "local" ]
-then
-	botusers="domain"
-elif [ "$botusers" = "admin" ]
+if [ "$botusers" = "admin" ]
 then
 	botusers=$botadmin
 fi
+
+#=================================================
+# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
+#=================================================
+ynh_script_progression --message="Validating installation parameters..." --weight=1
+
+final_path=/opt/yunohost/$app
+test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
 #=================================================
 # SET CONSTANTS
@@ -69,14 +74,6 @@ synapse_name="matrix-$synapse_instance"
 synapse_user="matrix-$synapse_instance"
 synapse_db_name="matrix_$synapse_instance"
 synapse_db_user="matrix_$synapse_instance"
-
-#=================================================
-# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
-#=================================================
-ynh_script_progression --message="Validating installation parameters..." --weight=1
-
-final_path=/opt/yunohost/$app
-test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
 #=================================================
 # STANDARD MODIFICATIONS
