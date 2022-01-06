@@ -149,7 +149,7 @@ ynh_add_config --template="../conf/config.yaml" --destination="$final_path/confi
 chmod -R 755 "$final_path"
 #chmod 755 "$final_path/config.yaml"
 #chmod 755 "$final_path/mautrix-whatsapp"
-#chown $app:$app -R "$final_path"
+chown $app:$app -R "$final_path"
 #chown $app:$app "$final_path/config.yaml"
 
 #=================================================
@@ -192,19 +192,19 @@ ynh_use_logrotate
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --time --weight=1
+ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
 yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=30
+ynh_script_progression --message="Starting a systemd service..." --weight=15
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
 # Wait until the synapse user is created
-sleep 30
+sleep 15
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
     if [ "$bot_synapse_adm" = true ]
     then
