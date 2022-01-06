@@ -133,8 +133,7 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 ynh_setup_source --dest_dir="$final_path" --source_id=$architecture
 
 chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chmod 755 "$final_path/mautrix-whatsapp"
+#chmod 755 "$final_path/mautrix-whatsapp"
 #chown $app:root -R $final_path
 
 #=================================================
@@ -147,7 +146,8 @@ enable_relaybot="true"
 log_level="error"
 
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
-chmod 600 "$final_path/config.yaml"
+#chmod 600 "$final_path/config.yaml"
+chmod -R o-rwx "$final_path"
 chown $app:$app -R "$final_path"
 #chown $app:$app "$final_path/config.yaml"
 
