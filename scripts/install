@@ -146,7 +146,7 @@ log_level="error"
 
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
 #chmod -R o-rwx "$final_path"
-#chmod -R 770 "$final_path"
+chmod -R 755 "$final_path"
 #chmod 755 "$final_path/config.yaml"
 #chmod 755 "$final_path/mautrix-whatsapp"
 #chown $app:$app -R "$final_path"
