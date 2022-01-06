@@ -188,10 +188,10 @@ ynh_store_file_checksum --file="$final_path/config.yaml"
 ynh_script_progression --message="Configuring log rotation..." --weight=3
 
 mkdir -p "/var/log/$app"
-chown -R $app:root "/var/log/$app"
+chown -R $app:$app "/var/log/$app"
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate
-chown -R $app:root "/var/log/$app"
+chown -R $app:$app "/var/log/$app"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
