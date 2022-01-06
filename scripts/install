@@ -134,7 +134,7 @@ ynh_setup_source --dest_dir="$final_path" --source_id=$architecture
 
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
-chown $app:root -R $final_path
+#chown $app:root -R $final_path
 
 #=================================================
 # ADD A CONFIGURATION
@@ -147,7 +147,8 @@ log_level="error"
 
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
 chmod 600 "$final_path/config.yaml"
-chown $app:$app "$final_path/config.yaml"
+#chown $app:$app "$final_path/config.yaml"
+chown $app:$app -R "$final_path"
 
 #=================================================
 # SETUP SYSTEMD
