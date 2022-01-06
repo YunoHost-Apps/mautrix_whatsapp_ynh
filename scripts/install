@@ -132,8 +132,8 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path" --source_id=$architecture
 
-chmod 750 "$final_path"
-chown $app:root $final_path
+chmod -R 750 "$final_path"
+chown -R $app:root "$final_path"
 
 #=================================================
 # ADD A CONFIGURATION
@@ -149,7 +149,7 @@ ynh_add_config --template="../conf/config.yaml" --destination="$final_path/confi
 chmod -R 755 "$final_path"
 #chmod 755 "$final_path/config.yaml"
 #chmod 755 "$final_path/mautrix-whatsapp"
-chown $app:$app -R "$final_path"
+chown -R $app:$app "$final_path"
 #chown $app:$app "$final_path/config.yaml"
 
 #=================================================
@@ -165,6 +165,7 @@ ynh_add_systemd_config
 #=================================================
 
 $final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_registration_path/$app.yaml
+chown -R $app:$app "$final_path"
 
 #Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
@@ -187,7 +188,9 @@ ynh_store_file_checksum --file="$final_path/config.yaml"
 ynh_script_progression --message="Configuring log rotation..." --weight=3
 
 # Use logrotate to manage application logfile(s)
+chown -R $app:root "/var/log/$app"
 ynh_use_logrotate
+chown -R $app:root "/var/log/$app"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
