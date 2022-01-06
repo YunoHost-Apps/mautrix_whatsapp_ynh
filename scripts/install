@@ -24,6 +24,16 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
+
+whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
+bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
+encryption=$YNH_APP_ARG_ENCRYPTION
+botadmin=$YNH_APP_ARG_BOTADMIN
+botusers=$YNH_APP_ARG_BOTUSERS
+if [ "$botusers" = "admin" ]
+then
+	botusers=$botadmin
+fi
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_whatsapp bridge
 if [ $synapsenumber -eq "1" ]
@@ -32,23 +42,12 @@ then
 else
 	synapse_instance="synapse__$synapsenumber"
 fi
-
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 
-whatsappbot=$YNH_APP_ARG_WHATSAPPBOT
-bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
 mautrix_version=$(ynh_app_upstream_version)
 architecture=$YNH_ARCH
 app=$YNH_APP_INSTANCE_NAME
-
-encryption=$YNH_APP_ARG_ENCRYPTION
-botadmin=$YNH_APP_ARG_BOTADMIN
-botusers=$YNH_APP_ARG_BOTUSERS
-if [ "$botusers" = "admin" ]
-then
-	botusers=$botadmin
-fi
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -63,28 +62,10 @@ test ! -e "$final_path" || ynh_die --message="This path already contains a folde
 #=================================================
 
 whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
-mautrix_whatsapp_user=$app
-mautrix_whatsapp_db_name=$app
-mautrix_whatsapp_db_user=$app
 mautrix_whatsapp_db_pwd=$(ynh_string_random --length=30)
-mautrix_config_path="$final_path/config.yaml"
-synapse_config_path="/etc/matrix-$synapse_instance"
 app_service_registration_path="/etc/matrix-$synapse_instance/app-service"
-synapse_name="matrix-$synapse_instance"
-synapse_user="matrix-$synapse_instance"
+#synapse_name="matrix-$synapse_instance"
 synapse_db_name="matrix_$synapse_instance"
-synapse_db_user="matrix_$synapse_instance"
-
-#=================================================
-# STANDARD MODIFICATIONS
-#=================================================
-# FIND AND OPEN A PORT
-#=================================================
-ynh_script_progression --message="Finding an available port..." --weight=1
-
-# Find a free port for communication between your local synapse instance (home server) and its app service mautrix_whatsapp.
-port=$(ynh_find_port --port=8449)
-ynh_app_setting_set --app=$app --key=port --value=$port
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -102,8 +83,19 @@ ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
 ynh_app_setting_set --app=$app --key=botusers --value=$botusers
 ynh_app_setting_set --app=$app --key=mautrix_version --value=$mautrix_version
 
-ynh_app_setting_set --app=$app --key=mautrix_whatsapp_db_name --value=$mautrix_whatsapp_db_name
+ynh_app_setting_set --app=$app --key=mautrix_whatsapp_db_name --value=$app
 ynh_app_setting_set --app=$app --key=mautrix_whatsapp_db_pwd --value=$mautrix_whatsapp_db_pwd
+
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# FIND AND OPEN A PORT
+#=================================================
+ynh_script_progression --message="Finding an available port..." --weight=1
+
+# Find a free port for communication between your local synapse instance (home server) and its app service mautrix_whatsapp.
+port=$(ynh_find_port --port=8449)
+ynh_app_setting_set --app=$app --key=port --value=$port
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -113,15 +105,24 @@ ynh_script_progression --message="Installing dependencies..." --weight=97
 ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..." --weight=1
+
+# Create a system user
+ynh_system_user_create --username=$app
+chown $app:root -R $final_path
+
+#=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
 ynh_script_progression --message="Creating a PostgreSQL database..." --weight=3
 
 # Create postgresql database
 ynh_psql_test_if_first_run
-ynh_psql_create_user $mautrix_whatsapp_db_user $mautrix_whatsapp_db_pwd
+ynh_psql_create_user $app $mautrix_whatsapp_db_pwd
 ynh_psql_execute_as_root \
---sql="CREATE DATABASE ""$mautrix_whatsapp_db_name"" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER ""$mautrix_whatsapp_db_user"";"
+--sql="CREATE DATABASE ""$app"" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER ""$app"";"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -132,55 +133,35 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path" --source_id=$architecture
 
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..." --weight=1
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
 
-# Create a system user
-ynh_system_user_create --username=$mautrix_whatsapp_user
-chown $mautrix_whatsapp_user:root -R $final_path
-chmod 755 $final_path/mautrix-whatsapp
+#=================================================
+# ADD A CONFIGURATION
+#=================================================
+ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
+
+enable_relaybot="true"
+# Options: debug, info, warn, error, fatal
+log_level="error"
+
+ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
+chmod 600 "$final_path/config.yaml"
+chown $app:$app "$final_path/config.yaml"
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
 ynh_script_progression --message="Configuring a systemd service..." --weight=20
 
-# Create systemd config for mautrix-whatsapp
-#cp ../conf/default_mautrix-whatsapp /etc/default/$app
-ynh_add_systemd_config --service=$app
-
-#=================================================
-
-#=================================================
-# SET MAUTRIX-WHATSAPP CONFIG
-#=================================================
-ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
-
-# Configure Mautrix-WhatsApp
-
-#verify_server_ssl_certificates="true"
-#matrix_server_supports_asmux="false"
-#log_filename="/var/log/$app/$app.log"
-
-#ynh_print_OFF
-#ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
-#ynh_print_ON
-enable_relaybot="true"
-#relaybot_management_room="highwaytohell"
-#relaybot_invite="$botadmin"
-log_format="log.log"
-# Options: debug, info, warn, error, fatal
-log_level="error"
-
-ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
+# Create a dedicated systemd config
+ynh_add_systemd_config
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 
-$final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
+$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r $app_service_registration_path/$app.yaml
 
 #Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
@@ -193,36 +174,24 @@ $final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registra
 
 # Calculate and store the config file checksum into the app settings
 ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
-ynh_store_file_checksum --file="$mautrix_config_path"
+ynh_store_file_checksum --file="$final_path/config.yaml"
 
 #=================================================
 # GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-# Set permissions to app files
-chown -R root: $final_path
-
-# WARNING : theses command are used in INSTALL, UPGRADE, RESTORE
-# For any update do it in all files
-chown $mautrix_whatsapp_user:root -R $final_path
-
 #=================================================
 # SETUP LOGROTATE
 #=================================================
 ynh_script_progression --message="Configuring log rotation..." --weight=3
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app/log.log"
-#chown $mautrix_whatsapp_user:root -R /var/log/$app
+ynh_use_logrotate
 
 #=================================================
-# ADVERTISE SERVICE IN ADMIN PANEL
+# INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-#yunohost service add $app --log "/var/log/$app/log.log"
-# if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
-yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/log.log"
+ynh_script_progression --message="Integrating service in YunoHost..." --time --weight=1
+
+yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -230,7 +199,7 @@ yunohost service add $app --description "$app daemon for bridging Whatsapp and M
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start"
+ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
 # Wait until the synapse user is created
 sleep 30
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
