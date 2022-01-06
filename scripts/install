@@ -147,7 +147,7 @@ enable_relaybot="true"
 log_level="error"
 
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
-chmod 400 "$final_path/config.yaml"
+chmod 600 "$final_path/config.yaml"
 chown $app:$app -R "$final_path"
 #chown $app:$app "$final_path/config.yaml"
 
