@@ -187,9 +187,9 @@ ynh_store_file_checksum --file="$final_path/config.yaml"
 #=================================================
 ynh_script_progression --message="Configuring log rotation..." --weight=3
 
-#mkdir -p /var/log/$app
+mkdir -p /var/log/$app
 #chmod 600 "/var/log/$app"
-#chown $app:$app "/var/log/$app"
+chown $app:$app "/var/log/$app"
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate --logfile "/var/log/$app/$app.log" --specific_user $app/$app
 #chmod 700 "/var/log/$app"
@@ -211,7 +211,7 @@ ynh_script_progression --message="Starting a systemd service..." --weight=15
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
 #chmod -R 600 "/var/log/$app"
-#chown -R $app:$app "/var/log/$app"
+chown -R $app:$app "/var/log/$app"
 # Wait until the synapse user is created
 sleep 30
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
