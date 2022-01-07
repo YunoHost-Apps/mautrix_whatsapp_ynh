@@ -187,14 +187,14 @@ ynh_store_file_checksum --file="$final_path/config.yaml"
 #=================================================
 ynh_script_progression --message="Configuring log rotation..." --weight=3
 
-mkdir -p /var/log/$app
-chmod 600 "/var/log/$app"
-chown $app:$app "/var/log/$app"
+#mkdir -p /var/log/$app
+#chmod 600 "/var/log/$app"
+#chown $app:$app "/var/log/$app"
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate
+ynh_use_logrotate --logfile "/var/log/$app/$app.log" --specific_user $app
 #chmod 700 "/var/log/$app"
-chmod 600 "/var/log/$app"
-chown $app:$app "/var/log/$app"
+#chmod 600 "/var/log/$app"
+#chown $app:$app "/var/log/$app"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
@@ -210,10 +210,10 @@ ynh_script_progression --message="Starting a systemd service..." --weight=15
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
-chmod -R 600 "/var/log/$app"
-chown -R $app:$app "/var/log/$app"
+#chmod -R 600 "/var/log/$app"
+#chown -R $app:$app "/var/log/$app"
 # Wait until the synapse user is created
-sleep 15
+sleep 30
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
     if [ "$bot_synapse_adm" = true ]
     then
@@ -221,8 +221,8 @@ sleep 15
     #yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
     fi
 ynh_systemd_action --service_name=$app --action="restart"
-chmod -R 600 "/var/log/$app"
-chown -R $app:$app "/var/log/$app"
+#chmod -R 600 "/var/log/$app"
+#chown -R $app:$app "/var/log/$app"
 
 #=================================================
 # END OF SCRIPT
