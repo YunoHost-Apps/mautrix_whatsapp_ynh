@@ -191,7 +191,7 @@ ynh_script_progression --message="Configuring log rotation..." --weight=3
 #chmod 600 "/var/log/$app"
 #chown $app:$app "/var/log/$app"
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app/$app.log" --specific_user $app
+ynh_use_logrotate --logfile "/var/log/$app/$app.log" --specific_user $app/$app
 #chmod 700 "/var/log/$app"
 #chmod 600 "/var/log/$app"
 #chown $app:$app "/var/log/$app"
