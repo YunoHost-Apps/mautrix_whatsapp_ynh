@@ -38,7 +38,7 @@
 				"default": "1"
 			},
 			{
-				"name": "whatsappbot",
+				"name": "botname",
 				"type": "string",
 				"ask": {
 					"en": "Choose a local Synapse user name for the WhatsApp bot",
@@ -59,10 +59,10 @@
 					"fr": "Donner au robot WhatsApp des droits administrateur à l'instance Synapse ?"
 				},
 				"help": {
-					"en": "If true, the bot can group WhatsApp chats in a Matrix community. Not required if you set up Synapse so that non-admins are authorized to create communities.",
+					"en": "If true, the bot can group WhatsApp chats in a Matrix space. Not required if you set up Synapse so that non-admins are authorized to create communities.",
 					"fr": "Si true, le robot groupera les conversations WhatsApp dans une communauté Matrix. Pas nécessaire si vous avez réglé Synapse pour qu'il autorise les non-admin à créer des communautés."
 				},
-				"default": 1
+				"default": true
 			},			
 			{
 				"name": "encryption",
@@ -71,14 +71,18 @@
 					"en": "Enable end-to-bridge encryption?",
 					"fr": "Activer le chiffrement entre Synapse et le bridge ?"
 				},
-				"default": 0
+				"help": {
+					"en": "Only activate if you know the prerequisites and constraints related to e2b.",
+					"fr": "N'activer que si vous connaissez les prérequis et constraintes liées à e2b."
+				},
+				"default": false
 			},			
 			{
 				"name": "botadmin",
 				"type": "string",
 				"ask": {
-					"en": "Choose the Matrix account administrator of the WhatsApp bot.",
-					"fr": "Choisissez le compte Matrix administrateur du robot WhatsApp."
+					"en": "Choose the Matrix account administrator of the WhatsApp bot",
+					"fr": "Choisissez le compte Matrix administrateur du robot WhatsApp"
 				},
 				"example": "@johndoe:localsynapse.servername or @johndoe:matrix.org",
 				"help": {
@@ -92,13 +96,13 @@
 				"type": "string",
 				"ask": {
 					"en": "Choose Matrix user(s) authorized to bridge with the WhatsApp bot.",
-					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser le robot WhatsApp."
+					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser la passerelle WhatsApp."
 				},
 				"example": "admin or domain or @johndoe:server.name or server.name or *",
 				"default": "domain",
 				"help": {
 					"en": "Either the administrator only (admin), all local Synapse users (domain), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the Matrix server_name, not the full domain/URL.",
-					"fr": "On peut autoriser le compte administrateur seul (admin), tous les comptes Synapse locaux (domain), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur Matrix, pas le domaine/URL complet."
+					"fr": "L'administrateur seulement (admin), tous les comptes Synapse locaux (domain), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur Matrix, pas le domaine/URL complet."
 				}
 			}
 		]
