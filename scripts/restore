@@ -26,21 +26,23 @@ ynh_abort_if_errors
 #=================================================
 ynh_script_progression --message="Loading settings..." --weight=5
 
-app=$YNH_APP_INSTANCE_NAME
-
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 botname=$(ynh_app_setting_get --app=$app --key=botname)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
+bot_synapse_adm=$(ynh_app_setting_get --app=$app --key=bot_synapse_adm)
 encryption=$(ynh_app_setting_get --app=$app --key=encryption)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
-mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
+previous_mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 port=$(ynh_app_setting_get --app=$app --key=port)
 
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+
+mautrix_version=$(ynh_app_upstream_version)
+app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
 # SET CONSTANTS
@@ -104,6 +106,7 @@ ynh_psql_execute_file_as_root --file="./db.sql" --database="$db_name"
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
+
 $final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
@@ -123,6 +126,7 @@ systemctl enable $app.service --quiet
 ynh_use_logrotate --logfile "/var/log/$app/$app.log" --specific_user $app/$app
 chmod -R 600 "/var/log/$app"
 chmod 700 "/var/log/$app"
+chown -R $app:$app /var/log/$app
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
