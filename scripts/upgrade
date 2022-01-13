@@ -43,8 +43,6 @@ log_level="error"
 
 synapse_db_name="matrix_$synapse_instance"
 bot_synapse_db_user="@$botname:$server_name"
-mautrix_config_path="$final_path/config.yaml"
-upstream_version=$(ynh_app_upstream_version)
 
 #=================================================
 # CHECK VERSION
