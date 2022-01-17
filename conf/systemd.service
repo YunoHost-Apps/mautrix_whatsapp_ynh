@@ -2,44 +2,14 @@
 Description=Matrix-Whatsapp Bridge
 After=matrix-synapse.service
 
-#[Service]
-#Type=simple
-#User=__APP__
-#WorkingDirectory=/opt/yunohost/__APP__
-#ExecStart=/opt/yunohost/__APP__/mautrix-whatsapp -c=/opt/yunohost/__APP__/config.yaml >> /var/log/__APP__/__APP__.log 2>&1
-#Restart=always
-#RestartSec=3
-
 [Service]
-Type=exec
+Type=simple
 User=__APP__
 Group=__APP__
 WorkingDirectory=/opt/yunohost/__APP__
 ExecStart=/opt/yunohost/__APP__/mautrix-whatsapp -c=/opt/yunohost/__APP__/config.yaml >> /var/log/__APP__/__APP__.log 2>&1
-Restart=on-failure
-RestartSec=30s
-
-# Optional hardening to improve security
-#ReadWritePaths=/opt/yunohost/__APP__ /var/log/__APP__/
-#NoNewPrivileges=yes
-#MemoryDenyWriteExecute=true
-#PrivateDevices=yes
-#PrivateTmp=yes
-#ProtectHome=yes
-#ProtectSystem=strict
-#ProtectControlGroups=true
-#RestrictSUIDSGID=true
-#RestrictRealtime=true
-#LockPersonality=true
-#ProtectKernelLogs=true
-#ProtectKernelTunables=true
-#ProtectHostname=true
-#ProtectKernelModules=true
-#PrivateUsers=true
-#ProtectClock=true
-#SystemCallArchitectures=native
-#SystemCallErrorNumber=EPERM
-#SystemCallFilter=@system-service
+Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
