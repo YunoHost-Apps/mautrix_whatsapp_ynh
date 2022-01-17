@@ -38,7 +38,7 @@ appservice:
         #   SQLite: File name is enough. https://github.com/mattn/go-sqlite3#connection-string
         #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
         #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql        #uri: mautrix-whatsapp.db
-        uri: postgres://__MAUTRIX_WHATSAPP_USER__:__MAUTRIX_WHATSAPP_DB_PWD__@localhost:5432/__MAUTRIX_WHATSAPP_DB_NAME__
+        uri: postgres://__APP__:__DB_PWD__@localhost:5432/__DB_NAME__
         # Maximum number of connections. Mostly relevant for Postgres.
         max_open_conns: 20
         max_idle_conns: 2
@@ -53,12 +53,12 @@ appservice:
 
     # The unique ID of this appservice.
     #id: whatsapp
-    id: __WHATSAPPBOT__
+    id: __BOTNAME__
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
         #username: whatsappbot
-        username: __WHATSAPPBOT__
+        username: __BOTNAME__
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
         displayname: WhatsApp bridge bot
@@ -213,7 +213,7 @@ bridge:
     # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.    
     encryption:
         # Allow encryption, work in group chat rooms with e2ee enabled
-        allow: false
+        allow: __ENCRYPTION__
         # Default to encryption, force-enable encryption in all portals the bridge creates
         # This will cause the bridge bot to be in private chats for the encryption to work properly.
         # It is recommended to also set private_chat_portal_meta to true when using this.
@@ -274,7 +274,7 @@ logging:
     # Available variables: .Date for the file date and .Index for different log files on the same day.
     # Set this to null to disable logging to file.
     #file_name_format: "{{.Date}}-{{.Index}}.log"
-    file_name_format: "__LOG_FORMAT__"
+    file_name_format: null
     # Date format for file names in the Go time format: https://golang.org/pkg/time/#pkg-constants
     #file_date_format: "2006-01-02"
     # Log file permissions.

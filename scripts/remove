@@ -19,12 +19,10 @@ app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
-app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
-whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
+botname=$(ynh_app_setting_get --app=$app --key=botname)
 botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 port=$(ynh_app_setting_get --app=$app --key=port)
-#db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-#db_user=$db_name
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
 #=================================================
@@ -32,10 +30,7 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 #=================================================
 
 synapse_db_name="matrix_$synapse_instance"
-whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
-mautrix_whatsapp_user=$app
-mautrix_whatsapp_db_name=$app
-mautrix_whatsapp_db_user=$app
+bot_synapse_db_user="@$botname:$server_name"
 
 #=================================================
 # STANDARD REMOVE
@@ -64,10 +59,14 @@ ynh_remove_systemd_config
 ynh_script_progression --message="Removing the PostgreSQL database..." --weight=4
 
 # Remove a database if it exists, along with the associated user
-ynh_psql_remove_db --db_user=$mautrix_whatsapp_db_name --db_name=$mautrix_whatsapp_db_user
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$mautrix_whatsapp_user"";"
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$mautrix_whatsapp_user"";"
-#yunohost app action run $synapse_instance drop_user -a username=$whatsappbot
+ynh_psql_remove_db --db_user=$db_name --db_name=$db_name
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$app"";"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$app"";"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$bot_synapse_db_user"";"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$bot_synapse_db_user"";"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$botname"";"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$botname"";"
+#yunohost app action run $synapse_instance drop_user -a username=$botname
 
 #=================================================
 # REMOVE DEPENDENCIES
@@ -83,7 +82,6 @@ ynh_remove_app_dependencies
 ynh_script_progression --message="Removing app main directory..." --weight=1
 
 # Remove the app directory securely
-#ynh_secure_remove --file="/etc/$app/"
 ynh_secure_remove --file="$final_path"
     
 #=================================================
@@ -100,7 +98,7 @@ ynh_remove_logrotate
 ynh_script_progression --message="Removing synapse app service..." --weight=6
 
 # Remove a directory securely
-ynh_secure_remove --file="$app_service_registration_path/$app.yaml"
+ynh_secure_remove --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
 
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
@@ -116,7 +114,7 @@ ynh_secure_remove --file="/var/log/$app"
 ynh_script_progression --message="Removing the dedicated system user..." --weight=5
 
 # Delete a system user
-ynh_system_user_delete --username=$mautrix_whatsapp_user
+ynh_system_user_delete --username=$app
 
 #=================================================
 # END OF SCRIPT

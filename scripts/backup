@@ -29,43 +29,39 @@ ynh_print_info --message="Loading installation settings..."
 app=$YNH_APP_INSTANCE_NAME
 
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-#domain=$(ynh_app_setting_get --app=$app --key=domain)
-mautrix_whatsapp_db_name=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_name)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 
 #=================================================
-# STANDARD BACKUP STEPS
+# DECLARE DATA AND CONF FILES TO BACKUP
 #=================================================
+ynh_print_info --message="Declaring files to be backed up..."
 
 #=================================================
 # BACKUP THE APP MAIN DIR
 #=================================================
-ynh_print_info --message="Backing up the main app directory..." 
 
 ynh_backup --src_path="$final_path"
-
-#=================================================
-# BACKUP THE POSTGRESQL DATABASE
-#=================================================
-ynh_print_info --message="Backing up the PostgreSQL database..."
-
-ynh_psql_dump_db --database="$mautrix_whatsapp_db_name" > ${YNH_CWD}/dump.sql
 
 #=================================================
 # SPECIFIC BACKUP
 #=================================================
 # BACKUP LOGROTATE
 #=================================================
-ynh_print_info --message="Backing up logrotate configuration..." 
 
 ynh_backup --src_path="/var/log/$app"
 
 #=================================================
 # BACKUP SYSTEMD
 #=================================================
-ynh_print_info --message="Backing up systemd configuration..."
 
-#ynh_backup --src_path="/etc/default/$app"
 ynh_backup --src_path="/etc/systemd/system/$app.service"
+
+#=================================================
+# BACKUP THE POSTGRESQL DATABASE
+#=================================================
+ynh_print_info --message="Backing up the PostgreSQL database..."
+
+ynh_psql_dump_db --database="$db_name" > db.sql
 
 #=================================================
 # END OF SCRIPT
