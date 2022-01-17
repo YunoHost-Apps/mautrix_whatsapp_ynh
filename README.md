@@ -114,7 +114,7 @@ To try the testing branch, please proceed like that:
 ```
 sudo yunohost app install https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing --debug
 or
-sudo yunohost app upgrade synapse -u https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing --debug
+sudo yunohost app upgrade mautrix_whatsapp -u https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing --debug
 ```
 
 To test communication between the App Service and Matrix-Synapse on a VM (e.g. with domain name: synapse.vm), you must install a certificate:
