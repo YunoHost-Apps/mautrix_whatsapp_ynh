@@ -1,6 +1,7 @@
-SOURCE_URL=https://mau.dev/mautrix/whatsapp/-/jobs/artifacts/v0.2.1/download?job=build+arm64
-SOURCE_SUM=5e98df2198e7dfe6479d565e82fd3e68a07d2334435a05c327e69de4264d54f7
+SOURCE_URL=https://mau.dev/mautrix/whatsapp/-/jobs/13507/artifacts/download
+SOURCE_SUM=8ebcd9f73799ac840780b676b8aae0af2f7dc7ce9b42133949541571d9ae96ec
 SOURCE_SUM_PRG=sha256sum
-SOURCE_FORMAT=zip
-SOURCE_IN_SUBDIR=false
-SOURCE_FILENAME=mautrix-whatsapp
+SOURCE_FORMAT=.zip
+SOURCE_IN_SUBDIR=true
+SOURCE_EXTRACT=false
+#SOURCE_FILENAME=mautrix-whatsapp
