@@ -1,7 +1,7 @@
 SOURCE_URL=https://mau.dev/mautrix/whatsapp/-/jobs/13506/artifacts/download
 SOURCE_SUM=a7d6fe31d41fe3b2ae113b5cc1e0445f4ac16081959b5c9d8cdf83a4989663f5
 SOURCE_SUM_PRG=sha256sum
-SOURCE_FORMAT=.zip
+SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
 #SOURCE_EXTRACT=false
 #SOURCE_FILENAME=mautrix-whatsapp
