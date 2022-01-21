@@ -1,4 +1,6 @@
-SOURCE_URL=https://mau.dev/mautrix/whatsapp/-/jobs/13507/artifacts/download.zip
-SOURCE_SUM=8ebcd9f73799ac840780b676b8aae0af2f7dc7ce9b42133949541571d9ae96ec
-SOURCE_FORMAT=zip
-SOURCE_FILENAME=download.zip
+SOURCE_URL=https://github.com/mautrix/whatsapp/releases/download/v0.2.3/mautrix-whatsapp-amd64
+SOURCE_SUM=4a9dc02c40b7220490bd372968cd3243989f2de50ab825f24bae8ca9bbaf8024
+SOURCE_SUM_PRG=sha256sum
+SOURCE_IN_SUBDIR=false
+SOURCE_FILENAME=mautrix-whatsapp
+SOURCE_EXTRACT=false
