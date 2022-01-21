@@ -1,10 +1,11 @@
 {
-	"name": "Matrix-Whatsapp bridge",
+	"name": "Matrix WhatsApp bridge",
 	"id": "mautrix_whatsapp",
 	"packaging_format": 1,
 	"description": {
-		"en": "WhatsApp puppeting bridge for Matrix/Synapse",
-		"fr": "Passerelle WhatsApp pour Matrix/Synapse"
+		"en": "Matrix puppeting bridge for WhatsApp (Synapse)",
+		"fr": "Passerelle Matrix pour WhatsApp (Synapse)"
+		"name": "Matrix-Whatsapp bridge",
 	},
 	"version": "0.2.3~ynh1",
 	"url": "https://github.com/mautrix/whatsapp",
