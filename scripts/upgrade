@@ -65,18 +65,20 @@ ynh_secure_remove --file="$src_path"
 src_path="$final_path"/src
 ynh_secure_remove --file="$src_path"
 
-# Upgrade from <=0.2.0
-db_name=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_name)
-db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
-if [$db_pwd == ""]
-then
-# Upgrade from >=0.2.2
-db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
-fi
-if [$db_name == ""]
-then
-# Upgrade from >=0.2.2
+# Upgrade from >0.2.0
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+
+# Upgrade from <=0.2.0
+if [ -z "$db_name" ]
+then
+    db_name=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_name)
+    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+fi
+if [ -z "$db_pwd" ]
+then
+    db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
+    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 fi
 
 # If db_name doesn't exist, create it
