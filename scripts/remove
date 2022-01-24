@@ -30,7 +30,7 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 #=================================================
 
 synapse_db_name="matrix_$synapse_instance"
-bot_synapse_db_user="@$botname:$server_name"
+bot_synapse_db_user="@""$botname"":""$server_name"
 
 #=================================================
 # STANDARD REMOVE
@@ -61,10 +61,10 @@ ynh_script_progression --message="Removing the PostgreSQL database..." --weight=
 # Remove a database if it exists, along with the associated user
 ynh_psql_remove_db --db_user=$db_name --db_name=$db_name
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$app"";"
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$app"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$bot_synapse_db_user"";"
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$bot_synapse_db_user"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$botname"";"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$app"";"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$bot_synapse_db_user"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$botname"";"
 #yunohost app action run $synapse_instance drop_user -a username=$botname
 
