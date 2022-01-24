@@ -66,13 +66,19 @@ src_path="$final_path"/src
 ynh_secure_remove --file="$src_path"
 
 # Upgrade from >0.2.0
+botname=$(ynh_app_setting_get --app=$app --key=botname)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
 
 # Upgrade from <=0.2.0
+if [ -z "$botname" ]
+then
+    botname=$(ynh_app_setting_get --app=$app --key=whatsappbot)
+    ynh_app_setting_set --app=$app --key=botname --value=$botname
+fi
 if [ -z "$db_name" ]
 then
-    db_name=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_name)
+    db_name=$(ynh_app_setting_get --app=$app --key=$app)
     ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 fi
 if [ -z "$db_pwd" ]
@@ -175,7 +181,6 @@ ynh_add_systemd_config
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 $final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-chown -R $app:$app "$final_path"
 
 #Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
@@ -214,6 +219,7 @@ yunohost service add $app --description "$app daemon for bridging Whatsapp and M
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
+chown -R $app:$app "$final_path"
 ynh_systemd_action --service_name=$app --action="start"
 
 #=================================================
