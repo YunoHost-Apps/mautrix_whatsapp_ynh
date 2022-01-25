@@ -3,12 +3,11 @@
 		sudo yunohost tools update apps
 		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/ -a "domain=$domain&server_name=$server_name&is_public=$is_public&jitsi_server=$jitsi_server" --force
 	; Manifest
-		port="8449"	(PORT)
 		synapsenumber="1"
 		whatsappbot="whatsappbot"
 		bot_synapse_adm=0
 		encryption=0
-		botadmin="@johndoe:synapsedomain.tld"	(USER)
+		botadmin="@johndoe:synapsedomain.tld"
 		botusers="@johndoe:synapsedomain.tld"
 	; Checks
 		pkg_linter=1
@@ -19,15 +18,11 @@
 		setup_public=0
 		upgrade=1
 		upgrade=1	from_commit=ede0231ac59aaa1d65a3009bcbdfe333bf5e87fd
-		#upgrade=1	from_commit=a95215f2ea5d1f34b1c804f776e78c4785477023
+		upgrade=1	from_commit=443ac4fb96297455281d9495844dde3b9a197214
 		backup_restore=1
 		multi_instance=1
-		port_already_use=1
-		change_url=0
-		actions=0
-		config_panel=0
 ;;; Upgrade options
 	; commit=ede0231ac59aaa1d65a3009bcbdfe333bf5e87fd
 		name=0.1.8
-#	; commit=a95215f2ea5d1f34b1c804f776e78c4785477023
-#		name=0.1.7
+	; commit=443ac4fb96297455281d9495844dde3b9a197214
+		name=0.1.10

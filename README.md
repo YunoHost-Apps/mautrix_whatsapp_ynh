@@ -14,7 +14,7 @@ A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. M
 
 ** Attention: always backup and restore the Yunohost matrix_synapse et mautrix_whatsapp apps together!**
 
-**Shipped version:** 0.1.10
+**Shipped version:** 0.2.3
 
 
 ## Screenshots
@@ -37,13 +37,26 @@ A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. M
 * Send ``help`` to the bot in the created room to know how to control the bot.
 See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/go/whatsapp/authentication.html)
 
-
+### Bridge an existing room | Bridge Whatsapp to Signal over Matrix
+By default, the bridge creates a portal room for each WA group that the WA user actively uses.
+Your can also create a portal for an existing Matrix room. **Note that this can be a room created by another bridge, e.g. a Signal portal room**
+1. Invite the bridge bot to the room (with an authorized user)
+2. type `!wa create`
+3. Your logged in WA user creates a new corresponding group. 
+4. Get the WA invite link `!wa invite-link` and share it with friends. Or invite Whatsapp puppets to room.
+5. Optional: Activate relaybot, see next section.
 
 ### Relaybot: Bridge a group for several Matrix and several WhatsApp users to chat together
-* First Relaybot option should be enabled in the bridge configuration (default=disabled, see below) and room ID of the relaybot administration room added.
-* Once the bot administration room is setup, you can also bridge all messages between a Matrix room and a WhatsApp room/group. 
-In WhatsApp all messages will be sent by the account who is logged in with a prefix for the source matrix user. On the matrix side the bridge will still create matrix users corresponding to the WhatsApp users when they send a message.
-See also [upstream wiki Relaybot page](https://docs.mau.fi/bridges/go/whatsapp/relaybot.html)
+**When upgrading from <v0.2.0, the relaybot system changed. There is no relaybot administration room anymore. Relay must be re-activated in all rooms**. 
+
+To be able to bridge not only your logged in Matrix account but also Matrix friends you invite to a portal room, you need to:
+1. enable relaybot setting in the bridge configuration `relay: enabled: true`
+2. login to your WhatsApp account in the (main) administration room
+3. write `!wa set-relay` in each of the rooms you want to relay to (re-)activate the relaybot function. By default, only bridge admin can do this, see setting `admin_only: true`
+
+* In WhatsApp: all messages will be seen as received from the account who is logged in with a prefix for the source matrix user. 
+* On the matrix side: the bridge will create matrix puppets corresponding to the WhatsApp users when they send a message.
+See also [upstream wiki Relaybot page](https://docs.mau.fi/bridges/general/relay-mode.html)
 
 ## Configuration of the bridge
 
@@ -114,7 +127,7 @@ To try the testing branch, please proceed like that:
 ```
 sudo yunohost app install https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing --debug
 or
-sudo yunohost app upgrade synapse -u https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing --debug
+sudo yunohost app upgrade mautrix_whatsapp -u https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing --debug
 ```
 
 To test communication between the App Service and Matrix-Synapse on a VM (e.g. with domain name: synapse.vm), you must install a certificate:

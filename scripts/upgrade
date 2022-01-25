@@ -19,47 +19,73 @@ app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 port=$(ynh_app_setting_get --app=$app --key=port)
-whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
+botname=$(ynh_app_setting_get --app=$app --key=botname)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
-app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
 encryption=$(ynh_app_setting_get --app=$app --key=encryption)
-botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
+botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
+previous_mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 
-ynh_print_OFF
-mautrix_whatsapp_db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
-ynh_print_ON
+#db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+#db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+
+mautrix_version=$(ynh_app_upstream_version)
+architecture=$YNH_ARCH
 
 #=================================================
 # SET CONSTANTS
 #=================================================
 
+enable_relaybot="true"
+# Options: debug, info, warn, error, fatal
+log_level="error"
+#log_format="$app.log"
+
 synapse_db_name="matrix_$synapse_instance"
-whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
-mautrix_whatsapp_user=$app
-mautrix_whatsapp_db_name=$app
-mautrix_whatsapp_db_user=$app
-mautrix_config_path="$final_path/config.yaml"
-upstream_version=$(ynh_app_upstream_version)
+bot_synapse_db_user="@$botname:$server_name"
 
 #=================================================
 # CHECK VERSION
 #=================================================
 
-### This helper will compare the version of the currently installed app and the version of the upstream package.
-### $upgrade_type can have 2 different values
-### - UPGRADE_APP if the upstream app version has changed
-### - UPGRADE_PACKAGE if only the YunoHost package has changed
-### ynh_check_app_version_changed will stop the upgrade if the app is up to date.
-### UPGRADE_APP should be used to upgrade the core app only if there's an upgrade to do.
 upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
+
+# Migration from <=1.10.0 to >0.2.1
+ynh_secure_remove --file="$final_path"/community.go
+ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-23-protoupgrade.go
+ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-16-message-delete-cascade.go
+src_path="$final_path"_src
+ynh_secure_remove --file="$src_path"
+src_path="$final_path"/src
+ynh_secure_remove --file="$src_path"
+
+# Upgrade from >0.2.0
+botname=$(ynh_app_setting_get --app=$app --key=botname)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+
+# Upgrade from <=0.2.0
+if [ -z "$botname" ]
+then
+    botname=$(ynh_app_setting_get --app=$app --key=whatsappbot)
+    ynh_app_setting_set --app=$app --key=botname --value=$botname
+fi
+if [ -z "$db_name" ]
+then
+    db_name=$(ynh_app_setting_get --app=$app --key=$app)
+    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+fi
+if [ -z "$db_pwd" ]
+then
+    db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
+    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+fi
 
 # If db_name doesn't exist, create it
 #if [ -z "$mautrix_whatsapp_db_name" ]; then
@@ -72,10 +98,6 @@ ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 #	final_path=/opt/yunohost/$app
 #	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 #fi
-
-#Migration from 0.1.5
-#domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
-#ynh_app_setting_set --app=$app --key=domain --value=$domain
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
@@ -101,6 +123,21 @@ ynh_script_progression --message="Stopping a systemd service..." --weight=1
 ynh_systemd_action --service_name=$app --action="stop"
 
 #=================================================
+# UPGRADE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Upgrading dependencies..." --weight=100
+
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Making sure dedicated system user exists..." --weight=8
+
+# Create a dedicated user (if not existing)
+ynh_system_user_create --username=$app
+
+#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
@@ -109,71 +146,10 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=2
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path"
+    ynh_setup_source --dest_dir="$final_path" --source_id=$architecture
+	chmod 750 $final_path
+	chown $app:$app $final_path
 fi
-
-#=================================================
-# UPGRADE DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Upgrading dependencies..." --weight=100
-
-ynh_install_app_dependencies $pkg_dependencies
-
-if [ $encryption = true ]
-then
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
-fi
-
-# TODO: check Go version and upgrade if needed
-#if ! command -v /usr/local/go/bin/go &> /dev/null
-#then
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
-#if
-
-# Migration from 1.6.0
-ynh_secure_remove --file="$final_path"/asmux.go
-src_path="$final_path"_src
-# Remove a directory securely
-ynh_secure_remove --file="$src_path"
-#export PATH=$PATH:$GO_PATH
-#env_path=$PATH
-
-src_path="$final_path"/src
-mkdir -p $src_path
-export GOPATH="$src_path"
-export GOCACHE="$GOPATH"/.cache/go-build
-
-#=================================================
-# BUILD GO
-#=================================================
-
-# Build mautrix-whatsapp
-
-pushd "$final_path" || ynh_die
-       ynh_script_progression --message="Building the sources (it will take some time)..." --weight=6
-	if [ $encryption = true ]
-	then
-	# Build with libolm3 end-to-bridge encryption
-	ynh_exec_warn_less ./build.sh
-	else
-	# Build without end-to-bridge encryption
-	ynh_exec_warn_less ./build.sh -tags nocrypto
-	fi
-popd || ynh_die
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..." --weight=8
-
-# Create a dedicated user (if not existing)
-ynh_system_user_create --username=$mautrix_whatsapp_user
-
-#=================================================
-# SPECIFIC UPGRADE
-#=================================================
-# ...
-#=================================================
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
@@ -181,58 +157,17 @@ ynh_system_user_create --username=$mautrix_whatsapp_user
 
 ### Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
 ### And create a backup of this file if the checksum is different. So the file will be backed up if the admin had modified it.
-ynh_backup_if_checksum_is_different --file="$mautrix_config_path"
-ynh_backup_if_checksum_is_different --file="$app_service_registration_path/$app.yaml"
+ynh_backup_if_checksum_is_different --file="$final_path/config.yaml"
+ynh_backup_if_checksum_is_different --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
 
 #=================================================
-# SET MAUTRIX-WHATSAPP CONFIG
+# UPDATE CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring Mautrix-WhatsApp..." --weight=2
+ynh_script_progression --message="Configuring Mautrix Bridge..." --weight=2
 
-# Configure Mautrix-WhatsApp
-
-#ynh_print_OFF
-#ynh_replace_string --match_string=__MAUTRIX_WHATSAPP_DB_PWD__ --replace_string=$mautrix_whatsapp_db_pwd --target_file="$mautrix_config_path"
-#ynh_print_ON
-
-enable_relaybot="true"
-relaybot_management_room="highwaytohell"
-relaybot_invite="$botadmin"
-log_format="log.log"
-# Options: debug, info, warn, error, fatal
-log_level="error"
-
-ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
-
-
-#=================================================
-# REGISTER SYNAPSE APP-SERVICE
-#=================================================
-$final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
-
-#Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
-    || ynh_die "Synapse can't restart with the appservice configuration"
-# Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
-
-#=================================================
-# STORE THE CONFIG FILE CHECKSUM
-#=================================================
-
-# Recalculate and store the checksum of the file for the next upgrade.
-ynh_store_file_checksum --file="$mautrix_config_path"
-ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
-
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
-
-# Use logrotate to manage application logfile(s)
-#ynh_use_logrotate --logfile "/var/log/$app/log.log"
-#chown $mautrix_whatsapp_user:root -R /var/log/$app
-# Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --non-append
+ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
+chmod -R 750 "$final_path"
+chown -R $app:$app "$final_path"
 
 #=================================================
 # SETUP SYSTEMD
@@ -243,28 +178,48 @@ ynh_script_progression --message="Upgrading systemd configuration..." --weight=4
 ynh_add_systemd_config
 
 #=================================================
+# REGISTER SYNAPSE APP-SERVICE
+#=================================================
+$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+
+#Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
+    || ynh_die "Synapse can't restart with the appservice configuration"
+
+#=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
+
+# Recalculate and store the checksum of the file for the next upgrade.
+ynh_store_file_checksum --file="$final_path/config.yaml"
+ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
+# SETUP LOGROTATE
 #=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
+ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
 
-# Set permissions on app files
-chown -R root: $final_path
-chown $mautrix_whatsapp_user:root -R $final_path
+# Use logrotate to manage application logfile(s)
+ynh_use_logrotate --logfile "/var/log/$app/$app.log" --specific_user $app/$app
+chmod -R 600 "/var/log/$app"
+chmod 700 "/var/log/$app"
+chown -R $app:$app /var/log/$app
 
 #=================================================
-# ADVERTISE SERVICE IN ADMIN PANEL
+# INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-#yunohost service add $app --log "/var/log/$app/log.log"
-# if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
-yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/log.log"
+ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
+
+yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
+chown -R $app:$app "$final_path"
 ynh_systemd_action --service_name=$app --action="start"
 
 #=================================================

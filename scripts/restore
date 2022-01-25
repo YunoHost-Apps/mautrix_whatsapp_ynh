@@ -28,50 +28,39 @@ ynh_script_progression --message="Loading settings..." --weight=5
 
 app=$YNH_APP_INSTANCE_NAME
 
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
-port=$(ynh_app_setting_get --app=$app --key=port)
-whatsappbot=$(ynh_app_setting_get --app=$app --key=whatsappbot)
+botname=$(ynh_app_setting_get --app=$app --key=botname)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
-app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
+bot_synapse_adm=$(ynh_app_setting_get --app=$app --key=bot_synapse_adm)
 encryption=$(ynh_app_setting_get --app=$app --key=encryption)
-botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
+botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
+previous_mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
+port=$(ynh_app_setting_get --app=$app --key=port)
 
-ynh_print_OFF
-mautrix_whatsapp_db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
-ynh_print_ON
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+
+mautrix_version=$(ynh_app_upstream_version)
 
 #=================================================
 # SET CONSTANTS
 #=================================================
 
 synapse_db_name="matrix_$synapse_instance"
-whatsappbot_synapse_db_user="@$whatsappbot:$server_name"
-mautrix_whatsapp_user=$app
-mautrix_whatsapp_db_name=$app
-mautrix_whatsapp_db_user=$app
-mautrix_config_path="$final_path/config.yaml"
+bot_synapse_db_user="@$botname:$server_name"
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
 ynh_script_progression --message="Validating restoration parameters..." --weight=1
 
-test ! -d $final_path \
-	|| ynh_die --message="There is already a directory: $final_path "
+test ! -d $final_path || ynh_die --message="There is already a directory: $final_path "
 
 #=================================================
 # STANDARD RESTORATION STEPS
-#=================================================
-# RESTORE THE APP MAIN DIR
-#=================================================
-ynh_script_progression --message="Restoring the app main directory..." --weight=1
-
-ynh_restore_file --origin_path="$final_path"
-
 #=================================================
 # RECREATE THE DEDICATED USER
 #=================================================
@@ -81,27 +70,28 @@ ynh_script_progression --message="Recreating the dedicated system user..." --wei
 ynh_system_user_create --username=$app
 
 #=================================================
+# RESTORE THE APP MAIN DIR
+#=================================================
+ynh_script_progression --message="Restoring the app main directory..." --weight=1
+
+ynh_restore_file --origin_path="$final_path"
+
+#=================================================
 # RESTORE USER RIGHTS
 #=================================================
 
 # Restore permissions on app files
-chown -R root: $final_path
-chown $mautrix_whatsapp_user:root -R $final_path
+chmod 750 "$final_path"
+chown $app:$app "$final_path"
+chmod -R 750 "$final_path"
+chown -R $app:$app "$final_path"
 
-#=================================================
-# SPECIFIC RESTORATION
 #=================================================
 # REINSTALL DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Reinstalling dependencies..." --weight=100
 
-ynh_install_app_dependencies $pkg_dependencies
-
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="golang-go"
-if [ $encryption = true ]
-then
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev"
-fi
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # RESTORE THE POSTGRESQL DATABASE
@@ -109,20 +99,18 @@ fi
 ynh_script_progression --message="Restoring the PostgreSQL database..." --weight=8
 
 ynh_psql_test_if_first_run
-ynh_print_OFF
-ynh_psql_create_user $mautrix_whatsapp_db_user $mautrix_whatsapp_db_pwd
-ynh_print_ON
-ynh_psql_execute_as_root \
---sql="CREATE DATABASE ""$mautrix_whatsapp_db_name"" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER ""$mautrix_whatsapp_db_user"";"
-ynh_psql_execute_file_as_root --file="${YNH_CWD}/dump.sql" --database="$mautrix_whatsapp_db_name"
+ynh_psql_setup_db --db_user=$db_name --db_name=$db_name --db_pwd=$db_pwd
+ynh_psql_execute_file_as_root --file="./db.sql" --database="$db_name"
 
+#=================================================
+# SPECIFIC RESTORATION
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
-$final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
+
+$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
-# Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
 
 #=================================================
 # RESTORE SYSTEMD
@@ -130,37 +118,39 @@ $final_path/mautrix-whatsapp -g -c $mautrix_config_path -r $app_service_registra
 ynh_script_progression --message="Restoring the systemd configuration..." --weight=3
 
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
-systemctl enable $app.service
+systemctl enable $app.service --quiet
 
 #=================================================
 # RESTORE THE LOGROTATE CONFIGURATION
 #=================================================
 
-ynh_use_logrotate --logfile "/var/log/$app/log.log"
-chown $mautrix_whatsapp_user:root -R /var/log/$app
+ynh_use_logrotate --logfile "/var/log/$app/$app.log" --specific_user $app/$app
+chmod -R 600 "/var/log/$app"
+chmod 700 "/var/log/$app"
+chown -R $app:$app /var/log/$app
 
 #=================================================
-# ADVERTISE SERVICE IN ADMIN PANEL
+# INTEGRATE SERVICE IN YUNOHOST
 #=================================================
+ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
-# if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
-yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/log.log"
+yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=30
 
-ynh_systemd_action --service_name=$app --action="start"
-#sleep 30
+ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+# Wait until the synapse user is created
+sleep 30
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-#    if [ "$bot_is_synapse_admin" = true ]
-#    then
-#    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$whatsappbot"";"
-#    yunohost app action run $synapse_instance set_admin_user -a username=$whatsappbot
-#    fi
-#ynh_systemd_action --service_name=$app --action="restart"
-
+    if [ "$bot_synapse_adm" = true ]
+    then
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$botname"";"
+    #yunohost app action run $synapse_instance set_admin_user -a username=$botname
+    fi
+ynh_systemd_action --service_name=$app --action="restart"
 
 #=================================================
 # END OF SCRIPT
