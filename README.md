@@ -14,7 +14,7 @@ A puppeting bridge between Matrix and WhatsApp packaged as a YunoHost service. M
 
 ** Attention: always backup and restore the Yunohost matrix_synapse et mautrix_whatsapp apps together!**
 
-**Shipped version:** 0.2.3
+**Shipped version:** 0.2.4
 
 
 ## Screenshots
