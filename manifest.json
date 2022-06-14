@@ -15,8 +15,8 @@
     },
     "license": "AGPL-3.0-or-later",
     "maintainer": {
-        "name": "thardev",
-        "email": "",
+        "name": "Gredin67",
+        "email": "mautrix_whatsapp_ynh@sans-nuage.fr",
         "url": "https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh"
     },
     "requirements": {
