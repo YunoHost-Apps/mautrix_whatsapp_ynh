@@ -1,4 +1,4 @@
-# From v0.2.1 https://github.com/mautrix/whatsapp/blob/master/example-config.yaml
+# From v0.5.0 https://github.com/mautrix/whatsapp/blob/master/example-config.yaml
 # Homeserver details.
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
@@ -48,14 +48,6 @@ appservice:
         # Parsed with https://pkg.go.dev/time#ParseDuration
         max_conn_idle_time: null
         max_conn_lifetime: null
-
-    # Settings for provisioning API
-    provisioning:
-        # Prefix for the provisioning API paths.
-        prefix: /_matrix/provision
-        # Shared secret for authentication. If set to "generate", a random secret will be generated,
-        # or if set to "disable", the provisioning API will be disabled.
-        shared_secret: generate
 
     # The unique ID of this appservice.
     #id: whatsapp
@@ -111,8 +103,15 @@ bridge:
     # {{.FullName}}  - full name from contact list
     # {{.FirstName}} - first name from contact list
     displayname_template: "{{if .PushName}}{{.PushName}}{{else if .BusinessName}}{{.BusinessName}}{{else}}{{.JID}}{{end}} (WA)"
+    # Should the bridge create a space for each logged-in user and add bridged rooms to it?
+    # Users who logged in before turning this on should run `!wa sync space` to create and fill the space for the first time.
+    personal_filtering_spaces: false
     # Should the bridge send a read receipt from the bridge bot when a message has been sent to WhatsApp?
     delivery_receipts: false
+    # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
+    message_status_events: false
+    # Whether the bridge should send error notices via m.notice events when a message fails to bridge.
+    message_error_notices: true
     # Should incoming calls send a message to the Matrix room?
     call_start_notices: true
     # Should another user's cryptographic identity changing send a message to Matrix?
@@ -206,6 +205,11 @@ bridge:
     # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
     # and is therefore prone to race conditions.
     sync_direct_chat_list: false
+    # Should the bridge use MSC2867 to bridge manual "mark as unread"s from
+    # WhatsApp and set the unread status on initial backfill?
+    # This will only work on clients that support the m.marked_unread or
+    # com.famedly.marked_unread room account data.
+    sync_manual_marked_unread: true
     # When double puppeting is enabled, users can use `!wa toggle` to change whether
     # presence and read receipts are bridged. These settings set the default values.
     # Existing users won't be affected when these are changed.
@@ -253,6 +257,9 @@ bridge:
     # Should WhatsApp status messages be bridged into a Matrix room?
     # Disabling this won't affect already created status broadcast rooms.
     enable_status_broadcast: true
+    # Should sending WhatsApp status messages be allowed?
+    # This can cause issues if the user has lots of contacts, so it's disabled by default.
+    disable_status_broadcast_send: true
     # Should the status broadcast room be muted and moved into low priority by default?
     # This is only applied when creating the room, the user can unmute it later.
     mute_status_broadcast: true
@@ -267,6 +274,17 @@ bridge:
     # Whether or not created rooms should have federation enabled.
     # If false, created portal rooms will never be federated.
     federate_rooms: true
+    # Whether to enable disappearing messages in groups. If enabled, then the expiration time of
+    # the messages will be determined by the first user to read the message, rather than individually.
+    # If the bridge only has a single user, this can be turned on safely.
+    disappearing_messages_in_groups: false
+    # Should the bridge never send alerts to the bridge management room?
+    # These are mostly things like the user being logged out.
+    disable_bridge_alerts: false
+    # Should the bridge detect URLs in outgoing messages, ask the homeserver to generate a preview,
+    # and send it to WhatsApp? URL previews can always be sent using the `com.beeper.linkpreviews`
+    # key in the event content even if this is disabled.
+    url_previews: false
 
     # The prefix for commands. Only required in non-management rooms.
     command_prefix: "!wa"
@@ -305,6 +323,14 @@ bridge:
             # Require devices to be verified by the bridge?
             # Verification by the bridge is not yet implemented.
             require_verification: true
+
+    # Settings for provisioning API
+    provisioning:
+        # Prefix for the provisioning API paths.
+        prefix: /_matrix/provision
+        # Shared secret for authentication. If set to "generate", a random secret will be generated,
+        # or if set to "disable", the provisioning API will be disabled.
+        shared_secret: generate
 
     # Permissions for using the bridge.
     # Permitted values:
