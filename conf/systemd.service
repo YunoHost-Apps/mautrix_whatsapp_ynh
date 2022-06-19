@@ -11,5 +11,27 @@ ExecStart=/opt/yunohost/__APP__/mautrix-whatsapp -c=/opt/yunohost/__APP__/config
 Restart=always
 RestartSec=3
 
+# Optional hardening to improve security
+ReadWritePaths=/opt/mautrix-whatsapp
+NoNewPrivileges=yes
+MemoryDenyWriteExecute=true
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+ProtectKernelLogs=true
+ProtectKernelTunables=true
+ProtectHostname=true
+ProtectKernelModules=true
+PrivateUsers=true
+ProtectClock=true
+SystemCallArchitectures=native
+SystemCallErrorNumber=EPERM
+SystemCallFilter=@system-service
+
 [Install]
 WantedBy=multi-user.target
