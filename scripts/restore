@@ -66,8 +66,9 @@ test ! -d $final_path || ynh_die --message="There is already a directory: $final
 #=================================================
 ynh_script_progression --message="Recreating the dedicated system user..." --weight=1
 
-# Create the dedicated user (if not existing)
-ynh_system_user_create --username=$app
+# Create a dedicated user (if not existing) and set home dir to /opt/yunohost/$app so systemd hardening works
+# See more: https://docs.mau.fi/bridges/go/setup.html?bridge=whatsapp#systemd-service
+ynh_system_user_create --username=$app --home_dir=/opt/yunohost/$app
 
 #=================================================
 # RESTORE THE APP MAIN DIR

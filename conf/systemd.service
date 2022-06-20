@@ -12,7 +12,7 @@ Restart=always
 RestartSec=3
 
 # Optional hardening to improve security
-ReadWritePaths=/opt/mautrix-whatsapp
+ReadWritePaths=/opt/yunohost/__APP__
 NoNewPrivileges=yes
 MemoryDenyWriteExecute=true
 PrivateDevices=yes
