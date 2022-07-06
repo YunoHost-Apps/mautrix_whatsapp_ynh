@@ -136,7 +136,11 @@ ynh_script_progression --message="Making sure dedicated system user exists..." -
 
 # Create a dedicated user (if not existing) and set home dir to /opt/yunohost/$app so systemd hardening works
 # See more: https://docs.mau.fi/bridges/go/setup.html?bridge=whatsapp#systemd-service
-ynh_system_user_create --username=$app --home_dir=/opt/yunohost/$app
+if ynh_system_user_exists -u "$app"; then
+  usermod --home /opt/yunohost/$app $app
+else
+  ynh_system_user_create --username=$app --home_dir=/opt/yunohost/$app
+fi
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
