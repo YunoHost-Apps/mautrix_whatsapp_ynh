@@ -125,7 +125,7 @@ systemctl enable $app.service --quiet
 # RESTORE THE LOGROTATE CONFIGURATION
 #=================================================
 
-ynh_use_logrotate --logfile "/var/log/$app/$app.log" --specific_user $app/$app
+ynh_use_logrotate --logfile "/var/log/$app/$app.log" --nonappend --specific_user $app/$app
 chmod -R 600 "/var/log/$app"
 chmod 700 "/var/log/$app"
 chown -R $app:$app /var/log/$app

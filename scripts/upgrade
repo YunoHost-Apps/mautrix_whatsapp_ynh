@@ -207,7 +207,7 @@ ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.y
 ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app/$app.log" --specific_user $app/$app
+ynh_use_logrotate --logfile "/var/log/$app/$app.log" --nonappend --specific_user $app/$app
 chmod -R 600 "/var/log/$app"
 chmod 700 "/var/log/$app"
 chown -R $app:$app /var/log/$app
