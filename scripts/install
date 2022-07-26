@@ -176,7 +176,7 @@ ynh_store_file_checksum --file="$final_path/config.yaml"
 ynh_script_progression --message="Configuring log rotation..." --weight=3
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app/$app.log" --specific_user $app/$app
+ynh_use_logrotate --logfile "/var/log/$app/$app.log" --nonappend --specific_user $app/$app
 chmod -R 600 "/var/log/$app"
 chmod 700 "/var/log/$app"
 chown -R $app:$app /var/log/$app
