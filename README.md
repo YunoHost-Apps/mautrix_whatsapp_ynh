@@ -25,6 +25,7 @@ Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) 
 
 
 **Shipped version:** 0.6.0~ynh3
+
 ## Disclaimers / important information
 
 ### List of known public services

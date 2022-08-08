@@ -25,6 +25,7 @@ C'est pourquoi [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_y
 
 
 **Version incluse :** 0.6.0~ynh3
+
 ## Avertissements / informations importantes
 
 ### Liste de passerelles publiques
