@@ -19,6 +19,7 @@ app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 port=$(ynh_app_setting_get --app=$app --key=port)
+appserviceid=$(ynh_app_setting_get --app=$app --key=appserviceid)
 botname=$(ynh_app_setting_get --app=$app --key=botname)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 encryption=$(ynh_app_setting_get --app=$app --key=encryption)
@@ -86,6 +87,14 @@ then
     db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
     ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 fi
+
+# If appserviceid doesn't exist, create it
+if [ -z "$appserviceid" ]
+then
+  appserviceid=$app
+  ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
+fi
+
 
 # If db_name doesn't exist, create it
 #if [ -z "$mautrix_whatsapp_db_name" ]; then

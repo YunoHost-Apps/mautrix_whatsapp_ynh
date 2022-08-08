@@ -50,7 +50,7 @@ appservice:
 
     # The unique ID of this appservice.
     #id: whatsapp
-    id: __BOTNAME__
+    id: __APPSERVICEID__
     # Appservice bot details.
     bot:
         # Username of the appservice bot.

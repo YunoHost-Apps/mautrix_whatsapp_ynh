@@ -24,6 +24,7 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
+appserviceid=$YNH_APP_INSTANCE_NAME
 botname=$YNH_APP_ARG_BOTNAME
 bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
 encryption=$YNH_APP_ARG_ENCRYPTION
@@ -76,6 +77,7 @@ ynh_script_progression --message="Storing installation settings..." --weight=1
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=server_name --value=$server_name
+ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
 ynh_app_setting_set --app=$app --key=botname --value=$botname
 ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
 ynh_app_setting_set --app=$app --key=bot_synapse_adm --value=$bot_synapse_adm
