@@ -117,6 +117,7 @@ In case you need to upload your logs somewhere, be aware that they contain your 
 
 ## Documentation and resources
 
+* Official app website: <https://maunium.net/go/mautrix-whatsapp/>
 * Official admin documentation: <https://docs.mau.fi/bridges/go/whatsapp/index.html>
 * Upstream app code repository: <https://github.com/mautrix/whatsapp>
 * YunoHost documentation for this app: <https://yunohost.org/app_mautrix_whatsapp>
