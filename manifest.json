@@ -10,6 +10,8 @@
     "url": "https://github.com/mautrix/whatsapp",
     "upstream": {
         "license": "AGPL-3.0-or-later",
+        "website": "https://maunium.net/go/mautrix-whatsapp/",
+        "demo": "",
         "admindoc": "https://docs.mau.fi/bridges/go/whatsapp/index.html",
         "code": "https://github.com/mautrix/whatsapp"
     },
