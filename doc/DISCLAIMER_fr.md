@@ -1,11 +1,11 @@
-### Liste de passerelles publiques
+## Liste de passerelles publiques
 
 * Demandez sur un des salons suivants: #mautrix_yunohost:matrix.fdn.fr or #whatsapp:maunium.net
 
-### Usages de la passerelle
+## Usages de la passerelle
 ** Notez que plusieurs comptes WhatsApp et Matrix peuvent être relayés, chaque compte WhatsApp connecté a son propre Salon d'Administration. Si plusieurs utilisateur.ice.s du Robot sont dans un même groupe WhatsApp, seul un Salon Matrix sera créé par la passerelle. **
 
-#### Relayer TOUTES les conversations entre UN compte WhatsApp et UN compte Matrix
+### Relayer TOUTES les conversations entre UN compte WhatsApp et UN compte Matrix
 * Prérequis : votre compte Matrix ou le serveur sur lequel il est hébergé doit être autorisé dans la configuration de la passerelle (voir ci-dessous)
 * Invitez le Robot (par défaut @whatsappbot:synapse.votredomaine) à une nouvelle conversation.
 * Ce nouveau salon d'administration du Robot Mautrix-WhatsApp est appelé "Administration Room".

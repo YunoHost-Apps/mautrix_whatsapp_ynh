@@ -1,5 +1,5 @@
 {
-    "name": "Matrix WhatsApp bridge",
+    "name": "Matrix-WhatsApp bridge",
     "id": "mautrix_whatsapp",
     "packaging_format": 1,
     "description": {
@@ -11,7 +11,6 @@
     "upstream": {
         "license": "AGPL-3.0-or-later",
         "website": "https://maunium.net/go/mautrix-whatsapp/",
-        "demo": "",
         "admindoc": "https://docs.mau.fi/bridges/go/whatsapp/index.html",
         "code": "https://github.com/mautrix/whatsapp"
     },
