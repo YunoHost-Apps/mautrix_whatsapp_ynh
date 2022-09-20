@@ -1,18 +1,18 @@
 [Unit]
-Description=Matrix-Whatsapp Bridge
+Description=Matrix Whatsapp Bridge
 After=matrix-synapse.service
 
 [Service]
 Type=simple
 User=__APP__
 Group=__APP__
-WorkingDirectory=/opt/yunohost/__APP__
-ExecStart=/opt/yunohost/__APP__/mautrix-whatsapp -c=/opt/yunohost/__APP__/config.yaml >> /var/log/__APP__/__APP__.log 2>&1
+WorkingDirectory=__FINALPATH__/
+ExecStart=__FINALPATH__/mautrix-whatsapp -c=__FINALPATH__/config.yaml >> /var/log/__APP__/__APP__.log 2>&1
 Restart=always
 RestartSec=3
 
 # Optional hardening to improve security
-ReadWritePaths=/opt/yunohost/__APP__
+ReadWritePaths=__FINALPATH__/
 NoNewPrivileges=yes
 MemoryDenyWriteExecute=true
 PrivateDevices=yes
