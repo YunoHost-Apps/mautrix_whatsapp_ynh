@@ -1,7 +1,7 @@
 ;; Default test serie
 	; pre-install
 		sudo yunohost tools update apps
-		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/ -a "domain=$domain&server_name=$server_name&is_public=$is_public&jitsi_server=$jitsi_server" --force
+		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/ -a "domain=$domain&server_name=$server_name&is_free_registration=$is_free_registration&jitsi_server=$jitsi_server" --force
 	; Manifest
 		synapsenumber="1"
 		whatsappbot="whatsappbot"
@@ -17,10 +17,15 @@
 		setup_private=0
 		setup_public=0
 		upgrade=1
+		# 0.3.0
 		upgrade=1	from_commit=42df5b910927283241e185dcb8a62089adeb9c85
+		# 0.2.4
 		upgrade=1	from_commit=23cd51919e2b09865256a21214865d798bd843f6
 		backup_restore=1
 		multi_instance=1
+;;; Options
+Email=
+Notification=none
 ;;; Upgrade options
 	; commit=42df5b910927283241e185dcb8a62089adeb9c85
 		name=0.3.0

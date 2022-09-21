@@ -1,10 +1,8 @@
-# Homeserver details.
+# Homeserver details
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
-    #address: https://example.com
     address: https://__DOMAIN__
     # The domain of the homeserver (for MXIDs, etc).
-    #domain: example.com
     domain: __SERVER_NAME__
 
     # Is the homeserver actually mautrix-asmux?
@@ -22,12 +20,10 @@ homeserver:
 # Changing these values requires regeneration of the registration.
 appservice:
     # The address that the homeserver can use to connect to this appservice.
-    #address: http://localhost:29318
     address: http://localhost:__PORT__
 
     # The hostname and port where this appservice should listen.
     hostname: 0.0.0.0
-    #port: 29318
     port: __PORT__
 
     # Database config.
@@ -392,7 +388,7 @@ bridge:
         # Whether relay mode should be allowed. If allowed, `!wa set-relay` can be used to turn any
         # authenticated user into a relaybot for that chat.
         #enabled: false
-        enabled: __ENABLE_RELAYBOT__
+        enabled: true
         # Should only admins be allowed to set themselves as relay users?
         admin_only: true
         # The formats to use when sending messages to WhatsApp via the relaybot.
@@ -423,4 +419,4 @@ logging:
     timestamp_format: "Jan _2, 2006 15:04:05"
     # Minimum severity for log messages printed to stdout/stderr. This doesn't affect the log file.
     # Options: debug, info, warn, error, fatal
-    print_level: __LOG_LEVEL__
+    print_level: INFO
