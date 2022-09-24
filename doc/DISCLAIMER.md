@@ -1,11 +1,11 @@
-### List of known public services
+## List of known public services
 
 * Ask on one of the following rooms: #mautrix_yunohost:matrix.fdn.fr or #whatsapp:maunium.net
 
-### Bridging usage
+## Bridging usage
 ** Note that several WhatsApp and Matrix users can be bridged, each WhatsApp account has its own bot administration room. If they are in a same WhatsApp group, only one matrix room will be created. **
 
-#### Bridge a WhatsApp user and a Matrix user
+### Bridge a WhatsApp user and a Matrix user
 * First your matrix user or server has to be authorized in the bridge configuration (see below)
 * Then, invite the bot (default @whatsappbot:yoursynapse.domain) 
 * The room with the Mautrix-WhatsApp bot is called "administration room".
@@ -14,7 +14,7 @@
 * Send ``help`` to the bot in the created room to know how to control the bot.
 See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/go/whatsapp/authentication.html)
 
-#### Bridge an existing room | Bridge Whatsapp to Signal over Matrix
+### Bridge an existing room | Bridge Whatsapp to Signal over Matrix
 By default, the bridge creates a portal room for each WA group that the WA user actively uses.
 Your can also create a portal for an existing Matrix room. **Note that this can be a room created by another bridge, e.g. a Signal portal room**
 1. Invite the bridge bot to the room (with an authorized user)
@@ -23,7 +23,7 @@ Your can also create a portal for an existing Matrix room. **Note that this can 
 4. Get the WA invite link `!wa invite-link` and share it with friends. Or invite Whatsapp puppets to room.
 5. Optional: Activate relaybot, see next section.
 
-#### Relaybot: Bridge a group for several Matrix and several WhatsApp users to chat together
+### Relaybot: Bridge a group for several Matrix and several WhatsApp users to chat together
 **When upgrading from <v0.2.0, the relaybot system changed. There is no relaybot administration room anymore. Relay must be re-activated in all rooms**. 
 
 To be able to bridge not only your logged in Matrix account but also Matrix friends you invite to a portal room, you need to:
@@ -35,14 +35,16 @@ To be able to bridge not only your logged in Matrix account but also Matrix frie
 * On the matrix side: the bridge will create matrix puppets corresponding to the WhatsApp users when they send a message.
 See also [upstream wiki Relaybot page](https://docs.mau.fi/bridges/general/relay-mode.html)
 
-### Configuration of the bridge
+## Configuration of the bridge
 
 The bridge is [roughly configured at installation](https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/blob/master/conf/config.yaml), e.g. allowed admin and user of the bot. Finer configuration can be done by modifying the
 following configuration file with SSH: 
 ```/opt/yunohost/mautrix_whatsapp/config.yaml```
 and then restarting the mautrix_whatsapp service.
 
-### Multi-users support
+## YunoHost specific features
+
+#### Multi-user support
 
 * Bot users are not related to Yunohost users. Any Matrix account or Synapse server autorized in the configuration of the bridge can invite/use the bot. 
 * The WhatsApp bot is a local Matrix-Synapse user, but accessible through federation (synapse public or private).
@@ -50,7 +52,7 @@ and then restarting the mautrix_whatsapp service.
 * If several bot users are in a same WhatsApp group, only one Matrix room will be created by the bridge.
 * See https://github.com/YunoHost-Apps/synapse_ynh#multi-users-support
 
-### Multi-instance support
+#### Multi-instance support
 
 * Multi-instance installation should work. Several bridge instances could be installed for one Matrix-Synapse instance so that one Matrix user can bridge several WhatsApp accounts. 
 * Several bridge instances could be installed for each Matrix-Synapse instance to benefit from it. But one bridge can be used by users from several Matrix-Synapse instances.
@@ -59,7 +61,7 @@ and then restarting the mautrix_whatsapp service.
 
 ARM, ARM64, AMD64
 
-### Limitations
+## Limitations
 
 * Audio/Video calls are not bridged yet. 
 * If WhatsApp loses connection, e.g. the phone is set in flight mode or push notifications are deactivated, the bot has sometimes to be restarted manually by sending a reconnnect message in the matrix administration room.

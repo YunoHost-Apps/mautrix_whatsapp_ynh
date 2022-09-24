@@ -14,7 +14,6 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 ynh_clean_setup () {
-	### Remove this function if there's nothing to clean before calling the remove script.
 	true
 }
 # Exit if an error occurs during the execution of the script
@@ -25,16 +24,20 @@ ynh_abort_if_errors
 #=================================================
 
 appserviceid=$YNH_APP_INSTANCE_NAME
+synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 botname=$YNH_APP_ARG_BOTNAME
 bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
 encryption=$YNH_APP_ARG_ENCRYPTION
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
+
+app=$YNH_APP_INSTANCE_NAME
+
 if [ "$botusers" == "admin" ]
 then
 	botusers=$botadmin
 fi
-synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
+
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_whatsapp bridge
 if [ $synapsenumber -eq "1" ]
 then
@@ -44,10 +47,7 @@ else
 fi
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
-
-mautrix_version=$(ynh_app_upstream_version)
-architecture=$YNH_ARCH
-app=$YNH_APP_INSTANCE_NAME
+synapse_db_name="matrix_$synapse_instance"
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -56,35 +56,21 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 
 final_path=/opt/yunohost/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-
-#=================================================
-# SET CONSTANTS
-#=================================================
-
-enable_relaybot="true"
-# Options: debug, info, warn, error, fatal
-log_level="error"
-#log_format="$app.log"
-
-synapse_db_name="matrix_$synapse_instance"
-bot_synapse_db_user="@$botname:$server_name"
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..." --weight=1
+ynh_script_progression --message="Storing installation settings..." --weight=7
 
-ynh_app_setting_set --app=$app --key=domain --value=$domain
-ynh_app_setting_set --app=$app --key=server_name --value=$server_name
 ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
 ynh_app_setting_set --app=$app --key=botname --value=$botname
-ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
 ynh_app_setting_set --app=$app --key=bot_synapse_adm --value=$bot_synapse_adm
 ynh_app_setting_set --app=$app --key=encryption --value=$encryption
-ynh_app_setting_set --app=$app --key=botusers --value=$botusers
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
-ynh_app_setting_set --app=$app --key=mautrix_version --value=$mautrix_version
+ynh_app_setting_set --app=$app --key=botusers --value=$botusers
+ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
+ynh_app_setting_set --app=$app --key=server_name --value=$server_name
+ynh_app_setting_set --app=$app --key=domain --value=$domain
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -100,7 +86,7 @@ ynh_app_setting_set --app=$app --key=port --value=$port
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..." --weight=10
+ynh_script_progression --message="Installing dependencies..." --weight=97
 
 ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
@@ -109,9 +95,8 @@ ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 ynh_script_progression --message="Configuring system user..." --weight=1
 
-# Create a system user and set home dir to /opt/yunohost/$app so systemd hardening works
-# See more: https://docs.mau.fi/bridges/go/setup.html?bridge=whatsapp#systemd-service
-ynh_system_user_create --username=$app --home_dir=/opt/yunohost/$app
+# Create a system user
+ynh_system_user_create --username=$app --home_dir="$final_path"
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -119,31 +104,48 @@ ynh_system_user_create --username=$app --home_dir=/opt/yunohost/$app
 ynh_script_progression --message="Creating a PostgreSQL database..." --weight=3
 
 db_name=$(ynh_sanitize_dbid --db_name=$app)
+db_user=$db_name
 ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-db_pwd=$(ynh_string_random --length=30)
-ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 ynh_psql_test_if_first_run
-ynh_psql_setup_db --db_user=$db_name --db_name=$db_name --db_pwd=$db_pwd
+ynh_psql_setup_db --db_user=$db_user --db_name=$db_name
+db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd)
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=5
 
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$final_path" --source_id=$architecture
+ynh_setup_source --dest_dir="$final_path" --source_id=$YNH_ARCH
 
 chmod 750 "$final_path"
-chown $app:$app "$final_path"
+chmod -R 750 "$final_path"
+chown -R $app:$app "$final_path"
 
+#=================================================
+# SPECIFIC SETUP
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring Mautrix Bridge..." --weight=2
+ynh_script_progression --message="Adding a configuration file..." --weight=2
 
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
-chmod -R 750 "$final_path"
+
+chmod 400 "$final_path/config.yaml"
+chown $app:$app "$final_path/config.yaml"
+
+#=================================================
+# REGISTER SYNAPSE APP-SERVICE
+#=================================================
+ynh_script_progression --message="Registering Synapse app-service" --weight=1
+
+$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
+
 chown -R $app:$app "$final_path"
+ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
+ynh_store_file_checksum --file="$final_path/config.yaml"
 
 #=================================================
 # SETUP SYSTEMD
@@ -152,24 +154,6 @@ ynh_script_progression --message="Configuring a systemd service..." --weight=5
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
-
-#=================================================
-# REGISTER SYNAPSE APP-SERVICE
-#=================================================
-
-$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-chown -R $app:$app "$final_path"
-
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
-    || ynh_die "Synapse can't restart with the appservice configuration"
-
-#=================================================
-# STORE THE CONFIG FILE CHECKSUM
-#=================================================
-
-# Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
-ynh_store_file_checksum --file="$final_path/config.yaml"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -189,7 +173,7 @@ chown -R $app:$app /var/log/$app
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
-yunohost service add $app --description "$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging Whatsapp and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
