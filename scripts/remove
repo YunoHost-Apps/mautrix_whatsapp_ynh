@@ -16,32 +16,25 @@ ynh_script_progression --message="Loading installation settings..." --weight=5
 
 app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-server_name=$(ynh_app_setting_get --app=$app --key=server_name)
-synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 botname=$(ynh_app_setting_get --app=$app --key=botname)
-botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
-port=$(ynh_app_setting_get --app=$app --key=port)
+synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
+server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-
-#=================================================
-# SET CONSTANTS
-#=================================================
-
 synapse_db_name="matrix_$synapse_instance"
 bot_synapse_db_user="@""$botname"":""$server_name"
 
 #=================================================
 # STANDARD REMOVE
 #=================================================
-# REMOVE SERVICE FROM ADMIN PANEL
+# REMOVE SERVICE INTEGRATION IN YUNOHOST
 #=================================================
 
-# Remove a service from the admin panel, added by `yunohost service add`
+# Remove the service from the list of services known by YunoHost (added from `yunohost service add`)
 if ynh_exec_warn_less yunohost service status $app >/dev/null
 then
-	ynh_script_progression --message="Removing $app service..." --weight=3
+	ynh_script_progression --message="Removing $app service integration..." --weight=3
 	yunohost service remove $app
 fi
 
@@ -54,12 +47,20 @@ ynh_script_progression --message="Stopping and removing the systemd service..." 
 ynh_remove_systemd_config
 
 #=================================================
+# REMOVE LOGROTATE CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing logrotate configuration..." --weight=1
+
+# Remove the app-specific logrotate config
+ynh_remove_logrotate
+
+#=================================================
 # REMOVE THE POSTGRESQL DATABASE
 #=================================================
 ynh_script_progression --message="Removing the PostgreSQL database..." --weight=4
 
 # Remove a database if it exists, along with the associated user
-ynh_psql_remove_db --db_user=$db_name --db_name=$db_name
+ynh_psql_remove_db --db_user=$db_user --db_name=$db_name
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$app"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$bot_synapse_db_user"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$botname"";"
@@ -67,6 +68,14 @@ ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$app"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$bot_synapse_db_user"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$botname"";"
 #yunohost app action run $synapse_instance drop_user -a username=$botname
+
+#=================================================
+# REMOVE APP MAIN DIR
+#=================================================
+ynh_script_progression --message="Removing app main directory..." --weight=1
+
+# Remove the app directory securely
+ynh_secure_remove --file="$final_path"
 
 #=================================================
 # REMOVE DEPENDENCIES
@@ -77,31 +86,15 @@ ynh_script_progression --message="Removing dependencies..." --weight=8
 ynh_remove_app_dependencies
 
 #=================================================
-# REMOVE APP MAIN DIR
-#=================================================
-ynh_script_progression --message="Removing app main directory..." --weight=1
-
-# Remove the app directory securely
-ynh_secure_remove --file="$final_path"
-    
-#=================================================
-# REMOVE LOGROTATE CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing logrotate configuration..." --weight=1
-
-# Remove the app-specific logrotate config
-ynh_remove_logrotate
-
-#=================================================
 # SPECIFIC REMOVE
 #=================================================
-ynh_script_progression --message="Removing synapse app service..." --weight=6
+# REMOVE VARIOUS FILES
+#=================================================
+ynh_script_progression --message="Removing various files..." --weight=6
 
 # Remove a directory securely
 ynh_secure_remove --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
-
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
-    || ynh_die "Synapse can't restart with the appservice configuration"
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
 # Remove the log files
 ynh_secure_remove --file="/var/log/$app"
