@@ -16,6 +16,7 @@ ynh_script_progression --message="Loading installation settings..." --weight=5
 
 app=$YNH_APP_INSTANCE_NAME
 
+appserviceid=$(ynh_app_setting_get --app=$app --key=appserviceid)
 botname=$(ynh_app_setting_get --app=$app --key=botname)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
