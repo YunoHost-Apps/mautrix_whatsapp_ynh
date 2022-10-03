@@ -1,0 +1,92 @@
+#!/bin/bash
+source /usr/share/yunohost/helpers
+ynh_abort_if_errors
+
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+
+function get__encryption {
+    encryption=$(ynh_app_setting_get --app $app --key encryption)
+    echo "'${encryption}'"
+}
+
+function get__botname {
+    botname=$(ynh_app_setting_get --app $app --key botname)
+    echo "${botname}"
+}
+
+function set__botname {
+    old_botname=$(ynh_app_setting_get --app $app --key botname)
+    if [ "$botname" -eq "$old_botname" ] # Check to avoid updating botname when it's not needed.
+    then
+      return
+    fi
+
+    ynh_app_setting_set --app=$app --key=botname --value="$botname"
+    synapse_instance=$(ynh_app_setting_get --app $app --key synapse_instance)
+
+    sed -i "s/username:.*/username: $botname/" "$final_path/config.yaml"
+    "$final_path/mautrix-whatsapp" -g -c "$final_path/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+    "/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh" || ynh_die --message="Synapse can't restart with the appservice configuration"
+    chown -R "$app:$app" "$final_path"
+    ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
+    ynh_store_file_checksum --file="$final_path/config.yaml"
+}
+
+function get__listuser {
+  existingUsers=$(grep -- "\".*: user" "$final_path/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+
+  cat <<EOF
+value: '$existingUsers'
+EOF
+}
+
+function get__listrelay {
+  existingRelayUsers=$(grep -- "\".*: relay" "$final_path/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+
+  cat <<EOF
+value: '$existingRelayUsers'
+EOF
+}
+
+function get__listadmin {
+  existingAdmins=$(grep -- "\".*: admin" "$final_path/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+
+  cat <<EOF
+value: '$existingAdmins'
+EOF
+}
+
+function get__role {
+  cat <<EOF
+choices: ["admin", "user", "relay"]
+default: "user"
+EOF
+}
+
+function set__role {
+    declare values="list$role"
+    newValues="${!values}" # Here we expand the dynamic variable we created in the previous line. ! Does the trick
+    usersArray=(${newValues//,/ }) # Split the values using comma (,) as separator.
+
+    if [ -n "${!values}" ]
+    then
+        ynh_systemd_action --service_name="$app" --action=stop
+        # Get all entries between "permissions:" and "relay:" keys, remove the role part, remove commented parts, format it with newlines and clean whitespaces and double quotes.
+        allDefinedEntries=$(awk '/permissions:/{flag=1; next} /relay:/{flag=0} flag' "$final_path/config.yaml" | sed -r 's/: (admin|user|relay)//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr ',' '\n' )
+        # Delete everything from the corresponding role to insert the new defined values. This way we also handle deletion of users.
+        sed -i "/permissions:/,/relay:/{/: ${role}/d;}" "$final_path/config.yaml"
+      	for user in "${usersArray[@]}"
+            do
+              if echo "$allDefinedEntries" | grep -q -E "^${user}$"
+              then
+                ynh_print_info "User $user already defined in another role."
+              else
+                sed -i "/permissions:/a \        \\\"${user}\": ${role}" "$final_path/config.yaml" # Whitespaces are needed so that the file can be correctly parsed
+              fi
+        done
+    fi
+
+    ynh_print_info "Users with role $role added in $final_path/config.yaml"
+}
+
+ynh_app_config_run $1

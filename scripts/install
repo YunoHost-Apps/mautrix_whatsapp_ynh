@@ -57,6 +57,10 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 final_path=/opt/yunohost/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
+if [ $encryption -eq 1 ]; then
+  encryption="true"
+fi
+
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
