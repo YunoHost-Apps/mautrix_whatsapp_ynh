@@ -6,7 +6,7 @@
         "en": "Matrix / Synapse puppeting bridge for WhatsApp",
         "fr": "Passerelle Matrix / Synapse pour WhatsApp"
     },
-    "version": "0.7.0~ynh2",
+    "version": "0.7.1~ynh1",
     "url": "https://github.com/mautrix/whatsapp",
     "upstream": {
         "license": "AGPL-3.0-or-later",
