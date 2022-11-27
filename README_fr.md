@@ -58,6 +58,12 @@ La passerelle est [configurée avec les paramètres standards adaptés pour votr
 puis en redémarrant le service: 
 ``` sudo yunohost service restart mautrix_whatsapp```
 
+#### End-to-bridge encryption
+Le robot peut éventuellement chiffrer les messages entre les utilisateurs de Matrix et la passarelle pour cacher les messages du serveur domestique. L'utilisation de Postgres est fortement recommandée lors de l'utilisation du chiffrement end-to-bridge.
+
+Si vous voulez l'activer, cherchez l'option ```bridge → encryption``` dans le fichier de configuration. Si vous définissez uniquement l'option ``allow: true``, le robot n'activera pas le chiffrement de lui-même, mais travaillera dans les portails chiffrés. Si vous définissez ```default: true```, la passerelle activera automatiquement le chiffrement dans les nouveaux portails.
+Il y a également la possibilité de définir ```require: true``` pour imposer le chiffrement sur tous les messages que vous envoyez (cela interdira tous les messages non chiffrés).
+
 ### Support multi-comptes
 
 * Les utilisateur.ice.s du Robot ne sont pas liés aux comptes Yunohost. N'importe quel compte Matrix ou serveur Synapse autorisés dans la configuration de la passerelle peut inviter/utiliser le Robot. 
