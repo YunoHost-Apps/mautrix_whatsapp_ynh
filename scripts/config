@@ -14,6 +14,16 @@ function get__botname {
     echo "${botname}"
 }
 
+function get__displayname {
+    displayname="WhatsApp bridge bot"
+    echo "${displayname}"
+}
+
+function get__avatar {
+    avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+    echo "${avatar}"
+}
+
 function set__botname {
     old_botname=$(ynh_app_setting_get --app $app --key botname)
     if [ "$botname" -eq "$old_botname" ] # Check to avoid updating botname when it's not needed.

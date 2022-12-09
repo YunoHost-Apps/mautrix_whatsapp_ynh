@@ -1,22 +1,109 @@
 version = "1.0"
 
-[main]
-name = "General configuration"
+[homeserver]
+name = "Homeserver configuration"
 services = ["__APP__"]
 
-    [main.config]
+    [homeserver.config]
     name = "Configuration options"
 
-        [main.config.botname]
-        ask = "Set a bot name for the bridge puppet"
+        [homeserver.config.async_media]
+        ask = "Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "Enables asynchronous media uploads"
+        bind = "homeserver>async_media:__FINALPATH__/config.yaml"
+
+[appservice]
+name = "Application service configuration"
+services = ["__APP__"]
+
+    [appservice.config]
+    name = "General configuration"
+
+        [appservice.config.ephemeral_events]
+        ask = "Whether or not to receive ephemeral events via appservice transactions"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "Requires MSC2409 support (i.e. Synapse 1.22+). You should disable bridge -> sync_with_custom_puppets when this is enabled"
+        bind = "appservice>ephemeral_events:__FINALPATH__/config.yaml"
+
+    [appservice.bot]
+    name = "Appservice bot configuration"
+
+        [appservice.bot.botname]
+        ask = "Username of the appservice bot"
         type = "string"
         help = "Sets bot username. Please keep in mind that the bot admin room for previous bot username will stop working so you may need to create a new one using the new username"
 
-        [main.config.log_level]
-        ask = "Sets log level of the application"
-        choices = ["debug", "info", "warn", "error", "fatal"]
-        default = "info"
-        bind = "logging>print_level:__FINALPATH__/config.yaml"
+        [appservice.bot.displayname]
+        ask = "Display name for bot"
+        type = "string"
+        help = "Set to 'remove' to remove display name, leave empty to leave display name as-is"
+
+        [appservice.bot.avatar]
+        ask = "Avatar for bot"
+        type = "string"
+        help = "Set to 'remove' to remove avatar, leave empty to leave avatar as-is"
+
+[metrics]
+name = "Prometheus configuration"
+services = ["__APP__"]
+
+    [metrics.config]
+    name = "General configuration"
+
+        [metrics.config.enabled]
+        ask = "Enable prometheus metrics"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        bind = "metrics>enabled:__FINALPATH__/config.yaml"
+
+        [metrics.config.listen]
+        ask = "IP and port where the metrics listener should be"
+        type = "string"
+        default = "127.0.0.1:8001"
+        help = "The path is always /metrics"
+        bind = "metrics>listen:__FINALPATH__/config.yaml"
+
+[whatsapp]
+name = "Whatsapp configuration"
+help = "Configuration for things that are directly sent to WhatsApp"
+services = ["__APP__"]
+
+    [whatsapp.config]
+    name = "General configuration"
+
+        [whatsapp.config.os_name]
+        ask = "Device name that's shown in the 'WhatsApp Web' section in the mobile app"
+        type = "string"
+        default = "Mautrix-WhatsApp bridge"
+        bind = "whatsapp>os_name:__FINALPATH__/config.yaml"
+
+        [whatsapp.config.browser_name]
+        ask = "Browser name that determines the logo shown in the mobile app"
+        type = "select"
+        choices = ["unknown", "chrome", "firefox", "ie", "opera", "safari", "edge", "desktop", "ipad", "android_tablet", "ohana", "aloha", "catalina", "tcl_tv"]
+        default = "unknown"
+        help = "Must be 'unknown' for a generic icon or a valid browser name if you want a specific icon"
+        bind = "whatsapp>browser_name:__FINALPATH__/config.yaml"
+
+[bridge]
+name = "Bridge configuration"
+services = ["__APP__"]
+
+    [bridge.config]
+    name = "General configuration"
+
+        [bridge.config.username_template]
+        ask = "Localpart template of MXIDs for WhatsApp users"
+        type = "string"
+        default = "whatsapp_{{.}}"
+        help = "{{.}} is replaced with the phone number of the WhatsApp user"
+        bind = "bridge>username_template:__FINALPATH__/config.yaml"
 
 [encryption]
 name = "Encryption"
