@@ -42,6 +42,12 @@ following configuration file with SSH:
 ```/opt/yunohost/mautrix_whatsapp/config.yaml```
 and then restarting the mautrix_whatsapp service.
 
+#### End-to-bridge encryption
+The bridge can optionally encrypt messages between Matrix users and the bridge to hide messages from the homeserver. Using Postgres is strongly recommended when using end-to-bridge encryption.
+
+If you want to enable it, look for the option ```bridge → encryption``` in the config file. If you only set ```allow: true```, the bridge won't enable encryption on its own, but will work in encrypted rooms. If you set ```default: true```, the bridge will automatically enable encryption in new portals.
+There is also the possibility to set ```require: true``` to enforce encryption on any of the messages that you send (this will drop any unencrypted messages).
+
 ## YunoHost specific features
 
 #### Multi-user support
