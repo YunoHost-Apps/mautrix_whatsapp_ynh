@@ -33,6 +33,32 @@ synapse_db_name="matrix_$synapse_instance"
 bot_synapse_db_user="@$botname:$server_name"
 
 #=================================================
+# GET CONFIG PANEL SETTINGS
+#=================================================
+async_media=$(ynh_app_setting_get --app=$app --key=async_media)
+displayname=$(ynh_app_setting_get --app=$app --key=displayname)
+avatar=$(ynh_app_setting_get --app=$app --key=avatar)
+ephemeral_events=$(ynh_app_setting_get --app=$app --key=ephemeral_events)
+enable_metrics=$(ynh_app_setting_get --app=$app --key=enable_metrics)
+metrics_listen_port=$(ynh_app_setting_get --app=$app --key=metrics_listen_port)
+os_name=$(ynh_app_setting_get --app=$app --key=os_name)
+browser_name=$(ynh_app_setting_get --app=$app --key=browser_name)
+username_template=$(ynh_app_setting_get --app=$app --key=username_template)
+personal_filtering_spaces=$(ynh_app_setting_get --app=$app --key=personal_filtering_spaces)
+delivery_receipts=$(ynh_app_setting_get --app=$app --key=delivery_receipts)
+send_presence_on_typing=$(ynh_app_setting_get --app=$app --key=send_presence_on_typing)
+url_previews=$(ynh_app_setting_get --app=$app --key=url_previews)
+encryption_default=$(ynh_app_setting_get --app=$app --key=encryption_default)
+encryption_require=$(ynh_app_setting_get --app=$app --key=encryption_require)
+enable_relaybot=$(ynh_app_setting_get --app=$app --key=enable_relaybot)
+admin_only=$(ynh_app_setting_get --app=$app --key=admin_only)
+print_level=$(ynh_app_setting_get --app=$app --key=print_level)
+existingUsers=$(ynh_app_setting_get --app=$app --key=existingUsers)
+existingAdmins=$(ynh_app_setting_get --app=$app --key=existingAdmins)
+existingRelayUsers=$(ynh_app_setting_get --app=$app --key=existingRelayUsers)
+
+
+#=================================================
 # CHECK VERSION
 #=================================================
 ynh_script_progression --message="Checking version..." --weight=1
@@ -67,56 +93,113 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
-# Migration from <=1.10.0 to >0.2.1
-ynh_secure_remove --file="$final_path"/community.go
-ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-23-protoupgrade.go
-ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-16-message-delete-cascade.go
-src_path="$final_path"_src
-ynh_secure_remove --file="$src_path"
-src_path="$final_path"/src
-ynh_secure_remove --file="$src_path"
+# SET STANDARD SETTINGS FROM DEFAULT CONFIG
 
-# Upgrade from >0.2.0
-botname=$(ynh_app_setting_get --app=$app --key=botname)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
-
-# Upgrade from <=0.2.0
-if [ -z "$botname" ]
+if [ -z "$async_media" ]
 then
-    botname=$(ynh_app_setting_get --app=$app --key=whatsappbot)
-    ynh_app_setting_set --app=$app --key=botname --value=$botname
+  async_media="false"
+  ynh_app_setting_set --app=$app --key=async_media --value=$async_media
 fi
-if [ -z "$db_name" ]
+if [ -z "$displayname" ]
 then
-    db_name=$(ynh_app_setting_get --app=$app --key=$app)
-    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+  displayname="WhatsApp bridge bot"
+  ynh_app_setting_set --app=$app --key=displayname --value=$displayname
 fi
-if [ -z "$db_pwd" ]
+if [ -z "$avatar" ]
 then
-    db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
-    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+  avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+  ynh_app_setting_set --app=$app --key=avatar --value=$avatar
 fi
-
-# If appserviceid doesn't exist, create it
-if [ -z "$appserviceid" ]
+if [ -z "$ephemeral_events" ]
 then
-  appserviceid=$app
-  ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
+  ephemeral_events="true"
+  ynh_app_setting_set --app=$app --key=ephemeral_events --value=$ephemeral_events
 fi
-
-
-# If db_name doesn't exist, create it
-#if [ -z "$mautrix_whatsapp_db_name" ]; then
-#	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
-#	ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
-#fi
-
-# If final_path doesn't exist, create it
-#if [ -z "$final_path" ]; then
-#	final_path=/opt/yunohost/$app
-#	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-#fi
+if [ -z "$enable_metrics" ]
+then
+  enable_metrics="false"
+  ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
+fi
+if [ -z "$metrics_listen_port" ]
+then
+  metrics_listen_port="127.0.0.1:8001"
+  ynh_app_setting_set --app=$app --key=metrics_listen_port --value=$metrics_listen_port
+fi
+if [ -z "$os_name" ]
+then
+  os_name="Mautrix-WhatsApp bridge"
+  ynh_app_setting_set --app=$app --key=os_name --value=$os_name
+fi
+if [ -z "$browser_name" ]
+then
+  browser_name="unknown"
+  ynh_app_setting_set --app=$app --key=browser_name --value=$browser_name
+fi
+if [ -z "$username_template" ]
+then
+  username_template="whatsapp_{{.}}"
+  ynh_app_setting_set --app=$app --key=username_template --value=$username_template
+fi
+if [ -z "$personal_filtering_spaces" ]
+then
+  personal_filtering_spaces="false"
+  ynh_app_setting_set --app=$app --key=personal_filtering_spaces --value=$personal_filtering_spaces
+fi
+if [ -z "$delivery_receipts" ]
+then
+  delivery_receipts="false"
+  ynh_app_setting_set --app=$app --key=delivery_receipts --value=$delivery_receipts
+fi
+if [ -z "$send_presence_on_typing" ]
+then
+  send_presence_on_typing="false"
+  ynh_app_setting_set --app=$app --key=send_presence_on_typing --value=$send_presence_on_typing
+fi
+if [ -z "$url_previews" ]
+then
+  url_previews="false"
+  ynh_app_setting_set --app=$app --key=url_previews --value=$url_previews
+fi
+if [ -z "$encryption_default" ]
+then
+  encryption_default="false"
+  ynh_app_setting_set --app=$app --key=encryption_default --value=$encryption_default
+fi
+if [ -z "$encryption_require" ]
+then
+  encryption_require="false"
+  ynh_app_setting_set --app=$app --key=encryption_require --value=$encryption_require
+fi
+if [ -z "$enable_relaybot" ]
+then
+  enable_relaybot="true"
+  ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
+fi
+if [ -z "$admin_only" ]
+then
+  admin_only="true"
+  ynh_app_setting_set --app=$app --key=admin_only --value=$admin_only
+fi
+if [ -z "$print_level" ]
+then
+  print_level="INFO"
+  ynh_app_setting_set --app=$app --key=print_level --value=$print_level
+fi
+if [ -z "$existingUsers" ]
+then
+  existingUsers=$botusers
+  ynh_app_setting_set --app=$app --key=existingUsers --value=$existingUsers
+fi
+if [ -z "$existingAdmins" ]
+then
+  existingAdmins=$botadmin
+  ynh_app_setting_set --app=$app --key=existingAdmins --value=$existingAdmins
+fi
+if [ -z "$existingRelayUsers" ]
+then
+  existingRelayUsers="*"
+  ynh_app_setting_set --app=$app --key=existingRelayUsers --value=$existingRelayUsers
+fi
 
 #=================================================
 # CREATE DEDICATED USER
