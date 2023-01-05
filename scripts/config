@@ -4,24 +4,9 @@ ynh_abort_if_errors
 
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
-function get__encryption {
-    encryption=$(ynh_app_setting_get --app $app --key encryption)
-    echo "'${encryption}'"
-}
-
 function get__botname {
     botname=$(ynh_app_setting_get --app $app --key botname)
     echo "${botname}"
-}
-
-function get__displayname {
-    displayname="WhatsApp bridge bot"
-    echo "${displayname}"
-}
-
-function get__avatar {
-    avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
-    echo "${avatar}"
 }
 
 function set__botname {

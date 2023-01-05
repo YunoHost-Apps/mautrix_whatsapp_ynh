@@ -25,7 +25,7 @@ ynh_abort_if_errors
 
 appserviceid=$YNH_APP_INSTANCE_NAME
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
-botname=$YNH_APP_ARG_BOTNAME
+username=$YNH_APP_ARG_BOTNAME
 bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
 encryption=$YNH_APP_ARG_ENCRYPTION
 botadmin=$YNH_APP_ARG_BOTADMIN
@@ -50,6 +50,54 @@ domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 synapse_db_name="matrix_$synapse_instance"
 
 #=================================================
+# SET STANDARD SETTINGS FROM DEFAULT CONFIG
+#=================================================
+
+async_media="false"
+displayname="WhatsApp bridge bot"
+avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+ephemeral_events="true"
+metrics_enabled="false"
+listen="127.0.0.1:8001"
+os_name="Mautrix-WhatsApp bridge"
+browser_name="unknown"
+username_template="whatsapp_{{.}}"
+personal_filtering_spaces="false"
+delivery_receipts="false"
+send_presence_on_typing="false"
+url_previews="false"
+default="false"
+require="false"
+enabled="true"
+admin_only="true"
+print_level="INFO"
+existingUsers=$botusers
+existingAdmins=$botadmin
+existingRelayUsers="*"
+
+ynh_app_setting_set --app=$app --key=async_media --value=$async_media
+ynh_app_setting_set --app=$app --key=displayname --value=$displayname
+ynh_app_setting_set --app=$app --key=avatar --value=$avatar
+ynh_app_setting_set --app=$app --key=ephemeral_events --value=$ephemeral_events
+ynh_app_setting_set --app=$app --key=metrics_enabled --value=$metrics_enabled
+ynh_app_setting_set --app=$app --key=listen --value=$listen
+ynh_app_setting_set --app=$app --key=os_name --value=$os_name
+ynh_app_setting_set --app=$app --key=browser_name --value=$browser_name
+ynh_app_setting_set --app=$app --key=username_template --value=$username_template
+ynh_app_setting_set --app=$app --key=personal_filtering_spaces --value=$personal_filtering_spaces
+ynh_app_setting_set --app=$app --key=delivery_receipts --value=$delivery_receipts
+ynh_app_setting_set --app=$app --key=send_presence_on_typing --value=$send_presence_on_typing
+ynh_app_setting_set --app=$app --key=url_previews --value=$url_previews
+ynh_app_setting_set --app=$app --key=default --value=$default
+ynh_app_setting_set --app=$app --key=require --value=$require
+ynh_app_setting_set --app=$app --key=enabled --value=$enabled
+ynh_app_setting_set --app=$app --key=admin_only --value=$admin_only
+ynh_app_setting_set --app=$app --key=print_level --value=$print_level
+ynh_app_setting_set --app=$app --key=existingUsers --value=$existingUsers
+ynh_app_setting_set --app=$app --key=existingAdmins --value=$existingAdmins
+ynh_app_setting_set --app=$app --key=existingRelayUsers --value=$existingRelayUsers
+
+#=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=1
@@ -67,7 +115,7 @@ fi
 ynh_script_progression --message="Storing installation settings..." --weight=7
 
 ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
-ynh_app_setting_set --app=$app --key=botname --value=$botname
+ynh_app_setting_set --app=$app --key=username --value=$username
 ynh_app_setting_set --app=$app --key=bot_synapse_adm --value=$bot_synapse_adm
 ynh_app_setting_set --app=$app --key=encryption --value=$encryption
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
@@ -191,8 +239,8 @@ sleep 30
     # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
     if [ "$bot_synapse_adm" = true ]
     then
-    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$botname"";"
-    #yunohost app action run $synapse_instance set_admin_user -a username=$botname
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$username"";"
+    #yunohost app action run $synapse_instance set_admin_user -a username=$username
     fi
 ynh_systemd_action --service_name=$app --action="restart"
 
