@@ -52,7 +52,7 @@ appservice:
     bot:
         # Username of the appservice bot.
         #username: whatsappbot
-        username: __USERNAME__
+        username: __BOTNAME__
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
         displayname: __DISPLAYNAME__
@@ -73,9 +73,9 @@ segment_key: null
 # Prometheus config.
 metrics:
     # Enable prometheus metrics?
-    enabled: __METRICS_ENABLED__
+    enabled: __ENABLE_METRICS__
     # IP and port where the metrics listener should be. The path is always /metrics
-    listen: __LISTEN__
+    listen: __METRICS_LISTEN_PORT__
 
 # Config for things that are directly sent to WhatsApp.
 whatsapp:
@@ -334,11 +334,11 @@ bridge:
         # Default to encryption, force-enable encryption in all portals the bridge creates
         # This will cause the bridge bot to be in private chats for the encryption to work properly.
         # It is recommended to also set private_chat_portal_meta to true when using this.
-        default: __DEFAULT__
+        default: __ENCRYPTION_DEFAULT__
         # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
         appservice: false
         # Require encryption, drop any unencrypted messages.
-        require: __REQUIRE__
+        require: __ENCRYPTION_REQUIRE__
         # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
         # You must use a client that supports requesting keys from other users to use this feature.
         allow_key_sharing: false
@@ -406,7 +406,7 @@ bridge:
         # Whether relay mode should be allowed. If allowed, `!wa set-relay` can be used to turn any
         # authenticated user into a relaybot for that chat.
         #enabled: false
-        enabled: __ENABLED__
+        enabled: __ENABLE_RELAYBOT__
         # Should only admins be allowed to set themselves as relay users?
         admin_only: __ADMIN_ONLY__
         # The formats to use when sending messages to WhatsApp via the relaybot.
