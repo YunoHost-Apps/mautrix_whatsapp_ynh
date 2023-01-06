@@ -33,11 +33,6 @@ botusers=$YNH_APP_ARG_BOTUSERS
 
 app=$YNH_APP_INSTANCE_NAME
 
-if [ "$botusers" == "admin" ]
-then
-	botusers=$botadmin
-fi
-
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_whatsapp bridge
 if [ $synapsenumber -eq "1" ]
 then
@@ -48,6 +43,11 @@ fi
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 synapse_db_name="matrix_$synapse_instance"
+
+if [ "$botusers" == "local" ]
+then
+	botusers="$server_name"
+fi
 
 #=================================================
 # SET STANDARD SETTINGS FROM DEFAULT CONFIG
@@ -104,10 +104,6 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 
 final_path=/opt/yunohost/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
-
-if [ $encryption -eq 1 ]; then
-  encryption="true"
-fi
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -236,7 +232,7 @@ ynh_script_progression --message="Starting a systemd service..." --weight=15
 ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
 # Wait until the synapse user is created
 sleep 30
-    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
+    # (Note that, by default, non-admins might not have your homeserver's permission to create Spaces.)
     if [ "$bot_synapse_adm" = true ]
     then
     ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$botname"";"

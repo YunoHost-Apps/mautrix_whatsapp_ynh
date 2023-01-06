@@ -64,7 +64,7 @@ services = ["__APP__"]
         [appservice.metrics.metrics_listen_port]
         ask = "IP and Port for the Metrics listener?"
         type = "string"
-        help = "Default "127.0.0.1:8001". The path is always /metrics"
+        help = "Defaults to: '127.0.0.1:8001'. The path is always /metrics"
         bind = ":__FINALPATH__/config.yaml"
 
 [whatsapp]
