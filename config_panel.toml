@@ -1,13 +1,13 @@
 version = "1.0"
 
-[homeserver]
-name = "Homeserver configuration"
+[appservice]
+name = "Homeserver Application Service"
 services = ["__APP__"]
 
-    [homeserver.config]
-    name = "Configuration options"
+    [appservice.config]
+    name = "Appservice Settings"
 
-        [homeserver.config.async_media]
+        [appservice.config.async_media]
         ask = "Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?"
         type = "boolean"
         yes = "true"
@@ -15,88 +15,84 @@ services = ["__APP__"]
         help = "Enables asynchronous media uploads"
         bind = ":__FINALPATH__/config.yaml"
 
-[appservice]
-name = "Application service configuration"
-services = ["__APP__"]
-
-    [appservice.config]
-    name = "General configuration"
-
         [appservice.config.ephemeral_events]
-        ask = "Whether or not to receive ephemeral events via appservice transactions"
+        ask = "Receive Ephemeral Events via Appservice transactions?"
         type = "boolean"
         yes = "true"
         no = "false"
         help = "Requires MSC2409 support (i.e. Synapse 1.22+). You should disable bridge -> sync_with_custom_puppets when this is enabled"
         bind = ":__FINALPATH__/config.yaml"
 
+        [appservice.config.print_level]
+        ask = "Logging print level (stdout/stderr)"
+        type = "select"
+        choices = ["debug", "info", "warn", "error", "fatal"]
+        help = "Minimum severity for log messages printed to stdout/stderr. This doesn't affect the log file."
+        bind = ":__FINALPATH__/config.yaml"
+
     [appservice.bot]
-    name = "Appservice bot configuration"
+    name = "Robot Settings"
 
         [appservice.bot.botname]
-        ask = "Username of the appservice bot"
+        ask = "Username of the Appservice Bot"
         type = "string"
         help = "Sets bot username. Please keep in mind that the bot admin room for previous bot username will stop working so you may need to create a new one using the new username"
         bind = ":__FINALPATH__/config.yaml"
 
         [appservice.bot.displayname]
-        ask = "Display name for bot"
+        ask = "Display name for Bot"
         type = "string"
         help = "Set to 'remove' to remove display name, leave empty to leave display name as-is"
         bind = ":__FINALPATH__/config.yaml"
 
         [appservice.bot.avatar]
-        ask = "Avatar for bot"
+        ask = "Avatar for Bot"
         type = "string"
         help = "Set to 'remove' to remove avatar, leave empty to leave avatar as-is"
         bind = ":__FINALPATH__/config.yaml"
 
-[metrics]
-name = "Prometheus configuration"
-services = ["__APP__"]
+    [appservice.metrics]
+    name = "Prometheus Metrics"
 
-    [metrics.config]
-    name = "General configuration"
-
-        [metrics.config.enable_metrics]
-        ask = "Enable prometheus metrics"
+        [appservice.metrics.enable_metrics]
+        ask = "Enable Prometheus Metrics?"
         type = "boolean"
         yes = "true"
         no = "false"
         bind = ":__FINALPATH__/config.yaml"
 
-        [metrics.config.metrics_listen_port]
-        ask = "IP and port where the metrics listener should be"
+        [appservice.metrics.metrics_listen_port]
+        ask = "IP and Port for the Metrics listener?"
         type = "string"
-        help = "The path is always /metrics"
+        help = "Default "127.0.0.1:8001". The path is always /metrics"
         bind = ":__FINALPATH__/config.yaml"
 
 [whatsapp]
-name = "Whatsapp configuration"
-help = "Configuration for things that are directly sent to WhatsApp"
+name = "WhatsApp"
+help = "Configuration for metadata that are sent to WhatsApp"
 services = ["__APP__"]
 
     [whatsapp.config]
-    name = "General configuration"
+    name = "Web API MetaData"
 
         [whatsapp.config.os_name]
-        ask = "Device name that's shown in the 'WhatsApp Web' section in the mobile app"
+        ask = "Device name in the 'WhatsApp Web' section of the smartphone app"
         type = "string"
         bind = ":__FINALPATH__/config.yaml"
 
         [whatsapp.config.browser_name]
-        ask = "Browser name that determines the logo shown in the mobile app"
+        ask = "Browser name that determines the logo shown in the smartphone app"
         type = "select"
         choices = ["unknown", "chrome", "firefox", "ie", "opera", "safari", "edge", "desktop", "ipad", "android_tablet", "ohana", "aloha", "catalina", "tcl_tv"]
-        help = "Must be 'unknown' for a generic icon or a valid browser name if you want a specific icon"
+        help = "Must be 'unknown' for a generic icon or a valid browser name if you want a specific logo"
         bind = ":__FINALPATH__/config.yaml"
 
 [bridge]
-name = "Bridge configuration"
+name = "Bridge"
 services = ["__APP__"]
 
     [bridge.config]
-    name = "General configuration"
+    name = "Puppet Settings"
 
         [bridge.config.username_template]
         ask = "Localpart template of MXIDs for WhatsApp users"
@@ -105,45 +101,42 @@ services = ["__APP__"]
         bind = ":__FINALPATH__/config.yaml"
 
         [bridge.config.enable_relaybot]
-        ask = "Whether relay mode should be allowed."
+        ask = "Should Relay mode be allowed?"
         type = "boolean"
         yes = "true"
 		no = "false"
-        help = "If allowed, `!wa set-relay` can be used to turn any authenticated user into a relaybot for that chat."
+        help = "If allowed, `!wa set-relay` can be used to turn any authenticated user into a RelayBot for that chat."
         bind = ":__FINALPATH__/config.yaml"
 
         [bridge.config.admin_only]
-        ask = "Should only admins be allowed to set themselves as relay users?"
+        ask = "Should only Bridge Admins be allowed to set themselves as relay users?"
         type = "boolean"
         yes = "true"
 		no = "false"
-        help = "see User management -> Admins"
+        help = "See User management -> Admins"
         bind = ":__FINALPATH__/config.yaml"
 
-[encryption]
-name = "Encryption"
-services = ["__APP__"]
-    [encryption.config]
-    name = "Encryption settings"
+    [bridge.portal_rooms]
+    name = "Portal Rooms & Encryption Settings"
 
-        [encryption.config.encryption]
-        ask = "Enable encryption"
+        [bridge.portal_rooms.encryption]
+        ask = "Allow End-to-Bridge (e2b) Encryption?"
         type = "boolean"
         yes = "true"
 		no = "false"
-        help = "Enables end to bridge encryption"
+        help = "For the Bridge to work in group chat Rooms with End-to-End Encryption (e2ee) enabled."
         bind = ":__FINALPATH__/config.yaml"
-
-        [encryption.config.encryption_default]
-        ask = "Default encryption"
+        
+        [bridge.portal_rooms.encryption_default]
+        ask = "Force-enable Encryption in all Portal Rooms the Bridge creates?"
         type = "boolean"
         yes = "true"
-        no = "false"
-        help = "Force-enable encryption in all portals the bridge creates. This will cause the bridge bot to be in private chats for the encryption to work properly."
+		no = "false"
+        help = "This will cause the Bridge Bot to be in private chats for the Encryption to work properly."
         bind = ":__FINALPATH__/config.yaml"
 
-        [encryption.config.encryption_require]
-        ask = "Require encryption"
+        [bridge.portal_rooms.encryption_require]
+        ask = "Require encryption?"
         type = "boolean"
         yes = "true"
         no = "false"
@@ -151,14 +144,19 @@ services = ["__APP__"]
         bind = ":__FINALPATH__/config.yaml"
 
 [usermanagement]
-name = "User management"
+name = "Bridge Permissions"
 services = ["__APP__"]
 
     [usermanagement.config]
-    name = "User management"
+    name = "User, Admin, Relay Management"
 
         [usermanagement.config.helptext]
-        ask = "Allowed values:\n&emsp;&emsp;* - All Matrix users\n&emsp;&emsp;domain - All users on that homeserver\n&emsp;&emsp;mxid (@user:matrix.org) - Specific Matrix user\n&emsp;&emsp;username - Specific local user"
+        ask = '''
+        Allowed values:
+        - * : All Matrix users
+        - domain.tld : All users on a given homeserver
+        - mxid (@user:matrix.org) : Specific Matrix user
+        '''
         type = "markdown"
 
         [usermanagement.config.listuser]
@@ -186,26 +184,26 @@ name = "Privacy"
 services = ["__APP__"]
 
     [privacy.config]
-    name = "Privacy settings"
+    name = "Privacy Settings"
 
         [privacy.config.delivery_receipts]
-        ask = "Delivery receipts"
+        ask = "Enable Delivery Receipts?"
         type = "boolean"
         yes = "true"
         no = "false"
-        help = "Should the bridge send a read receipt from the bridge bot when a message has been sent to WhatsApp?"
+        help = "Should the bridge send a read Receipt from the bridge bot when a message has been sent to WhatsApp?"
         bind = ":__FINALPATH__/config.yaml"
 
         [privacy.config.send_presence_on_typing]
-        ask = "Send presence on typing"
+        ask = "Send Presence on typing?"
         type = "boolean"
         yes = "true"
         no = "false"
-        help = "Send the presence as 'available' to whatsapp when users start typing on a portal."
+        help = "Send the Presence as 'available' to whatsapp when users start typing on a portal."
         bind = ":__FINALPATH__/config.yaml"
 
         [privacy.config.url_previews]
-        ask = "URL previews"
+        ask = "Enable URL preview?"
         type = "boolean"
         yes = "true"
         no = "false"
