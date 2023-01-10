@@ -19,8 +19,6 @@ app=$YNH_APP_INSTANCE_NAME
 appserviceid=$(ynh_app_setting_get --app=$app --key=appserviceid)
 botname=$(ynh_app_setting_get --app=$app --key=botname)
 encryption=$(ynh_app_setting_get --app=$app --key=encryption)
-botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
-botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
@@ -40,7 +38,7 @@ displayname=$(ynh_app_setting_get --app=$app --key=displayname)
 avatar=$(ynh_app_setting_get --app=$app --key=avatar)
 ephemeral_events=$(ynh_app_setting_get --app=$app --key=ephemeral_events)
 enable_metrics=$(ynh_app_setting_get --app=$app --key=enable_metrics)
-metrics_listen_port=$(ynh_app_setting_get --app=$app --key=metrics_listen_port)
+listen_port=$(ynh_app_setting_get --app=$app --key=listen_port)
 os_name=$(ynh_app_setting_get --app=$app --key=os_name)
 browser_name=$(ynh_app_setting_get --app=$app --key=browser_name)
 username_template=$(ynh_app_setting_get --app=$app --key=username_template)
@@ -53,9 +51,9 @@ encryption_require=$(ynh_app_setting_get --app=$app --key=encryption_require)
 enable_relaybot=$(ynh_app_setting_get --app=$app --key=enable_relaybot)
 admin_only=$(ynh_app_setting_get --app=$app --key=admin_only)
 print_level=$(ynh_app_setting_get --app=$app --key=print_level)
-existingUsers=$(ynh_app_setting_get --app=$app --key=existingUsers)
-existingAdmins=$(ynh_app_setting_get --app=$app --key=existingAdmins)
-existingRelayUsers=$(ynh_app_setting_get --app=$app --key=existingRelayUsers)
+listrelay=$(ynh_app_setting_get --app=$app --key=listrelay)
+listuser=$(ynh_app_setting_get --app=$app --key=listuser)
+listadmin=$(ynh_app_setting_get --app=$app --key=listadmin)
 
 
 #=================================================
@@ -120,10 +118,10 @@ then
   enable_metrics="false"
   ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
 fi
-if [ -z "$metrics_listen_port" ]
+if [ -z "$listen_port" ]
 then
-  metrics_listen_port="127.0.0.1:8001"
-  ynh_app_setting_set --app=$app --key=metrics_listen_port --value=$metrics_listen_port
+  listen_port="127.0.0.1:8001"
+  ynh_app_setting_set --app=$app --key=listen_port --value=$listen_port
 fi
 if [ -z "$os_name" ]
 then
@@ -185,20 +183,29 @@ then
   print_level="INFO"
   ynh_app_setting_set --app=$app --key=print_level --value=$print_level
 fi
-if [ -z "$existingUsers" ]
+if [ -z "$listrelay" ]
 then
-  existingUsers=$botusers
-  ynh_app_setting_set --app=$app --key=existingUsers --value=$existingUsers
+    listrelay="*"
+    ynh_app_setting_set --app=$app --key=listrelay --value=$listrelay
 fi
-if [ -z "$existingAdmins" ]
+if [ -z "$enable_relaybot" ]
 then
-  existingAdmins=$botadmin
-  ynh_app_setting_set --app=$app --key=existingAdmins --value=$existingAdmins
+    enable_relaybot="true"
+    ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
 fi
-if [ -z "$existingRelayUsers" ]
+
+if [ -z "$listuser" ]
 then
-  existingRelayUsers="*"
-  ynh_app_setting_set --app=$app --key=existingRelayUsers --value=$existingRelayUsers
+    listuser=$(ynh_app_setting_get --app=$app --key=botusers)
+    ynh_app_setting_set --app=$app --key=listuser --value=$listuser
+    ynh_app_setting_delete --app=$app --key=botusers
+fi
+
+if [ -z "$listadmin" ]
+then
+    listadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
+    ynh_app_setting_set --app=$app --key=listadmin --value=$listadmin
+    ynh_app_setting_delete --app=$app --key=botadmin
 fi
 
 #=================================================

@@ -75,7 +75,7 @@ metrics:
     # Enable prometheus metrics?
     enabled: __ENABLE_METRICS__
     # IP and port where the metrics listener should be. The path is always /metrics
-    listen: __METRICS_LISTEN_PORT__
+    listen: __LISTEN_PORT__
 
 # Config for things that are directly sent to WhatsApp.
 whatsapp:
@@ -395,11 +395,9 @@ bridge:
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
-        "*": relay
-        #"example.com": user
-        "__BOTUSERS__": user
-        #"@admin:example.com": admin
-        "__BOTADMIN__": admin
+        "__LISTRELAY__": relay
+        "__LISTUSER__": user
+        "__LISTADMIN__": admin
 
     # Settings for relay mode
     relay:

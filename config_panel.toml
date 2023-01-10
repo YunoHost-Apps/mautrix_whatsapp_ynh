@@ -61,7 +61,7 @@ services = ["__APP__"]
         no = "false"
         bind = "metrics>enabled:__FINALPATH__/config.yaml"
 
-        [appservice.metrics.metrics_listen_port]
+        [appservice.metrics.listen_port]
         ask = "IP and Port for the Metrics listener?"
         type = "string"
         help = "Defaults to: '127.0.0.1:8001'. The path is always /metrics"

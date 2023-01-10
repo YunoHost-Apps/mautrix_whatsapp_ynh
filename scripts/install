@@ -28,8 +28,8 @@ synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 botname=$YNH_APP_ARG_BOTNAME
 bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
 encryption=$YNH_APP_ARG_ENCRYPTION
-botadmin=$YNH_APP_ARG_BOTADMIN
-botusers=$YNH_APP_ARG_BOTUSERS
+listadmin=$YNH_APP_ARG_BOTADMIN
+listuser=$YNH_APP_ARG_BOTUSERS
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -44,9 +44,9 @@ server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 synapse_db_name="matrix_$synapse_instance"
 
-if [ "$botusers" == "local" ]
+if [ "$listuser" == "local" ]
 then
-	botusers="$server_name"
+	listuser="$server_name"
 fi
 
 #=================================================
@@ -58,7 +58,7 @@ displayname="WhatsApp bridge bot"
 avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
 ephemeral_events="true"
 enable_metrics="false"
-metrics_listen_port="127.0.0.1:8001"
+listen_port="127.0.0.1:8001"
 os_name="Mautrix-WhatsApp bridge"
 browser_name="unknown"
 username_template="whatsapp_{{.}}"
@@ -68,19 +68,17 @@ send_presence_on_typing="false"
 url_previews="false"
 encryption_default="false"
 encryption_require="false"
-enable_relaybot="true"
 admin_only="true"
 print_level="INFO"
-existingUsers=$botusers
-existingAdmins=$botadmin
-existingRelayUsers="*"
+enable_relaybot="true"
+listrelay="*"
 
 ynh_app_setting_set --app=$app --key=async_media --value=$async_media
 ynh_app_setting_set --app=$app --key=displayname --value=$displayname
 ynh_app_setting_set --app=$app --key=avatar --value=$avatar
 ynh_app_setting_set --app=$app --key=ephemeral_events --value=$ephemeral_events
 ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
-ynh_app_setting_set --app=$app --key=metrics_listen_port --value=$metrics_listen_port
+ynh_app_setting_set --app=$app --key=listen_port --value=$listen_port
 ynh_app_setting_set --app=$app --key=os_name --value=$os_name
 ynh_app_setting_set --app=$app --key=browser_name --value=$browser_name
 ynh_app_setting_set --app=$app --key=username_template --value=$username_template
@@ -93,9 +91,7 @@ ynh_app_setting_set --app=$app --key=encryption_require --value=$encryption_requ
 ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
 ynh_app_setting_set --app=$app --key=admin_only --value=$admin_only
 ynh_app_setting_set --app=$app --key=print_level --value=$print_level
-ynh_app_setting_set --app=$app --key=existingUsers --value=$existingUsers
-ynh_app_setting_set --app=$app --key=existingAdmins --value=$existingAdmins
-ynh_app_setting_set --app=$app --key=existingRelayUsers --value=$existingRelayUsers
+ynh_app_setting_set --app=$app --key=listrelay --value=$listrelay
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -114,8 +110,8 @@ ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
 ynh_app_setting_set --app=$app --key=botname --value=$botname
 ynh_app_setting_set --app=$app --key=bot_synapse_adm --value=$bot_synapse_adm
 ynh_app_setting_set --app=$app --key=encryption --value=$encryption
-ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
-ynh_app_setting_set --app=$app --key=botusers --value=$botusers
+ynh_app_setting_set --app=$app --key=listuser --value=$listuser
+ynh_app_setting_set --app=$app --key=listadmin --value=$listadmin
 ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
 ynh_app_setting_set --app=$app --key=server_name --value=$server_name
 ynh_app_setting_set --app=$app --key=domain --value=$domain
