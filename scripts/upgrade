@@ -305,7 +305,7 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
 
-yunohost app config set mautrix_whatsapp usermanagement.config.role -v
+yunohost app config set mautrix_whatsapp usermanagement.config.role
 
 #=================================================
 # END OF SCRIPT
