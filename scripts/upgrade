@@ -305,6 +305,12 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
 
+# Re-apply permissions to avoid wrong syntax "domain.tld,domain2.tld: admin"
+role="user"
+yunohost app config set mautrix_whatsapp usermanagement.config.role
+role="admin"
+yunohost app config set mautrix_whatsapp usermanagement.config.role
+role="relay"
 yunohost app config set mautrix_whatsapp usermanagement.config.role
 
 #=================================================
