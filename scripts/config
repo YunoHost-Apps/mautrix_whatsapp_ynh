@@ -31,7 +31,7 @@ function get__listuser {
   existingUsers=$(grep -- "\".*: user" "$final_path/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
   cat <<EOF
-value: '$existingUsers'
+"$existingUsers"
 EOF
 }
 
@@ -39,7 +39,7 @@ function get__listrelay {
   existingRelayUsers=$(grep -- "\".*: relay" "$final_path/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
   cat <<EOF
-value: '$existingRelayUsers'
+"$existingRelayUsers"
 EOF
 }
 
@@ -47,7 +47,7 @@ function get__listadmin {
   existingAdmins=$(grep -- "\".*: admin" "$final_path/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
   cat <<EOF
-value: '$existingAdmins'
+"$existingAdmins"
 EOF
 }
 
@@ -62,6 +62,7 @@ function set__role {
     set -o noglob # Disable globbing to avoid expansions when passing * as value.
     declare values="list$role"
     newValues="${!values}" # Here we expand the dynamic variable we created in the previous line. ! Does the trick
+    newValues="${newValues//\"}"
     usersArray=(${newValues//,/ }) # Split the values using comma (,) as separator.
 
     if [ -n "$newValues" ]
