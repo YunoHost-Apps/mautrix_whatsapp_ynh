@@ -24,7 +24,7 @@ C'est pourquoi [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_y
 ** Attention : sauvegardez et restaurez toujours les deux applications Yunohost matrix_synapse et mautrix_whatsapp en même temps!**
 
 
-**Version incluse :** 0.7.1~ynh1
+**Version incluse :** 0.8.0~ynh1
 ## Avertissements / informations importantes
 
 ## Liste de passerelles publiques
@@ -57,6 +57,12 @@ La passerelle est [configurée avec les paramètres standards adaptés pour votr
 ``` sudo nano /opt/yunohost/mautrix_whatsapp/config.yaml```
 puis en redémarrant le service: 
 ``` sudo yunohost service restart mautrix_whatsapp```
+
+#### End-to-bridge encryption
+Le robot peut éventuellement chiffrer les messages entre les utilisateurs de Matrix et la passarelle pour cacher les messages du serveur domestique. L'utilisation de Postgres est fortement recommandée lors de l'utilisation du chiffrement end-to-bridge.
+
+Si vous voulez l'activer, cherchez l'option ```bridge → encryption``` dans le fichier de configuration. Si vous définissez uniquement l'option ``allow: true``, le robot n'activera pas le chiffrement de lui-même, mais travaillera dans les portails chiffrés. Si vous définissez ```default: true```, la passerelle activera automatiquement le chiffrement dans les nouveaux portails.
+Il y a également la possibilité de définir ```require: true``` pour imposer le chiffrement sur tous les messages que vous envoyez (cela interdira tous les messages non chiffrés).
 
 ### Support multi-comptes
 
