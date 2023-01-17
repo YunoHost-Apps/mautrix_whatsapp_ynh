@@ -5,15 +5,15 @@ It shall NOT be edited by hand.
 
 # Matrix-WhatsApp bridge pour YunoHost
 
-[![Niveau d'intégration](https://dash.yunohost.org/integration/mautrix_whatsapp.svg)](https://dash.yunohost.org/appci/app/mautrix_whatsapp) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/mautrix_whatsapp.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/mautrix_whatsapp.maintain.svg)  
+[![Niveau d’intégration](https://dash.yunohost.org/integration/mautrix_whatsapp.svg)](https://dash.yunohost.org/appci/app/mautrix_whatsapp) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/mautrix_whatsapp.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/mautrix_whatsapp.maintain.svg)  
 [![Installer Matrix-WhatsApp bridge avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_whatsapp)
 
 *[Read this readme in english.](./README.md)*
 
-> *Ce package vous permet d'installer Matrix-WhatsApp bridge rapidement et simplement sur un serveur YunoHost.
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+> *Ce package vous permet d’installer Matrix-WhatsApp bridge rapidement et simplement sur un serveur YunoHost.
+Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l’installer et en profiter.*
 
-## Vue d'ensemble
+## Vue d’ensemble
 
 Une passerelle entre Matrix et WhatsApp empaquetée comme un service YunoHost.
 Les messages, médias et notifications sont relayées entre un compte WhatsApp et un compte Matrix.
@@ -24,7 +24,7 @@ C'est pourquoi [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_y
 ** Attention : sauvegardez et restaurez toujours les deux applications Yunohost matrix_synapse et mautrix_whatsapp en même temps!**
 
 
-**Version incluse :** 0.8.0~ynh1
+**Version incluse :** 0.8.1~ynh1
 ## Avertissements / informations importantes
 
 ## Liste de passerelles publiques
@@ -106,9 +106,9 @@ Si vous devez téléverser vos fichiers log quelque-part, soyez avertis qu'ils c
 
 ## Documentations et ressources
 
-* Site officiel de l'app : <https://maunium.net/go/mautrix-whatsapp/>
-* Documentation officielle de l'admin : <https://docs.mau.fi/bridges/go/whatsapp/index.html>
-* Dépôt de code officiel de l'app : <https://github.com/mautrix/whatsapp>
+* Site officiel de l’app : <https://maunium.net/go/mautrix-whatsapp/>
+* Documentation officielle de l’admin : <https://docs.mau.fi/bridges/go/whatsapp/index.html>
+* Dépôt de code officiel de l’app : <https://github.com/mautrix/whatsapp>
 * Documentation YunoHost pour cette app : <https://yunohost.org/app_mautrix_whatsapp>
 * Signaler un bug : <https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/issues>
 
@@ -124,4 +124,4 @@ ou
 sudo yunohost app upgrade mautrix_whatsapp -u https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing --debug
 ```
 
-**Plus d'infos sur le packaging d'applications :** <https://yunohost.org/packaging_apps>
+**Plus d’infos sur le packaging d’applications :** <https://yunohost.org/packaging_apps>
