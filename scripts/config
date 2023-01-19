@@ -51,14 +51,22 @@ function get__listadmin {
 EOF
 }
 
-function get__role {
-  cat <<EOF
-choices: ["admin", "user", "relay"]
-default: "user"
-EOF
+function set__listuser {
+  role="user"
+  set_permissions
 }
 
-function set__role {
+function set__listrelay {
+  role="relay"
+  set_permissions
+}
+
+function set__listadmin {
+  role="admin"
+  set_permissions
+}
+
+set_permissions() {
     set -o noglob # Disable globbing to avoid expansions when passing * as value.
     declare values="list$role"
     newValues="${!values}" # Here we expand the dynamic variable we created in the previous line. ! Does the trick
@@ -67,7 +75,7 @@ function set__role {
 
     if [ -n "$newValues" ]
     then
-        ynh_systemd_action --service_name="$app" --action=stop
+        #ynh_systemd_action --service_name="$app" --action=stop
         # Get all entries between "permissions:" and "relay:" keys, remove the role part, remove commented parts, format it with newlines and clean whitespaces and double quotes.
         allDefinedEntries=$(awk '/permissions:/{flag=1; next} /relay:/{flag=0} flag' "$final_path/config.yaml" | sed "/: $role/d" | sed -r 's/: (admin|user|relay)//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr ',' '\n' )
         # Delete everything from the corresponding role to insert the new defined values. This way we also handle deletion of users.

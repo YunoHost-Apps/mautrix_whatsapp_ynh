@@ -13,8 +13,15 @@ services = ["__APP__"]
         - * : All Matrix users
         - domain.tld : All users on a given homeserver
         - mxid (@user:matrix.org) : Specific Matrix user
+        Increasing Power: Relay<User<Admin
         '''
         type = "markdown"
+
+        [main.permissions.listrelay]
+        ask = "Users bridged thanks to Relay Mode"
+        type = "tags"
+        help = "Talk on WhatsApp through the RelayBot in a room where it's activated '!wa set-relay', no access otherwise."
+        visible = "enable_relaybot"
 
         [main.permissions.listuser]
         ask = "Bridge Users"
@@ -22,15 +29,9 @@ services = ["__APP__"]
         help = "Access to use the bridge to chat with a WhatsApp account."
 
         [main.permissions.listadmin]
-        ask = "Bride Administrators"
+        ask = "Bridge Administrators"
         type = "tags"
         help = "User level and some additional administration tools."
-
-        [main.permissions.listrelay]
-        ask = "Users bridged thanks to Relay Mode"
-        type = "tags"
-        help = "Talk on WhatsApp through the RelayBot in a room where it's activated '!wa set-relay', no access otherwise."
-        visible = "enable_relaybot"
 
     [main.bridge]
     name = "Puppetting Bridge Settings"
@@ -81,7 +82,9 @@ services = ["__APP__"]
     name = "Portal Rooms & Encryption Settings"
 
         [privacy.portal_rooms.text]
-        ask = "!! Inviting the Bridge in an encrypted room **breaks End-to-End Encryption (e2ee)** !! Messages will be unencrypted on the Bridge Server!"
+        ask = '''
+        !! Inviting the Bridge in an encrypted room **breaks End-to-End Encryption (e2ee)** !! Messages will be unencrypted on the Bridge Server!
+        '''
         type = "markdown"
 
         [privacy.portal_rooms.encryption]
