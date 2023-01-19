@@ -51,10 +51,18 @@ encryption_require=$(ynh_app_setting_get --app=$app --key=encryption_require)
 enable_relaybot=$(ynh_app_setting_get --app=$app --key=enable_relaybot)
 admin_only=$(ynh_app_setting_get --app=$app --key=admin_only)
 print_level=$(ynh_app_setting_get --app=$app --key=print_level)
+
+# reset permissions to be able to apply_permissions with app_setting values after upgrade
+listrelay=""
+listuser=""
+listadmin=""
+yunohost app config set mautrix_whatsapp main.permissions.listuser
+yunohost app config set mautrix_whatsapp main.permissions.listrelay
+yunohost app config set mautrix_whatsapp main.permissions.listadmin
+
 listrelay=$(ynh_app_setting_get --app=$app --key=listrelay)
 listuser=$(ynh_app_setting_get --app=$app --key=listuser)
 listadmin=$(ynh_app_setting_get --app=$app --key=listadmin)
-
 
 #=================================================
 # CHECK VERSION
@@ -253,6 +261,7 @@ ynh_script_progression --message="Updating a configuration file..." --weight=2
 
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
 
+# apply_permissions to have correct syntax in config file
 yunohost app config set mautrix_whatsapp main.permissions.listuser
 yunohost app config set mautrix_whatsapp main.permissions.listrelay
 yunohost app config set mautrix_whatsapp main.permissions.listadmin
