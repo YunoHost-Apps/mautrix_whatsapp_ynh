@@ -265,9 +265,9 @@ ynh_add_config --template="../conf/config.yaml" --destination="$final_path/confi
 chmod 400 "$final_path/config.yaml"
 chown $app:$app "$final_path/config.yaml"
 
-listrelay = "$(yunohost app config get $app main.permissions.listrelay)"
-listuser = "$(yunohost app config get $app main.permissions.listuser)"
-listadmin = "$(yunohost app config get $app main.permissions.listadmin)"
+listrelay="$(yunohost app config get $app main.permissions.listrelay)"
+listuser="$(yunohost app config get $app main.permissions.listuser)"
+listadmin="$(yunohost app config get $app main.permissions.listadmin)"
 
 listrelay="*"
 listuser="@user:domain.tld"
