@@ -94,17 +94,23 @@ set__botname() {
 
 set__listuser() {
   role="user"
+  ynh_app_setting_set --app=$app --key=listuser --value="$listuser"
   apply_permissions
+  ynh_store_file_checksum --file="$final_path/config.yaml"
 }
 
 set__listrelay() {
   role="relay"
+  ynh_app_setting_set --app=$app --key=listrelay --value="$listrelay"
   apply_permissions
+  ynh_store_file_checksum --file="$final_path/config.yaml"
 }
 
 set__listadmin() {
   role="admin"
+  ynh_app_setting_set --app=$app --key=listadmin --value="$listadmin"
   apply_permissions
+  ynh_store_file_checksum --file="$final_path/config.yaml"
 }
 
 ynh_app_config_run $1
