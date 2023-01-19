@@ -57,12 +57,13 @@ listuser_backup=$(ynh_app_setting_get --app=$app --key=listuser)
 listadmin_backup=$(ynh_app_setting_get --app=$app --key=listadmin)
 
 # reset permissions to be able to apply_permissions with app_setting values after upgrade
-listrelay=""
-listuser=""
-listadmin=""
+listrelay="@user:domain.tld"
+listuser="@user:domain.tld"
+listadmin="@user:domain.tld"
 yunohost app config set mautrix_whatsapp main.permissions.listuser
 yunohost app config set mautrix_whatsapp main.permissions.listrelay
 yunohost app config set mautrix_whatsapp main.permissions.listadmin
+#ynh_store_file_checksum --file="$final_path/config.yaml"
 
 listrelay=$listrelay_backup
 listuser=$listrelay_backup
