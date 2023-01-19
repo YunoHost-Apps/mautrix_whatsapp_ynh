@@ -265,19 +265,20 @@ ynh_add_config --template="../conf/config.yaml" --destination="$final_path/confi
 chmod 400 "$final_path/config.yaml"
 chown $app:$app "$final_path/config.yaml"
 
-yunohost app config set mautrix_whatsapp main.permissions.listrelay
-yunohost app config set mautrix_whatsapp main.permissions.listuser
-yunohost app config set mautrix_whatsapp main.permissions.listadmin
-#ynh_store_file_checksum --file="$final_path/config.yaml"
-
 listrelay=$listrelay_
 listuser=$listuser_
 listadmin=$listadmin_
 
-# apply_permissions to have correct syntax in config file
 yunohost app config set mautrix_whatsapp main.permissions.listrelay
 yunohost app config set mautrix_whatsapp main.permissions.listuser
 yunohost app config set mautrix_whatsapp main.permissions.listadmin
+# ynh_store_file_checksum --file="$final_path/config.yaml"
+
+
+# apply_permissions to have correct syntax in config file
+# yunohost app config set mautrix_whatsapp main.permissions.listrelay
+# yunohost app config set mautrix_whatsapp main.permissions.listuser
+# yunohost app config set mautrix_whatsapp main.permissions.listadmin
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
