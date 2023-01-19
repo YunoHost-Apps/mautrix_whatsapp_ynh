@@ -282,9 +282,9 @@ yunohost app config set mautrix_whatsapp main.permissions.listrelay
 yunohost app config set mautrix_whatsapp main.permissions.listuser
 yunohost app config set mautrix_whatsapp main.permissions.listadmin
 
-listrelay = "$(yunohost app config get $app main.permissions.listrelay)"
-listuser = "$(yunohost app config get $app main.permissions.listuser)"
-listadmin = "$(yunohost app config get $app main.permissions.listadmin)"
+listrelay="$(yunohost app config get $app main.permissions.listrelay)"
+listuser="$(yunohost app config get $app main.permissions.listuser)"
+listadmin="$(yunohost app config get $app main.permissions.listadmin)"
 
 listrelay=$listrelay_
 listuser=$listuser_
