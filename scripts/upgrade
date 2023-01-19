@@ -57,9 +57,9 @@ listuser_backup=$(ynh_app_setting_get --app=$app --key=listuser)
 listadmin_backup=$(ynh_app_setting_get --app=$app --key=listadmin)
 
 # reset permissions to be able to apply_permissions with app_setting values after upgrade
-listrelay="@user:domain.tld"
+listrelay="@relay:domain.tld"
 listuser="@user:domain.tld"
-listadmin="@user:domain.tld"
+listadmin="@admin:domain.tld"
 yunohost app config set mautrix_whatsapp main.permissions.listuser
 yunohost app config set mautrix_whatsapp main.permissions.listrelay
 yunohost app config set mautrix_whatsapp main.permissions.listadmin
@@ -266,13 +266,13 @@ ynh_script_progression --message="Updating a configuration file..." --weight=2
 
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
 
+chmod 400 "$final_path/config.yaml"
+chown $app:$app "$final_path/config.yaml"
+
 # apply_permissions to have correct syntax in config file
 yunohost app config set mautrix_whatsapp main.permissions.listuser
 yunohost app config set mautrix_whatsapp main.permissions.listrelay
 yunohost app config set mautrix_whatsapp main.permissions.listadmin
-
-chmod 400 "$final_path/config.yaml"
-chown $app:$app "$final_path/config.yaml"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
