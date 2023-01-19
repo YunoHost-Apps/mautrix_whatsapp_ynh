@@ -253,6 +253,10 @@ ynh_script_progression --message="Updating a configuration file..." --weight=2
 
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
 
+yunohost app config set mautrix_whatsapp main.permissions.listuser
+yunohost app config set mautrix_whatsapp main.permissions.listrelay
+yunohost app config set mautrix_whatsapp main.permissions.listadmin
+
 chmod 400 "$final_path/config.yaml"
 chown $app:$app "$final_path/config.yaml"
 
