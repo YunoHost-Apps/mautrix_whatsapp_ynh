@@ -4,30 +4,16 @@ ynh_abort_if_errors
 
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
-function get__botname {
+#=================================================
+# SPECIFIC GETTERS FOR TOML SHORT KEY
+#=================================================
+
+get__botname() {
     botname=$(ynh_app_setting_get --app $app --key botname)
     echo "${botname}"
 }
 
-function set__botname {
-    old_botname=$(ynh_app_setting_get --app $app --key botname)
-    if [ "$botname" -eq "$old_botname" ] # Check to avoid updating botname when it's not needed.
-    then
-      return
-    fi
-
-    ynh_app_setting_set --app=$app --key=botname --value="$botname"
-    synapse_instance=$(ynh_app_setting_get --app $app --key synapse_instance)
-
-    sed -i "s/username:.*/username: $botname/" "$final_path/config.yaml"
-    "$final_path/mautrix-whatsapp" -g -c "$final_path/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
-    "/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh" || ynh_die --message="Synapse can't restart with the appservice configuration"
-    chown -R "$app:$app" "$final_path"
-    ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
-    ynh_store_file_checksum --file="$final_path/config.yaml"
-}
-
-function get__listuser {
+get__listuser() {
   existingUsers=$(grep -- "\".*: user" "$final_path/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
   cat <<EOF
@@ -35,7 +21,7 @@ function get__listuser {
 EOF
 }
 
-function get__listrelay {
+get__listrelay() {
   existingRelayUsers=$(grep -- "\".*: relay" "$final_path/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
   cat <<EOF
@@ -43,7 +29,7 @@ function get__listrelay {
 EOF
 }
 
-function get__listadmin {
+get__listadmin() {
   existingAdmins=$(grep -- "\".*: admin" "$final_path/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
   cat <<EOF
@@ -51,22 +37,15 @@ function get__listadmin {
 EOF
 }
 
-function set__listuser {
-  role="user"
-  set_permissions
-}
+#=================================================
+# SPECIFIC VALIDATORS FOR TOML SHORT KEYS
+#=================================================
 
-function set__listrelay {
-  role="relay"
-  set_permissions
-}
+#=================================================
+# SPECIFIC SETTERS FOR TOML SHORT KEYS
+#=================================================
 
-function set__listadmin {
-  role="admin"
-  set_permissions
-}
-
-set_permissions() {
+apply_permissions() {
     set -o noglob # Disable globbing to avoid expansions when passing * as value.
     declare values="list$role"
     newValues="${!values}" # Here we expand the dynamic variable we created in the previous line. ! Does the trick
@@ -93,6 +72,39 @@ set_permissions() {
     set +o noglob
 
     ynh_print_info "Users with role $role added in $final_path/config.yaml"
+}
+
+set__botname() {
+    old_botname=$(ynh_app_setting_get --app $app --key botname)
+    if [ "$botname" -eq "$old_botname" ] # Check to avoid updating botname when it's not needed.
+    then
+      return
+    fi
+
+    ynh_app_setting_set --app=$app --key=botname --value="$botname"
+    synapse_instance=$(ynh_app_setting_get --app $app --key synapse_instance)
+
+    sed -i "s/username:.*/username: $botname/" "$final_path/config.yaml"
+    "$final_path/mautrix-whatsapp" -g -c "$final_path/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+    "/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh" || ynh_die --message="Synapse can't restart with the appservice configuration"
+    chown -R "$app:$app" "$final_path"
+    ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
+    ynh_store_file_checksum --file="$final_path/config.yaml"
+}
+
+set__listuser() {
+  role="user"
+  apply_permissions
+}
+
+set__listrelay() {
+  role="relay"
+  apply_permissions
+}
+
+set__listadmin() {
+  role="admin"
+  apply_permissions
 }
 
 ynh_app_config_run $1
