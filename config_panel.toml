@@ -5,33 +5,33 @@ name = "Main Settings"
 services = ["__APP__"]
 
     [main.permissions]
-    name = "Permissions for using the bridge."
+    name = "Permissions for using the bridge"
 
         [main.permissions.helptext]
         ask = '''
-        Allowed values:
+        Roles with Increasing Power: Relay<User<Admin
+        Allowed values for roles:
         - * : All Matrix users
         - domain.tld : All users on a given homeserver
         - mxid (@user:matrix.org) : Specific Matrix user
-        Increasing Power: Relay<User<Admin
         '''
         type = "markdown"
 
         [main.permissions.listrelay]
         ask = "Users bridged thanks to Relay Mode"
         type = "tags"
-        help = "Talk on WhatsApp through the RelayBot in a room where it's activated '!wa set-relay', no access otherwise."
+        help = "Relay Role: Talk on WhatsApp through the RelayBot in a room where it has been activated with '!wa set-relay', no access otherwise."
         visible = "enable_relaybot"
 
         [main.permissions.listuser]
         ask = "Bridge Users"
         type = "tags"
-        help = "Access to use the bridge to chat with a WhatsApp account."
+        help = "User Role: Access to use the bridge to chat with a WhatsApp account."
 
         [main.permissions.listadmin]
         ask = "Bridge Administrators"
         type = "tags"
-        help = "User level and some additional administration tools."
+        help = "Admin Role: User level and some additional administration tools."
 
     [main.bridge]
     name = "Puppetting Bridge Settings"
@@ -71,7 +71,7 @@ services = ["__APP__"]
         [main.bot.avatar]
         ask = "Avatar for Bot"
         type = "string"
-        help = "Should be in format 'mxc://__SERVER_NAME__/NeXNQarUbrlYBiPCpprYsRqr', see README for tutorial. Set to 'remove' to remove avatar, leave empty to use standard WhatsApp logo."
+        help = "Should be in format 'mxc://server_name/NeXNQarUbrlYBiPCpprYsRqr', see README for tutorial. Set to 'remove' to remove avatar, leave empty to use standard WhatsApp logo."
         bind = ":__FINALPATH__/config.yaml"
 
 [privacy]
@@ -83,12 +83,14 @@ services = ["__APP__"]
 
         [privacy.portal_rooms.text]
         ask = '''
-        !! Inviting the Bridge in an encrypted room **breaks End-to-End Encryption (e2ee)** !! Messages will be unencrypted on the Bridge Server!
+        !! Inviting the Bridge in an encrypted room          !!
+        !! breaks real End-to-End Encryption (e2ee)          !! 
+        !! Messages will be unencrypted on the Bridge Server !!
         '''
         type = "markdown"
 
         [privacy.portal_rooms.encryption]
-        ask = "Allow Encryption from Matrix Client to Bridge Server?"
+        ask = "Allow Encryption between Matrix Client and Bridge Server?"
         type = "boolean"
         yes = "true"
 		no = "false"

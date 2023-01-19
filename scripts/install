@@ -69,7 +69,7 @@ url_previews="false"
 encryption_default="false"
 encryption_require="false"
 admin_only="true"
-print_level="INFO"
+print_level="info"
 enable_relaybot="true"
 listrelay="*"
 

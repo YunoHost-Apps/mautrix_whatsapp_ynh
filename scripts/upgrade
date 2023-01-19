@@ -180,7 +180,7 @@ then
 fi
 if [ -z "$print_level" ]
 then
-  print_level="INFO"
+  print_level="info"
   ynh_app_setting_set --app=$app --key=print_level --value=$print_level
 fi
 if [ -z "$listrelay" ]
@@ -252,17 +252,6 @@ ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 ynh_script_progression --message="Updating a configuration file..." --weight=2
 
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
-
-# Re-apply permissions to avoid wrong syntax "domain.tld,domain2.tld: admin"
-# x="$(yunohost app config get mautrix_whatsapp main.permissions.listuser)"
-# yunohost app config set mautrix_whatsapp main.permissions.listuser -v ""
-# yunohost app config set mautrix_whatsapp main.permissions.listuser -v "$x"
-# x="$(yunohost app config get mautrix_whatsapp main.permissions.listrelay)"
-# yunohost app config set mautrix_whatsapp main.permissions.listrelay -v ""
-# yunohost app config set mautrix_whatsapp main.permissions.listrelay -v "$x"
-# x="$(yunohost app config get mautrix_whatsapp main.permissions.listadmin)"
-# yunohost app config set mautrix_whatsapp main.permissions.listadmin -v ""
-# yunohost app config set mautrix_whatsapp main.permissions.listadmin -v "$x"
 
 chmod 400 "$final_path/config.yaml"
 chown $app:$app "$final_path/config.yaml"
