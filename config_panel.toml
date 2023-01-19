@@ -148,7 +148,7 @@ name = "Bridge Permissions"
 services = ["__APP__"]
 
     [usermanagement.config]
-    name = "User, Admin, Relay Management"
+    name = "Permissions for using the bridge."
 
         [usermanagement.config.helptext]
         ask = '''
@@ -160,24 +160,19 @@ services = ["__APP__"]
         type = "markdown"
 
         [usermanagement.config.listuser]
-        ask = "Users"
+        ask = "Bridge Users"
         type = "tags"
-        visible = "role == 'user'"
+        help = "Access to use the bridge to chat with a WhatsApp account."
 
         [usermanagement.config.listadmin]
-        ask = "Admins"
+        ask = "Bride Administrators"
         type = "tags"
-        visible = "role == 'admin'"
+        help = "User level and some additional administration tools."
 
         [usermanagement.config.listrelay]
-        ask = "Relay users"
+        ask = "Bridge Users of the Relaybot Mode"
         type = "tags"
-        visible = "role == 'relay'"
-
-        [usermanagement.config.role]
-        ask = "Role"
-        type = "select"
-        choices = ["user", "admin", "relay"]
+        help = "Talk through the relaybot (if enabled), no access otherwise."
 
 [privacy]
 name = "Privacy"
