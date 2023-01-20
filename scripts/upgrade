@@ -89,7 +89,7 @@ then
 fi
 if [ -z "$db_name" ]
 then
-    db_name=$(ynh_app_setting_get --app=$app --key=$app)
+    db_name=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_name)
     ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 fi
 if [ -z "$db_pwd" ]
