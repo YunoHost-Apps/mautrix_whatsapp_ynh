@@ -268,9 +268,9 @@ chown $app:$app "$final_path/config.yaml"
 listrelay=$listrelay_
 listuser=$listuser_
 listadmin=$listadmin_
-yunohost app config set mautrix_whatsapp main.permissions.listrelay -v $listrelay
-yunohost app config set mautrix_whatsapp main.permissions.listuser -v $listuser
-yunohost app config set mautrix_whatsapp main.permissions.listadmin -v $listadmin
+yunohost app config set $app main.permissions.listrelay -v "$listrelay"
+yunohost app config set $app main.permissions.listuser -v "$listuser"
+yunohost app config set $app main.permissions.listadmin -v "$listadmin"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
