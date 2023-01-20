@@ -91,6 +91,26 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
+# DB Backup missing because of wrong Upgrade from <=0.2.0
+if [ -z "$botname" ]
+then
+    botname=$(ynh_app_setting_get --app=$app --key=whatsappbot)
+    ynh_app_setting_set --app=$app --key=botname --value=$botname
+fi
+if [ -z "$db_name" ]
+then
+    db_name=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_name)
+    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+fi
+if [ -z "$db_pwd" ]
+then
+    db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
+    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+fi
+ynh_app_setting_delete --app=$app --key=whatsappbot
+ynh_app_setting_delete --app=$app --key=mautrix_whatsapp_db_name
+ynh_app_setting_delete --app=$app --key=mautrix_whatsapp_db_pwd
+
 # SET STANDARD SETTINGS FROM DEFAULT CONFIG
 
 if [ -z "$async_media" ]
