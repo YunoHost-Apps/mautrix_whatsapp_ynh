@@ -251,11 +251,10 @@ ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 ynh_script_progression --message="Updating a configuration file..." --weight=2
 
+# reset permissions to be able to apply_permissions with app_setting values after upgrade
 listrelay_=$listrelay
 listuser_=$listuser
 listadmin_=$listadmin
-
-# reset permissions to be able to apply_permissions with app_setting values after upgrade
 listrelay="*"
 listuser="@user:domain.tld"
 listadmin="@admin:domain.tld"
@@ -265,37 +264,13 @@ ynh_add_config --template="../conf/config.yaml" --destination="$final_path/confi
 chmod 400 "$final_path/config.yaml"
 chown $app:$app "$final_path/config.yaml"
 
-listrelay="$(yunohost app config get $app main.permissions.listrelay)"
-listuser="$(yunohost app config get $app main.permissions.listuser)"
-listadmin="$(yunohost app config get $app main.permissions.listadmin)"
-
-listrelay="*"
-listuser="@user:domain.tld"
-listadmin="@admin:domain.tld"
-
-# ynh_store_file_checksum --file="$final_path/config.yaml"
-# ynh_app_setting_set --app=$app --key=listrelay --value=$listrelay
-# ynh_app_setting_set --app=$app --key=listuser --value=$listuser
-# ynh_app_setting_set --app=$app --key=listadmin --value=$listadmin
-
-yunohost app config set mautrix_whatsapp main.permissions.listrelay
-yunohost app config set mautrix_whatsapp main.permissions.listuser
-yunohost app config set mautrix_whatsapp main.permissions.listadmin
-
-listrelay="$(yunohost app config get $app main.permissions.listrelay)"
-listuser="$(yunohost app config get $app main.permissions.listuser)"
-listadmin="$(yunohost app config get $app main.permissions.listadmin)"
-
+# apply_permissions to have correct syntax in config file
 listrelay=$listrelay_
 listuser=$listuser_
 listadmin=$listadmin_
-
-# ynh_store_file_checksum --file="$final_path/config.yaml"
-
-# apply_permissions to have correct syntax in config file
-yunohost app config set mautrix_whatsapp main.permissions.listrelay
-yunohost app config set mautrix_whatsapp main.permissions.listuser
-yunohost app config set mautrix_whatsapp main.permissions.listadmin
+yunohost app config set mautrix_whatsapp main.permissions.listrelay -v $listrelay
+yunohost app config set mautrix_whatsapp main.permissions.listuser -v $listuser
+yunohost app config set mautrix_whatsapp main.permissions.listadmin -v $listadmin
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
