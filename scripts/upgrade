@@ -19,8 +19,6 @@ app=$YNH_APP_INSTANCE_NAME
 appserviceid=$(ynh_app_setting_get --app=$app --key=appserviceid)
 botname=$(ynh_app_setting_get --app=$app --key=botname)
 encryption=$(ynh_app_setting_get --app=$app --key=encryption)
-botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
-botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
@@ -31,6 +29,32 @@ synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 synapse_db_name="matrix_$synapse_instance"
 bot_synapse_db_user="@$botname:$server_name"
+
+#=================================================
+# GET CONFIG PANEL SETTINGS
+#=================================================
+async_media=$(ynh_app_setting_get --app=$app --key=async_media)
+displayname=$(ynh_app_setting_get --app=$app --key=displayname)
+avatar=$(ynh_app_setting_get --app=$app --key=avatar)
+ephemeral_events=$(ynh_app_setting_get --app=$app --key=ephemeral_events)
+enable_metrics=$(ynh_app_setting_get --app=$app --key=enable_metrics)
+listen_port=$(ynh_app_setting_get --app=$app --key=listen_port)
+os_name=$(ynh_app_setting_get --app=$app --key=os_name)
+browser_name=$(ynh_app_setting_get --app=$app --key=browser_name)
+username_template=$(ynh_app_setting_get --app=$app --key=username_template)
+personal_filtering_spaces=$(ynh_app_setting_get --app=$app --key=personal_filtering_spaces)
+delivery_receipts=$(ynh_app_setting_get --app=$app --key=delivery_receipts)
+send_presence_on_typing=$(ynh_app_setting_get --app=$app --key=send_presence_on_typing)
+url_previews=$(ynh_app_setting_get --app=$app --key=url_previews)
+encryption_default=$(ynh_app_setting_get --app=$app --key=encryption_default)
+encryption_require=$(ynh_app_setting_get --app=$app --key=encryption_require)
+enable_relaybot=$(ynh_app_setting_get --app=$app --key=enable_relaybot)
+admin_only=$(ynh_app_setting_get --app=$app --key=admin_only)
+print_level=$(ynh_app_setting_get --app=$app --key=print_level)
+
+listrelay=$(ynh_app_setting_get --app=$app --key=listrelay)
+listuser=$(ynh_app_setting_get --app=$app --key=listuser)
+listadmin=$(ynh_app_setting_get --app=$app --key=listadmin)
 
 #=================================================
 # CHECK VERSION
@@ -67,21 +91,7 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
-# Migration from <=1.10.0 to >0.2.1
-ynh_secure_remove --file="$final_path"/community.go
-ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-23-protoupgrade.go
-ynh_secure_remove --file="$final_path"/database/upgrades/2019-05-16-message-delete-cascade.go
-src_path="$final_path"_src
-ynh_secure_remove --file="$src_path"
-src_path="$final_path"/src
-ynh_secure_remove --file="$src_path"
-
-# Upgrade from >0.2.0
-botname=$(ynh_app_setting_get --app=$app --key=botname)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
-
-# Upgrade from <=0.2.0
+# DB Backup missing because of wrong Upgrade from <=0.2.0
 if [ -z "$botname" ]
 then
     botname=$(ynh_app_setting_get --app=$app --key=whatsappbot)
@@ -89,7 +99,7 @@ then
 fi
 if [ -z "$db_name" ]
 then
-    db_name=$(ynh_app_setting_get --app=$app --key=$app)
+    db_name=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_name)
     ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 fi
 if [ -z "$db_pwd" ]
@@ -97,26 +107,126 @@ then
     db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
     ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 fi
+ynh_app_setting_delete --app=$app --key=whatsappbot
+ynh_app_setting_delete --app=$app --key=mautrix_whatsapp_db_name
+ynh_app_setting_delete --app=$app --key=mautrix_whatsapp_db_pwd
 
-# If appserviceid doesn't exist, create it
-if [ -z "$appserviceid" ]
+# SET STANDARD SETTINGS FROM DEFAULT CONFIG
+
+if [ -z "$async_media" ]
 then
-  appserviceid=$app
-  ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
+  async_media="false"
+  ynh_app_setting_set --app=$app --key=async_media --value=$async_media
+fi
+if [ -z "$displayname" ]
+then
+  displayname="WhatsApp bridge bot"
+  ynh_app_setting_set --app=$app --key=displayname --value=$displayname
+fi
+if [ -z "$avatar" ]
+then
+  avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+  ynh_app_setting_set --app=$app --key=avatar --value=$avatar
+fi
+if [ -z "$ephemeral_events" ]
+then
+  ephemeral_events="true"
+  ynh_app_setting_set --app=$app --key=ephemeral_events --value=$ephemeral_events
+fi
+if [ -z "$enable_metrics" ]
+then
+  enable_metrics="false"
+  ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
+fi
+if [ -z "$listen_port" ]
+then
+  listen_port="127.0.0.1:8001"
+  ynh_app_setting_set --app=$app --key=listen_port --value=$listen_port
+fi
+if [ -z "$os_name" ]
+then
+  os_name="Mautrix-WhatsApp bridge"
+  ynh_app_setting_set --app=$app --key=os_name --value=$os_name
+fi
+if [ -z "$browser_name" ]
+then
+  browser_name="unknown"
+  ynh_app_setting_set --app=$app --key=browser_name --value=$browser_name
+fi
+if [ -z "$username_template" ]
+then
+  username_template="whatsapp_{{.}}"
+  ynh_app_setting_set --app=$app --key=username_template --value=$username_template
+fi
+if [ -z "$personal_filtering_spaces" ]
+then
+  personal_filtering_spaces="false"
+  ynh_app_setting_set --app=$app --key=personal_filtering_spaces --value=$personal_filtering_spaces
+fi
+if [ -z "$delivery_receipts" ]
+then
+  delivery_receipts="false"
+  ynh_app_setting_set --app=$app --key=delivery_receipts --value=$delivery_receipts
+fi
+if [ -z "$send_presence_on_typing" ]
+then
+  send_presence_on_typing="false"
+  ynh_app_setting_set --app=$app --key=send_presence_on_typing --value=$send_presence_on_typing
+fi
+if [ -z "$url_previews" ]
+then
+  url_previews="false"
+  ynh_app_setting_set --app=$app --key=url_previews --value=$url_previews
+fi
+if [ -z "$encryption_default" ]
+then
+  encryption_default="false"
+  ynh_app_setting_set --app=$app --key=encryption_default --value=$encryption_default
+fi
+if [ -z "$encryption_require" ]
+then
+  encryption_require="false"
+  ynh_app_setting_set --app=$app --key=encryption_require --value=$encryption_require
+fi
+if [ -z "$enable_relaybot" ]
+then
+  enable_relaybot="true"
+  ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
+fi
+if [ -z "$admin_only" ]
+then
+  admin_only="true"
+  ynh_app_setting_set --app=$app --key=admin_only --value=$admin_only
+fi
+if [ -z "$print_level" ]
+then
+  print_level="info"
+  ynh_app_setting_set --app=$app --key=print_level --value=$print_level
+fi
+if [ -z "$listrelay" ]
+then
+    listrelay="*"
+    ynh_app_setting_set --app=$app --key=listrelay --value=$listrelay
+fi
+if [ -z "$enable_relaybot" ]
+then
+    enable_relaybot="true"
+    ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
 fi
 
+if [ -z "$listuser" ]
+then
+    listuser=$(ynh_app_setting_get --app=$app --key=botusers)
+    ynh_app_setting_set --app=$app --key=listuser --value=$listuser
+    ynh_app_setting_delete --app=$app --key=botusers
+fi
 
-# If db_name doesn't exist, create it
-#if [ -z "$mautrix_whatsapp_db_name" ]; then
-#	mautrix_whatsapp_db_name=$(ynh_sanitize_dbid --db_name=$app)
-#	ynh_app_setting_set --app=$app --key=db_name --value=$mautrix_whatsapp_db_name
-#fi
-
-# If final_path doesn't exist, create it
-#if [ -z "$final_path" ]; then
-#	final_path=/opt/yunohost/$app
-#	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-#fi
+if [ -z "$listadmin" ]
+then
+    listadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
+    ynh_app_setting_set --app=$app --key=listadmin --value=$listadmin
+    ynh_app_setting_delete --app=$app --key=botadmin
+fi
 
 #=================================================
 # CREATE DEDICATED USER
@@ -161,10 +271,27 @@ ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 ynh_script_progression --message="Updating a configuration file..." --weight=2
 
+# reset permissions to be able to apply_permissions with app_setting values after upgrade
+listrelay_=$listrelay
+listuser_=$listuser
+listadmin_=$listadmin
+listrelay="*"
+listuser="@user:domain.tld"
+listadmin="@admin:domain.tld"
+
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
 
 chmod 400 "$final_path/config.yaml"
 chown $app:$app "$final_path/config.yaml"
+
+listrelay=$listrelay_
+listuser=$listuser_
+listadmin=$listadmin_
+# MIGRATION from previous version without config panel -> config panel does not exist yet, so we upgrade the config after starting the systemd service
+# apply_permissions to have correct syntax in config file
+#yunohost app config set $app main.permissions.listrelay -v "$listrelay"
+#yunohost app config set $app main.permissions.listuser -v "$listuser"
+#yunohost app config set $app main.permissions.listadmin -v "$listadmin"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
@@ -214,6 +341,12 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
+
+# MIGRATION from previous version without config panel -> config panel does not exist yet, so we upgrade the config after starting the systemd service
+# apply_permissions to have correct syntax in config file
+yunohost app config set $app main.permissions.listrelay -v "$listrelay"
+yunohost app config set $app main.permissions.listuser -v "$listuser"
+yunohost app config set $app main.permissions.listadmin -v "$listadmin"
 
 #=================================================
 # END OF SCRIPT
