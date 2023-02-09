@@ -287,11 +287,11 @@ chown $app:$app "$final_path/config.yaml"
 listrelay=$listrelay_
 listuser=$listuser_
 listadmin=$listadmin_
-# MIGRATION from previous version without config panel -> config panel does not exist yet, so we upgrade the config after starting the systemd service
+
 # apply_permissions to have correct syntax in config file
-#yunohost app config set $app main.permissions.listrelay -v "$listrelay"
-#yunohost app config set $app main.permissions.listuser -v "$listuser"
-#yunohost app config set $app main.permissions.listadmin -v "$listadmin"
+yunohost app config set $app main.permissions.listrelay -v "$listrelay"
+yunohost app config set $app main.permissions.listuser -v "$listuser"
+yunohost app config set $app main.permissions.listadmin -v "$listadmin"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
@@ -341,12 +341,6 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
-
-# MIGRATION from previous version without config panel -> config panel does not exist yet, so we upgrade the config after starting the systemd service
-# apply_permissions to have correct syntax in config file
-yunohost app config set $app main.permissions.listrelay -v "$listrelay"
-yunohost app config set $app main.permissions.listuser -v "$listuser"
-yunohost app config set $app main.permissions.listadmin -v "$listadmin"
 
 #=================================================
 # END OF SCRIPT
