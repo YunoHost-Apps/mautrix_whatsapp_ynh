@@ -6,6 +6,7 @@ It shall NOT be edited by hand.
 # Matrix-WhatsApp bridge for YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/mautrix_whatsapp.svg)](https://dash.yunohost.org/appci/app/mautrix_whatsapp) ![Working status](https://ci-apps.yunohost.org/ci/badges/mautrix_whatsapp.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/mautrix_whatsapp.maintain.svg)
+
 [![Install Matrix-WhatsApp bridge with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_whatsapp)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -24,7 +25,7 @@ Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) 
 ** Attention: always backup and restore the Yunohost matrix_synapse et mautrix_whatsapp apps together!**
 
 
-**Shipped version:** 0.8.1~ynh1
+**Shipped version:** 0.8.2~ynh1
 ## Disclaimers / important information
 
 ## List of known public services
