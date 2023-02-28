@@ -289,9 +289,9 @@ listuser=$listuser_
 listadmin=$listadmin_
 
 # apply_permissions to have correct syntax in config file
-yunohost app config set $app main.permissions.listrelay -v "$listrelay"
-yunohost app config set $app main.permissions.listuser -v "$listuser"
-yunohost app config set $app main.permissions.listadmin -v "$listadmin"
+set__listuser
+set__listrelay
+set__listadmin
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
