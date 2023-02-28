@@ -1,0 +1,67 @@
+#!/bin/bash
+source _common.sh
+source /usr/share/yunohost/helpers
+ynh_abort_if_errors
+
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+
+#=================================================
+# SPECIFIC GETTERS FOR TOML SHORT KEY
+#=================================================
+
+get__botname() {
+    botname=$(ynh_app_setting_get --app $app --key botname)
+    echo "${botname}"
+}
+
+get__listuser() {
+  existingUsers=$(grep -- "\".*: user" "$final_path/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+
+  cat <<EOF
+"$existingUsers"
+EOF
+}
+
+get__listrelay() {
+  existingRelayUsers=$(grep -- "\".*: relay" "$final_path/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+
+  cat <<EOF
+"$existingRelayUsers"
+EOF
+}
+
+get__listadmin() {
+  existingAdmins=$(grep -- "\".*: admin" "$final_path/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+
+  cat <<EOF
+"$existingAdmins"
+EOF
+}
+
+#=================================================
+# SPECIFIC VALIDATORS FOR TOML SHORT KEYS
+#=================================================
+
+#=================================================
+# SPECIFIC SETTERS FOR TOML SHORT KEYS
+#=================================================
+
+set__botname() {
+    old_botname=$(ynh_app_setting_get --app $app --key botname)
+    if [ "$botname" -eq "$old_botname" ] # Check to avoid updating botname when it's not needed.
+    then
+      return
+    fi
+
+    ynh_app_setting_set --app=$app --key=botname --value="$botname"
+    synapse_instance=$(ynh_app_setting_get --app $app --key synapse_instance)
+
+    sed -i "s/username:.*/username: $botname/" "$final_path/config.yaml"
+    "$final_path/mautrix-whatsapp" -g -c "$final_path/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+    "/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh" || ynh_die --message="Synapse can't restart with the appservice configuration"
+    chown -R "$app:$app" "$final_path"
+    ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
+    ynh_store_file_checksum --file="$final_path/config.yaml"
+}
+
+ynh_app_config_run $1
