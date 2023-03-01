@@ -116,7 +116,7 @@ done
 
 echo "Update latest version of conf/config.yaml"
 # Update the config.yaml with the latest version of it and add vars that will be replaced
-configFilePath="conf/config-new.yaml"
+configFilePath="conf/config.yaml"
 newConfigFilePath=$(tar -tf "$tempdir/$version" |  grep 'example-config.yaml')
 tar -xf "$tempdir/$version" --directory "$tempdir" "$newConfigFilePath"
 mv "$tempdir/$newConfigFilePath" "$configFilePath"
