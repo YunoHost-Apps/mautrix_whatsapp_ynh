@@ -44,9 +44,13 @@ server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 synapse_db_name="matrix_$synapse_instance"
 
-if [ "$listuser" == "local" ]
+# This is needed to convert the value from the manifest to a valid value for the config.yaml file.
+# Without this the install script will throw a warning.
+if [ "$encryption" -eq "1" ]
 then
-	listuser="$server_name"
+  encryption="true"
+else
+  encryption="false"
 fi
 
 #=================================================
