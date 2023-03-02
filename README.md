@@ -25,7 +25,7 @@ Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) 
 ** Attention: always backup and restore the Yunohost matrix_synapse et mautrix_whatsapp apps together!**
 
 
-**Shipped version:** 0.8.1~ynh1
+**Shipped version:** 0.8.2~ynh1
 ## Disclaimers / important information
 
 ## List of known public services
@@ -122,7 +122,15 @@ In case you need to upload your logs somewhere, be aware that they contain your 
 ``| sed -r 's/[0-9]{10,}/📞/g' ``
  * "Mautrix-WhatsApp" bridge is based on the [Rhymen/go-whatsapp](https://github.com/Rhymen/go-whatsapp) implementation of the [sigalor/whatsapp-web-reveng](https://github.com/sigalor/whatsapp-web-reveng) project.
 
+## Development code quality
 
+The `.github/workflows/updater.sh` script needs to be synced with changes in `conf/config.yaml` therefore a `pre-commit`
+hook is used to display a reminder to update `.github/workflows/updater.sh` (if needed)  when `conf/config.yaml` has been modified.
+
+Please enable Git hooks using following command to ensure code quality and stability.
+``` bash
+git config --local core.hooksPath .githooks
+```
 ## Documentation and resources
 
 * Official app website: <https://maunium.net/go/mautrix-whatsapp/>
