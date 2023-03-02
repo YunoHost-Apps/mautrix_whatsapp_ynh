@@ -52,8 +52,8 @@
                 },
                 "example": "whatsappbot",
                 "help": {
-                    "en": "A system user will be created. Invite @whatsappbot:localsynapse.servername from an authorized Matrix account to start bridging. Give the Matrix server_name, not the full domain/URL.",
-                    "fr": "Un utilisateur système sera créé. Inviter @whatsappbot:localsynapse.servername depuis un compte Matrix autorisé pour démarrer une passerelle. Donner le nom du serveur Matrix, pas le domaine/URL complet."
+                    "en": "A system user will be created. Invite @whatsappbot:localsynapse.servername from an authorized Matrix account to start bridging.\nGive the Matrix server_name, not the full domain/URL.",
+                    "fr": "Un utilisateur système sera créé. Inviter @whatsappbot:localsynapse.servername depuis un compte Matrix autorisé pour démarrer une passerelle.\nDonner le nom du serveur Matrix, pas le domaine/URL complet."
                 },
                 "default": "whatsappbot"
             },
@@ -65,8 +65,8 @@
                     "fr": "Donner au robot WhatsApp des droits administrateur à l'instance Synapse ?"
                 },
                 "help": {
-                    "en": "If true, the bot can group WhatsApp chats in a Matrix space. Not required if you set up Synapse so that non-admins are authorized to create communities.",
-                    "fr": "Si true, le robot groupera les conversations WhatsApp dans une communauté Matrix. Pas nécessaire si vous avez réglé Synapse pour qu'il autorise les non-admin à créer des communautés."
+                    "en": "If true, the bot can group WhatsApp chats in a Matrix space.\nNot required if you set up Synapse so that non-admins are authorized to create communities.",
+                    "fr": "Si true, le robot groupera les conversations WhatsApp dans une communauté Matrix.\nPas nécessaire si vous avez réglé Synapse pour qu'il autorise les non-admin à créer des communautés."
                 },
                 "default": true
             },
@@ -92,10 +92,9 @@
                 },
                 "example": "@johndoe:localsynapse.servername or @johndoe:matrix.org",
                 "help": {
-                    "en": "The WhatsApp bot administrator does not need to be a local Synapse account.",
-                    "fr": "Le compte administrateur du robot WhatsApp peut ne pas être un compte local Synapse."
-                },
-                "default": "Your main Matrix account"
+                    "en": "The administrator does not need to be a local Synapse account. Valid formats are @johndoe:localsynapse.servername or @johndoe:matrix.org",
+                    "fr": "L'administrateur peut ne pas être un compte local Synapse. Les formats valables sont @johndoe:localsynapse.servername or @johndoe:matrix.org"
+                }
             },
             {
                 "name": "botusers",
@@ -104,11 +103,10 @@
                     "en": "Choose Matrix user(s) authorized to bridge with the WhatsApp bot.",
                     "fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser la passerelle WhatsApp."
                 },
-                "example": "local or @johndoe:server.name or server.name or *",
-                "default": "local",
+                "example": "@johndoe:server.name or server.name or *",
                 "help": {
-                    "en": "Either all local Synapse users (local), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the Matrix server_name, not the full domain/URL.",
-                    "fr": "Soit tous les comptes Synapse locaux (local), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur Matrix, pas le domaine/URL complet."
+                    "en": "A remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized.\nGive the Matrix server_name, not the full domain/URL.\nIt is also possible to specify multiple values by separating them with comma. Example: @johndoe:server.name,domain.tld,matrix.org",
+                    "fr": "Un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*).\nDonner le nom du serveur Matrix, pas le domaine/URL complet\nIl est également possible de spécifier plusieurs valeurs en les séparant par une virgule. Exemple : @johndoe:server.name,domain.tld,matrix.org"
                 }
             }
         ]
