@@ -25,7 +25,7 @@ C'est pourquoi [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_y
 ** Attention : sauvegardez et restaurez toujours les deux applications Yunohost matrix_synapse et mautrix_whatsapp en même temps!**
 
 
-**Version incluse :** 0.8.2~ynh2
+**Version incluse :** 0.8.5~ynh1
 ## Avertissements / informations importantes
 
 ## Liste de passerelles publiques
