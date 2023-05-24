@@ -25,6 +25,8 @@ apply_permissions() {
         allDefinedEntries=$(awk '/permissions:/{flag=1; next} /relay:/{flag=0} flag' "$final_path/config.yaml" | sed "/: $role/d" | sed -r 's/: (admin|user|relay)//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr ',' '\n' )
         # Delete everything from the corresponding role to insert the new defined values. This way we also handle deletion of users.
         sed -i "/permissions:/,/relay:/{/: $role/d;}" "$final_path/config.yaml"
+        # Ensure that entries with value surrounded with quotes are deleted too. E.g. "users".
+        sed -i "/permissions:/,/relay:/{/: \"$role\"/d;}" "$final_path/config.yaml"
       	for user in "${usersArray[@]}"
             do
               if grep -q -x "${user}" <<< "$allDefinedEntries"
