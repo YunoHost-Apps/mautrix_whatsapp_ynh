@@ -414,9 +414,9 @@ bridge:
   #   domain - All users on that homeserver
   #     mxid - Specific user
   permissions:
-    "__LISTRELAY__": "relay"
-    "__LISTUSER__": "user"
-    "__LISTADMIN__": "admin"
+    "__LISTRELAY__": relay
+    "__LISTUSER__": user
+    "__LISTADMIN__": admin
   # Settings for relay mode
   relay:
     # Whether relay mode should be allowed. If allowed, `!wa set-relay` can be used to turn any
@@ -436,16 +436,13 @@ bridge:
       m.location: "<b>{{ .Sender.Displayname }}</b> sent a location"
 # Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
-  min_level: debug
+  min_level: __PRINT_LEVEL__
   writers:
     - type: stdout
       format: pretty-colored
     - type: file
       format: json
-      filename: ./logs/mautrix-whatsapp.log
+      filename: /var/log/__APP__
       max_size: 100
       max_backups: 10
       compress: true
-  directory: /var/log/__APP__
-  print_level: __PRINT_LEVEL__
-  file_name_format: "null"
