@@ -442,7 +442,7 @@ logging:
       format: pretty-colored
     - type: file
       format: json
-      filename: /var/log/__APP__
+      filename: /var/log/__APP__/__APP__.log
       max_size: 100
       max_backups: 10
       compress: true
