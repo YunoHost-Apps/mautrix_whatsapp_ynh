@@ -7,12 +7,12 @@ Type=simple
 User=__APP__
 Group=__APP__
 WorkingDirectory=__FINALPATH__/
-ExecStart=__FINALPATH__/mautrix-whatsapp -c=__FINALPATH__/config.yaml >> /var/log/__APP__/__APP__.log 2>&1
+ExecStart=__FINALPATH__/mautrix-whatsapp -c=__FINALPATH__/config.yaml
 Restart=always
 RestartSec=3
 
 # Optional hardening to improve security
-ReadWritePaths=__FINALPATH__/
+ReadWritePaths=__FINALPATH__/ /var/log/__APP__
 NoNewPrivileges=yes
 MemoryDenyWriteExecute=true
 PrivateDevices=yes

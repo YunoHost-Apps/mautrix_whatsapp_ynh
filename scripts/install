@@ -183,8 +183,10 @@ ynh_add_config --template="../conf/config.yaml" --destination="$final_path/confi
 chmod 400 "$final_path/config.yaml"
 chown $app:$app "$final_path/config.yaml"
 
-# This call allows to set multiple users during install question "botusers" specifying them separated by a comma
+# This calls allows to set multiple users during install question "botusers" specifying them separated by a comma
 set__listuser
+set__listrelay
+set__listadmin
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
