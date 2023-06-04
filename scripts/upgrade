@@ -9,24 +9,6 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#=================================================
-# LOAD SETTINGS
-#=================================================
-ynh_script_progression --message="Loading installation settings..." --weight=5
-
-app=$YNH_APP_INSTANCE_NAME
-
-appserviceid=$(ynh_app_setting_get --app=$app --key=appserviceid)
-botname=$(ynh_app_setting_get --app=$app --key=botname)
-encryption=$(ynh_app_setting_get --app=$app --key=encryption)
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_user=$db_name
-db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd)
-port=$(ynh_app_setting_get --app=$app --key=port)
-synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
-server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 synapse_db_name="matrix_$synapse_instance"
 bot_synapse_db_user="@$botname:$server_name"
 
@@ -68,14 +50,10 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=10
 
-# Backup the current version of the app
-ynh_backup_before_upgrade
 ynh_clean_setup () {
 	# Restore it if the upgrade fails
 	ynh_restore_upgradebackup
 }
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -236,9 +214,9 @@ ynh_script_progression --message="Making sure dedicated system user exists..." -
 # Create a dedicated user (if not existing) and set home dir to /opt/yunohost/$app so systemd hardening works
 # See more: https://docs.mau.fi/bridges/go/setup.html?bridge=whatsapp#systemd-service
 if ynh_system_user_exists -u "$app"; then
-	usermod --home "$final_path" $app
+	usermod --home "$install_dir" $app
 else
-	ynh_system_user_create --username=$app --home_dir="$final_path"
+	ynh_system_user_create --username=$app --home_dir="$install_dir"
 fi
 
 #=================================================
@@ -250,19 +228,12 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=2
 
 	# Download, check integrity, uncompress and patch the source from app.src
-    ynh_setup_source --dest_dir="$final_path" --source_id=$YNH_ARCH
+    ynh_setup_source --dest_dir="$install_dir" --source_id=$YNH_ARCH
 fi
 
-chmod 750 "$final_path"
-chmod -R 750 "$final_path"
-chown -R $app:$app "$final_path"
-
-#=================================================
-# UPGRADE DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Upgrading dependencies..." --weight=100
-
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
+chmod 750 "$install_dir"
+chmod -R 750 "$install_dir"
+chown -R $app:$app "$install_dir"
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -279,10 +250,10 @@ listrelay="*"
 listuser="@user:domain.tld"
 listadmin="@admin:domain.tld"
 
-ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
+ynh_add_config --template="../conf/config.yaml" --destination="$install_dir/config.yaml"
 
-chmod 400 "$final_path/config.yaml"
-chown $app:$app "$final_path/config.yaml"
+chmod 400 "$install_dir/config.yaml"
+chown $app:$app "$install_dir/config.yaml"
 
 listrelay=$listrelay_
 listuser=$listuser_
@@ -298,13 +269,13 @@ set__listadmin
 #=================================================
 ynh_script_progression --message="Registering Synapse app-service" --weight=1
 
-$final_path/mautrix-whatsapp -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+$install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 # Set permissions on app files
-chown -R $app:$app "$final_path"
+chown -R $app:$app "$install_dir"
 ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
-ynh_store_file_checksum --file="$final_path/config.yaml"
+ynh_store_file_checksum --file="$install_dir/config.yaml"
 
 #=================================================
 # SETUP SYSTEMD
