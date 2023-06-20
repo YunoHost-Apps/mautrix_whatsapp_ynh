@@ -193,7 +193,7 @@ services = ["__APP__"]
         help = "Enable only if HomeServer supports MSC2409 (i.e. Synapse 1.22+). If enabled, you should disable bridge -> 'sync_with_custom_puppets'."
         bind = ":__FINALPATH__/config.yaml"
 
-        [advanced.appservice.print_level]
+        [advanced.appservice.min_level]
         ask = "Logging print level for Standard Output"
         type = "select"
         choices = ["debug", "info", "warn", "error", "fatal"]
