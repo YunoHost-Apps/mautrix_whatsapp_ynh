@@ -148,7 +148,7 @@ yq -i '.bridge.encryption.require = "__ENCRYPTION_REQUIRE__"' $configFilePath
 yq -i 'with(.bridge.permissions ; . = { "__LISTRELAY__": "relay", "__LISTUSER__": "user", "__LISTADMIN__": "admin" } | ... style="double")' $configFilePath
 yq -i '.bridge.relay.enabled = "__ENABLE_RELAYBOT__"' $configFilePath
 yq -i '.bridge.relay.admin_only = "__ADMIN_ONLY__"' $configFilePath
-yq -i '.logging.writers.filename = "/var/log/__APP__"' $configFilePath
+yq -i '.logging.writers.filename = "/var/log/__APP__/__APP__.log"' $configFilePath
 yq -i '.logging.min_level = "__PRINT_LEVEL__"' $configFilePath
 
 #=================================================
