@@ -32,6 +32,7 @@ pattern.regexp = "synapse(__)*[0-9]*"
 pattern.error = "Invalid app selected. Please select a Synapse instance."
 help.en = "Usually the Synapse instances contain a number after it is installed more than one time. E.g. synapse__1 will be the second instance."
 help.fr = "En général, les instances de Synapse contiennent un numéro après avoir été installées plus d'une fois. Par exemple, synapse__1 sera la deuxième instance."
+default = "synapse"
 
 [install.botname]
 ask.en = "Choose a local Synapse user name for the WhatsApp bot"
@@ -86,6 +87,10 @@ packages = "g++, postgresql, ffmpeg"
 
 [resources.database]
 type = "postgresql"
+
+[resources.permissions]
+main.allowed = "all_users"
+main.auth_header = false
 
 [resources.system_user]
 home = "/opt/yunohost/__APP__"
