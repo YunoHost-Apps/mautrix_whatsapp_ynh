@@ -440,7 +440,7 @@ logging:
       format: pretty-colored
     - type: file
       format: json
-      filename: ./logs/mautrix-whatsapp.log
+      filename: /var/log/__APP__/__APP__.log
       max_size: 100
       max_backups: 10
       compress: true
