@@ -17,9 +17,11 @@ ynh_clean_setup () {
 	true
 }
 
-# Retrieve some values from selected Synapse instance
+# Retrieve some values from selected Synapse instance and store them
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
+ynh_app_setting_set --app=$app --key=server_name --value=$server_name
+ynh_app_setting_set --app=$app --key=domain --value=$domain
 synapse_db_name="matrix_$synapse_instance"
 
 # This is needed to convert the value from the manifest to a valid value for the config.yaml file.
