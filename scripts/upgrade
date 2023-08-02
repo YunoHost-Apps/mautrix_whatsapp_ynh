@@ -15,6 +15,32 @@ synapse_db_name="matrix_$synapse_instance"
 bot_synapse_db_user="@$botname:$server_name"
 
 #=================================================
+# GET CONFIG PANEL SETTINGS
+#=================================================
+async_media=$(ynh_app_setting_get --app=$app --key=async_media)
+displayname=$(ynh_app_setting_get --app=$app --key=displayname)
+avatar=$(ynh_app_setting_get --app=$app --key=avatar)
+ephemeral_events=$(ynh_app_setting_get --app=$app --key=ephemeral_events)
+enable_metrics=$(ynh_app_setting_get --app=$app --key=enable_metrics)
+listen_port=$(ynh_app_setting_get --app=$app --key=listen_port)
+os_name=$(ynh_app_setting_get --app=$app --key=os_name)
+browser_name=$(ynh_app_setting_get --app=$app --key=browser_name)
+username_template=$(ynh_app_setting_get --app=$app --key=username_template)
+personal_filtering_spaces=$(ynh_app_setting_get --app=$app --key=personal_filtering_spaces)
+delivery_receipts=$(ynh_app_setting_get --app=$app --key=delivery_receipts)
+send_presence_on_typing=$(ynh_app_setting_get --app=$app --key=send_presence_on_typing)
+url_previews=$(ynh_app_setting_get --app=$app --key=url_previews)
+encryption_default=$(ynh_app_setting_get --app=$app --key=encryption_default)
+encryption_require=$(ynh_app_setting_get --app=$app --key=encryption_require)
+enable_relaybot=$(ynh_app_setting_get --app=$app --key=enable_relaybot)
+admin_only=$(ynh_app_setting_get --app=$app --key=admin_only)
+print_level=$(ynh_app_setting_get --app=$app --key=print_level)
+
+listrelay=$(ynh_app_setting_get --app=$app --key=listrelay)
+listuser=$(ynh_app_setting_get --app=$app --key=listuser)
+listadmin=$(ynh_app_setting_get --app=$app --key=listadmin)
+
+#=================================================
 # CHECK VERSION
 #=================================================
 ynh_script_progression --message="Checking version..." --weight=1
