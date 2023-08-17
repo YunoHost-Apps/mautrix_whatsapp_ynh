@@ -14,8 +14,8 @@
 #=================================================
 
 # Fetching information
-current_version=$(cat manifest.json | jq -j '.version|split("~")[0]')
-repo=$(cat manifest.json | jq -j '.upstream.code|split("https://github.com/")[1]')
+current_version=$(yq ".version" manifest.toml | cut -d '~' -f 1 -)
+repo=$(yq ".upstream.code" manifest.toml | sed 's/https:\/\/github.com\///')
 # Some jq magic is needed, because the latest upstream release is not always the latest version (e.g. security patches for older versions)
 version=$(curl --silent "https://api.github.com/repos/$repo/releases" | jq -r '.[] | select( .prerelease != true ) | .tag_name' | sort -V | tail -1)
 assets=($(curl --silent "https://api.github.com/repos/$repo/releases" | jq -r '[ .[] | select(.tag_name=="'$version'").assets[].browser_download_url ] | join(" ") | @sh' | tr -d "'"))
@@ -31,9 +31,9 @@ fi
 # Setting up the environment variables
 echo "Current version: $current_version"
 echo "Latest release from upstream: $version"
-echo "VERSION=$version" >> $GITHUB_ENV
+echo "VERSION=$version" >> "$GITHUB_ENV"
 # For the time being, let's assume the script will fail
-echo "PROCEED=false" >> $GITHUB_ENV
+echo "PROCEED=false" >> "$GITHUB_ENV"
 
 # Proceed only if the retrieved version is greater than the current one
 if ! dpkg --compare-versions "$current_version" "lt" "$version" ; then
@@ -91,21 +91,16 @@ curl --silent -4 -L $tarball -o "$tempdir/$version"
 checksum=$(sha256sum "$tempdir/$filename" | head -c 64)
 
 # Rewrite source file
-cat <<EOT > conf/$src.src
-SOURCE_URL=$asset_url
-SOURCE_SUM=$checksum
-SOURCE_SUM_PRG=sha256sum
-SOURCE_IN_SUBDIR=false
-SOURCE_FILENAME=mautrix-whatsapp
-SOURCE_EXTRACT=false
-EOT
-echo "... conf/$src.src updated"
+sed -i "s|$src.url.*|src.url = \"$asset_url\"|g" manifest.toml
+sed -i "s|$src.sha256.*|$src.sha256 = \"$checksum\"|g" manifest.toml
 
 else
 echo "... asset ignored"
 fi
 
 done
+
+echo "manifest.toml assets updated"
 
 #=================================================
 # SPECIFIC UPDATE STEPS
@@ -148,7 +143,7 @@ yq -i '.bridge.encryption.require = "__ENCRYPTION_REQUIRE__"' $configFilePath
 yq -i 'with(.bridge.permissions ; . = { "__LISTRELAY__": "relay", "__LISTUSER__": "user", "__LISTADMIN__": "admin" } | ... style="double")' $configFilePath
 yq -i '.bridge.relay.enabled = "__ENABLE_RELAYBOT__"' $configFilePath
 yq -i '.bridge.relay.admin_only = "__ADMIN_ONLY__"' $configFilePath
-yq -i '.logging.writers.filename = "/var/log/__APP__/__APP__.log"' $configFilePath
+yq -i '.logging.writers[1].filename = "/var/log/__APP__/__APP__.log"' $configFilePath
 yq -i '.logging.min_level = "__PRINT_LEVEL__"' $configFilePath
 
 #=================================================
@@ -156,7 +151,7 @@ yq -i '.logging.min_level = "__PRINT_LEVEL__"' $configFilePath
 #=================================================
 
 # Replace new version in manifest
-echo "$(jq -s --indent 4 ".[] | .version = \"$version~ynh1\"" manifest.json)" > manifest.json
+sed -i "s|version.*|version = \"$version~ynh1\"|g" manifest.toml
 
 # Delete temporary directory
 rm -rf $tempdir
