@@ -13,7 +13,7 @@ get__botname() {
 }
 
 get__listuser() {
-  existingUsers=$(grep -- "\".*: user" "$install_dir/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+  existingUsers=$(grep -- "\".*: user" "$install_dir/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',') | sed -r 's/,$//'
 
   cat <<EOF
 "$existingUsers"
@@ -21,7 +21,7 @@ EOF
 }
 
 get__listrelay() {
-  existingRelayUsers=$(grep -- "\".*: relay" "$install_dir/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+  existingRelayUsers=$(grep -- "\".*: relay" "$install_dir/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',') | sed -r 's/,$//'
 
   cat <<EOF
 "$existingRelayUsers"
@@ -29,7 +29,7 @@ EOF
 }
 
 get__listadmin() {
-  existingAdmins=$(grep -- "\".*: admin" "$install_dir/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+  existingAdmins=$(grep -- "\".*: admin" "$install_dir/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',') | sed -r 's/,$//'
 
   cat <<EOF
 "$existingAdmins"
@@ -60,6 +60,61 @@ set__botname() {
     chown -R "$app:$app" "$install_dir"
     ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
     ynh_store_file_checksum --file="$install_dir/config.yaml"
+}
+
+set__permissions_in_conf() {
+    # As sed is not non greddy (first match is last occurence) and escape word doesnt exist, 
+    # to find two successif new line, we need to first replace \n\n by a non used char 
+    # then execute our regex and finaly replace back the special char by \n\n
+    # here i select the  ¿ as special caractere
+    permissions_regex="s/\n\n/¿/g;s/permissionsi:[^¿]*¿/permissions:"
+    
+    # add users to the substitute regex
+    readarray -td, arruser < <(echo ${listuser});
+    
+    for user in "${arruser[@]}"; do
+	# add it to regex substitution part
+        permissions_regex=${permissions_regex}"\n    \"${user}\": \"user\"";
+    done;
+    ;;
+
+    # add relays to the substitute regex
+    readarray -td, arrrelay < <(echo ${listrelay});
+    
+    for relay in "${arrrelay[@]}"; do
+	# add it to regex substitution part
+        permissions_regex=${permissions_regex}"\n    \"${relay}\": \"relay\"";
+    done;
+    ;;
+
+    # add admins to the substitute regex
+    readarray -td, arradmin < <(echo ${listadmin});
+    
+    for admin in "${arradmin[@]}"; do
+	# add it to regex substitution part
+        permissions_regex=${permissions_regex}"\n    \"${admin}\": \"admin\"";
+    done;
+    ;;
+
+    #finalize the regex then apply the sed command
+    permissions_regex=${permissions_regex}"¿/;s/¿/\n\n/g"
+    sed -i -z -r "${permissions_regex}" "$final_path/config.yaml"
+
+}
+
+set__listuser() {
+	set__permissions_in_conf;
+	ynh_app_setting_set --app=$app --key=listuser --value="${listuser}"
+}
+
+set__listrelay() {
+	set__permissions_in_conf;
+	ynh_app_setting_set --app=$app --key=listrelay --value="${listrelay}"
+}
+
+set__listadmin() {
+	set__permissions_in_conf;
+	ynh_app_setting_set --app=$app --key=listadmin --value="${listadmin}"
 }
 
 ynh_app_config_run $1
