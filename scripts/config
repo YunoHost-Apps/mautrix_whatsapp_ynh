@@ -13,28 +13,35 @@ get__botname() {
 }
 
 get__listuser() {
-  existingUsers=$(grep -- "\".*: user" "$install_dir/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',') | sed -r 's/,$//'
+    listuser=$(ynh_app_setting_get --app $app --key listuser)
+    echo "${listuser}"
+#    existingUsers=$(grep -- "\".*: user" "$final_path/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',' | sed -r 's/,$//')
 
-  cat <<EOF
-"$existingUsers"
-EOF
+#    cat <<EOF
+#    "$existingUsers"
+#    EOF
 }
 
 get__listrelay() {
-  existingRelayUsers=$(grep -- "\".*: relay" "$install_dir/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',') | sed -r 's/,$//'
+    listrelay=$(ynh_app_setting_get --app $app --key listrelay)
+    echo "${listrelay}"
+#    existingRelayUsers=$(grep -- "\".*: relay" "$final_path/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',' | sed -r 's/,$//')
 
-  cat <<EOF
-"$existingRelayUsers"
-EOF
+#    cat <<EOF
+#    "$existingRelayUsers"
+#    EOF
 }
 
 get__listadmin() {
-  existingAdmins=$(grep -- "\".*: admin" "$install_dir/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',') | sed -r 's/,$//'
+    listadmin=$(ynh_app_setting_get --app $app --key listadmin)
+    echo "${listadmin}"
+#    existingAdmins=$(grep -- "\".*: admin" "$final_path/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',' | sed -r 's/,$//')
 
-  cat <<EOF
-"$existingAdmins"
-EOF
+#    cat <<EOF
+#    "$existingAdmins"
+#    EOF
 }
+
 
 #=================================================
 # SPECIFIC VALIDATORS FOR TOML SHORT KEYS
