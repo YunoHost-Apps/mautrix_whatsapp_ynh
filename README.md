@@ -25,7 +25,7 @@ Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) 
 ** Attention: always backup and restore the Yunohost matrix_synapse et mautrix_whatsapp apps together!**
 
 
-**Shipped version:** 0.9.0~ynh1
+**Shipped version:** 0.10.1~ynh1
 ## Documentation and resources
 
 * Official app website: <https://maunium.net/go/mautrix-whatsapp/>
