@@ -14,6 +14,7 @@
 #=================================================
 
 # Fetching information
+app="mautrix-whatsapp"
 current_version=$(yq ".version" manifest.toml | cut -d '~' -f 1 -)
 repo=$(yq ".upstream.code" manifest.toml | sed 's/https:\/\/github.com\///')
 # Some jq magic is needed, because the latest upstream release is not always the latest version (e.g. security patches for older versions)
@@ -64,13 +65,13 @@ echo "Handling asset at $asset_url"
 # Here we base the source file name upon a unique keyword in the assets url (admin vs. update)
 # Leave $src empty to ignore the asset
 case $asset_url in
-  *"amd64")
+  *"$app-amd64")
     src="amd64"
     ;;
-  *"arm")
+  *"$app-arm")
     src="armhf"
     ;;
-  *"arm64")
+  *"$app-arm64")
     src="arm64"
     ;;
   *)
@@ -91,7 +92,7 @@ curl --silent -4 -L $tarball -o "$tempdir/$version"
 checksum=$(sha256sum "$tempdir/$filename" | head -c 64)
 
 # Rewrite source file
-sed -i "s|$src.url.*|src.url = \"$asset_url\"|g" manifest.toml
+sed -i "s|$src.url.*|$src.url = \"$asset_url\"|g" manifest.toml
 sed -i "s|$src.sha256.*|$src.sha256 = \"$checksum\"|g" manifest.toml
 
 else
