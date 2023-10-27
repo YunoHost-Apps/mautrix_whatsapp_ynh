@@ -1,9 +1,12 @@
 packaging_format = 2
+
 id = "mautrix_whatsapp"
 name = "Matrix-WhatsApp bridge"
+
 description.en = "Matrix / Synapse puppeting bridge for WhatsApp"
 description.fr = "Passerelle Matrix / Synapse pour WhatsApp"
 version = "0.10.3~ynh1"
+
 maintainers = ["thardev"]
 
 [upstream]
@@ -13,7 +16,7 @@ code = "https://github.com/mautrix/whatsapp"
 admindoc = "https://docs.mau.fi/bridges/go/whatsapp/index.html"
 
 [integration]
-yunohost = ">= 11.1"
+yunohost = ">= 11.2"
 architectures = ["amd64", "arm64", "armhf"]
 multi_instance = true
 ldap = false
@@ -82,12 +85,6 @@ Il est également possible de spécifier plusieurs valeurs en les séparant par 
 
 [resources]
 
-[resources.apt]
-packages = "g++, postgresql, ffmpeg"
-
-[resources.database]
-type = "postgresql"
-
 [resources.permissions]
 main.allowed = "all_users"
 main.auth_header = false
@@ -113,3 +110,9 @@ arm64.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.3/mautr
 arm64.sha256 = "20e5bef339b431341bc74cc57c7665b47e1e76cf8ff084742e9176dee4aa227a"
 armhf.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.3/mautrix-whatsapp-arm"
 armhf.sha256 = "ed0eae8fbd6efb4bf013f1593b6d1fa0f762e88aa4d0f8db5382f29d091eb5d0"
+
+[resources.apt]
+packages = "g++, postgresql, ffmpeg"
+
+[resources.database]
+type = "postgresql"
