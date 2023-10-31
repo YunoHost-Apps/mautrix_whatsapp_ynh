@@ -31,6 +31,7 @@ Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) 
 * Official app website: <https://maunium.net/go/mautrix-whatsapp/>
 * Official admin documentation: <https://docs.mau.fi/bridges/go/whatsapp/index.html>
 * Upstream app code repository: <https://github.com/mautrix/whatsapp>
+* YunoHost Store: <https://apps.yunohost.org/app/mautrix_whatsapp>
 * Report a bug: <https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/issues>
 
 ## Developer info
