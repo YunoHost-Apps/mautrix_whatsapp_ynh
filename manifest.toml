@@ -1,9 +1,12 @@
 packaging_format = 2
+
 id = "mautrix_whatsapp"
 name = "Matrix-WhatsApp bridge"
+
 description.en = "Matrix / Synapse puppeting bridge for WhatsApp"
 description.fr = "Passerelle Matrix / Synapse pour WhatsApp"
-version = "0.10.2~ynh1"
+version = "0.10.3~ynh1"
+
 maintainers = ["thardev"]
 
 [upstream]
@@ -13,7 +16,7 @@ code = "https://github.com/mautrix/whatsapp"
 admindoc = "https://docs.mau.fi/bridges/go/whatsapp/index.html"
 
 [integration]
-yunohost = ">= 11.1"
+yunohost = ">= 11.2"
 architectures = ["amd64", "arm64", "armhf"]
 multi_instance = true
 ldap = false
@@ -82,12 +85,6 @@ Il est également possible de spécifier plusieurs valeurs en les séparant par 
 
 [resources]
 
-[resources.apt]
-packages = "g++, postgresql, ffmpeg"
-
-[resources.database]
-type = "postgresql"
-
 [resources.permissions]
 main.allowed = "all_users"
 main.auth_header = false
@@ -107,9 +104,15 @@ main.default = 8449
 in_subdir = false
 extract = false
 rename = "mautrix-whatsapp"
-amd64.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.2/mautrix-whatsapp-amd64"
-amd64.sha256 = "ba04e93d11fe796d0f0fcf35e35447cce46ee06bee90051183c24dc0bd5044a0"
-arm64.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.2/mautrix-whatsapp-arm64"
-arm64.sha256 = "449ddd86d6533d2de63b2df536312d4514b83490c510a193a9fea09f56645b1c"
-armhf.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.2/mautrix-whatsapp-arm"
-armhf.sha256 = "9601ca6074d98c19f6184cb4c2feb751eb2e8d6784f9f0e5cf313c8f5dfaa5c4"
+amd64.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.3/mautrix-whatsapp-amd64"
+amd64.sha256 = "d5c78d9b75ef9846863cca3383dacb4efb76a5a58d8b6336cbb871e51a4d0073"
+arm64.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.3/mautrix-whatsapp-arm64"
+arm64.sha256 = "20e5bef339b431341bc74cc57c7665b47e1e76cf8ff084742e9176dee4aa227a"
+armhf.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.3/mautrix-whatsapp-arm"
+armhf.sha256 = "ed0eae8fbd6efb4bf013f1593b6d1fa0f762e88aa4d0f8db5382f29d091eb5d0"
+
+[resources.apt]
+packages = "g++, postgresql, ffmpeg"
+
+[resources.database]
+type = "postgresql"
