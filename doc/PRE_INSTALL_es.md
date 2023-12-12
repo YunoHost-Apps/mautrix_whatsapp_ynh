@@ -15,8 +15,7 @@
 **Más información en la página de documentación:**
   https://docs.mau.fi/bridges/go/whatsapp/index.html
 
-
-Para probar la comunicación entre el App Service y Matrix-Synapse en una máquina virtual (por ejemplo, con nombre de dominio: synapse.vm), se debe instalar un certificado:
+* Para probar la comunicación entre el App Service y Matrix-Synapse en una máquina virtual (por ejemplo, con nombre de dominio: synapse.vm), se debe instalar un certificado:
 ```
 echo | openssl s_client -showcerts -servername synapse.vm -connect synapse.vm:443 2>/dev/null | awk '/-----BEGIN CERTIFICATE-----/, /-----END CERTIFICATE-----/' >> /usr/local/share/ca-certificates/synapse.vm.crt
 update-ca-certificates
