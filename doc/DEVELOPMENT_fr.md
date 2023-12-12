@@ -1,5 +1,4 @@
 ## Development code quality
-
 Le script `.github/workflows/updater.sh` doit être synchronisé avec les changements dans `conf/config.yaml`,
 donc un hook `pre-commit` est utilisé pour afficher un rappel pour mettre à jour
 `.github/workflows/updater.sh` (si nécessaire) lorsque `conf/config.yaml` a été modifié.
