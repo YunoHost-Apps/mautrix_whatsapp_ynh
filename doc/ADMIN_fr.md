@@ -1,5 +1,4 @@
 ### Configuration de la passerelle
-
 La passerelle est [configurée avec les paramètres standards adaptés pour votre YunoHost et l'instance Matrix-Synapse sélectionnée](https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/blob/master/conf/config.yaml).
 Une configuration plus fine peut être effectuée en utilisant le panneau de configuration existant dans le panneau d'administration de Yunohost ou en modifiant le fichier de configuration suivant avec SSH:
 ``` /opt/yunohost/mautrix_whatsapp/config.yaml```

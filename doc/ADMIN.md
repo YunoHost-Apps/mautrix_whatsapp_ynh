@@ -1,5 +1,4 @@
 ## Configuration of the bridge
-
 The bridge is [roughly configured at installation](https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/blob/master/conf/config.yaml), e.g. allowed admin and user of the bot.
 Finer configuration can be done by using the existing config panel in the Yunohost admin panel or by modifying the
 following configuration file with SSH:
