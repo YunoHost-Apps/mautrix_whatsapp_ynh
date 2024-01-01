@@ -14,6 +14,7 @@ license = "AGPL-3.0-or-later"
 website = "https://maunium.net/go/mautrix-whatsapp/"
 code = "https://github.com/mautrix/whatsapp"
 admindoc = "https://docs.mau.fi/bridges/go/whatsapp/index.html"
+fund = "https://github.com/sponsors/tulir"
 
 [integration]
 yunohost = ">= 11.2"
@@ -23,7 +24,7 @@ ldap = false
 sso = false
 disk = "100M"
 ram.build = "256M"
-ram.runtime = "1024M"
+ram.runtime = "2"
 
 [install]
 
