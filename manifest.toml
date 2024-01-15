@@ -24,7 +24,7 @@ ldap = false
 sso = false
 disk = "100M"
 ram.build = "256M"
-ram.runtime = "2"
+ram.runtime = "1024M"
 
 [install]
 
