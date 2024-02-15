@@ -112,6 +112,11 @@ arm64.sha256 = "9b046ee43d1da1242effc18a3c4f6a4d80782beebee3f3d076a6a6cbbcb1d91c
 armhf.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.5/mautrix-whatsapp-arm"
 armhf.sha256 = "b5866bc24efd98f24dbe3b834489f86d976b0bb3da49883c5622cf34cdf20562"
 
+autoupdate.strategy = "latest_github_release"
+autoupdate.asset.amd64 = "mautrix-whatsapp-amd64"
+autoupdate.asset.arm64 = "mautrix-whatsapp-arm64"
+autoupdate.asset.armhf = "mautrix-whatsapp-arm"
+
 [resources.apt]
 packages = "g++, postgresql, ffmpeg"
 
