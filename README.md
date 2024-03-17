@@ -24,15 +24,14 @@ Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) 
 
 ** Attention: always backup and restore the Yunohost matrix_synapse et mautrix_whatsapp apps together!**
 
-
-**Shipped version:** 0.10.5~ynh1
+**Shipped version:** 0.10.6~ynh1
 ## Documentation and resources
 
-* Official app website: <https://maunium.net/go/mautrix-whatsapp/>
-* Official admin documentation: <https://docs.mau.fi/bridges/go/whatsapp/index.html>
-* Upstream app code repository: <https://github.com/mautrix/whatsapp>
-* YunoHost Store: <https://apps.yunohost.org/app/mautrix_whatsapp>
-* Report a bug: <https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/issues>
+- Official app website: <https://maunium.net/go/mautrix-whatsapp/>
+- Official admin documentation: <https://docs.mau.fi/bridges/go/whatsapp/index.html>
+- Upstream app code repository: <https://github.com/mautrix/whatsapp>
+- YunoHost Store: <https://apps.yunohost.org/app/mautrix_whatsapp>
+- Report a bug: <https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/issues>
 
 ## Developer info
 
@@ -40,7 +39,7 @@ Please send your pull request to the [testing branch](https://github.com/YunoHos
 
 To try the testing branch, please proceed like that.
 
-``` bash
+```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing --debug
 or
 sudo yunohost app upgrade mautrix_whatsapp -u https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing --debug
