@@ -3,7 +3,7 @@
 请勿手动编辑。
 -->
 
-# YunoHost 的 Matrix-WhatsApp bridge
+# YunoHost 上的 Matrix-WhatsApp bridge
 
 [![集成程度](https://dash.yunohost.org/integration/mautrix_whatsapp.svg)](https://dash.yunohost.org/appci/app/mautrix_whatsapp) ![工作状态](https://ci-apps.yunohost.org/ci/badges/mautrix_whatsapp.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/mautrix_whatsapp.maintain.svg)
 
