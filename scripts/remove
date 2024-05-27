@@ -17,7 +17,7 @@ ynh_script_progression --message="Loading installation settings..." --weight=5
 app=$YNH_APP_INSTANCE_NAME
 
 db_user=$db_name
-synapse_db_name="matrix_$synapse_instance"
+synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@""$botname"":""$server_name"
 
 #=================================================
