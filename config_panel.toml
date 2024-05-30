@@ -148,7 +148,7 @@ services = ["__APP__"]
 name = "Advanced Settings"
 services = ["__APP__"]
 
-    [advanced.helptext]
+    [advanced.helptext.text]
     name = "SETTINGS FOR EXPERTS IN SERVER ADMINISTRATION"
     ask = "!! There are **security and privacy risks** if you change these settings without knowing what you do !!"
     type = "markdown"
