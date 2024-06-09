@@ -84,7 +84,7 @@ services = ["__APP__"]
         [privacy.portal_rooms.text]
         ask = '''
         !! Inviting the Bridge in an encrypted room          !!
-        !! breaks real End-to-End Encryption (e2ee)          !! 
+        !! breaks real End-to-End Encryption (e2ee)          !!
         !! Messages will be unencrypted on the Bridge Server !!
         '''
         type = "markdown"
@@ -96,7 +96,7 @@ services = ["__APP__"]
 		no = "false"
         help = "Enable so-called End-to-Bridge (e2b) Encryption. For the Bridge to work in group chat Rooms with End-to-End Encryption (e2ee) enabled."
         bind = "encryption>allow:__INSTALL_DIR__/config.yaml"
-        
+
         [privacy.portal_rooms.encryption_default]
         ask = "Force-enable Encryption in all Portal Rooms the Bridge creates?"
         type = "boolean"
@@ -146,12 +146,10 @@ services = ["__APP__"]
 name = "Advanced Settings"
 services = ["__APP__"]
 
-    [advanced.help]
+    [advanced.helptext]
     name = "SETTINGS FOR EXPERTS IN SERVER ADMINISTRATION"
-
-        [advanced.help.text]
-        ask = "!! There are **security and privacy risks** if you change these settings without knowing what you do !!"
-        type = "markdown"
+    ask = "!! There are **security and privacy risks** if you change these settings without knowing what you do !!"
+    type = "markdown"
 
     [advanced.whatsapp]
     name = "WhatsApp Web API MetaData"
@@ -173,7 +171,7 @@ services = ["__APP__"]
         choices = ["unknown", "chrome", "firefox", "ie", "opera", "safari", "edge", "desktop", "ipad", "android_tablet", "ohana", "aloha", "catalina", "tcl_tv"]
         help = "Must be 'unknown' for a generic icon or a valid browser name if you want a specific logo."
         bind = ":__INSTALL_DIR__/config.yaml"
-        
+
     [advanced.appservice]
     name = "HomeServer Application Service"
 
@@ -216,4 +214,3 @@ services = ["__APP__"]
         help = "Defaults to: '127.0.0.1:8001'. The path is always /metrics"
         bind = "metrics>listen:__INSTALL_DIR__/config.yaml"
         visible = "enable_metrics"
-
