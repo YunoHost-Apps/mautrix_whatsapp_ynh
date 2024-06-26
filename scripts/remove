@@ -61,7 +61,6 @@ ynh_secure_remove --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
 # Remove the log files
-ynh_secure_remove --file="/var/log/$app"
 
 #=================================================
 # END OF SCRIPT
