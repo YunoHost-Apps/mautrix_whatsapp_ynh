@@ -150,8 +150,7 @@ services = ["__APP__"]
 
     [advanced.helptext]
     name = "SETTINGS FOR EXPERTS IN SERVER ADMINISTRATION"
-    ask = "!! There are **security and privacy risks** if you change these settings without knowing what you do !!"
-    type = "markdown"
+    help = "There are security and privacy risks if you change these settings without knowing what you do!"
 
     [advanced.whatsapp]
     name = "WhatsApp Web API MetaData"
