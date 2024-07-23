@@ -7,7 +7,7 @@ name = "Matrix-WhatsApp bridge"
 
 description.en = "Matrix / Synapse puppeting bridge for WhatsApp"
 description.fr = "Passerelle Matrix / Synapse pour WhatsApp"
-version = "0.10.7~ynh1"
+version = "0.10.9~ynh1"
 
 maintainers = ["thardev"]
 
@@ -102,12 +102,12 @@ main.default = 8449
 in_subdir = false
 extract = false
 rename = "mautrix-whatsapp"
-amd64.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.7/mautrix-whatsapp-amd64"
-amd64.sha256 = "8a83cbe9be2528b22c0492a4c49f414f754e86ed76d5595b116d2ebd90eac718"
-arm64.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.7/mautrix-whatsapp-arm64"
-arm64.sha256 = "f702360c5e5b10d4cde72e3b57d9ea921f003968a92f39d09881889c026b5ae8"
-armhf.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.7/mautrix-whatsapp-arm"
-armhf.sha256 = "2df120dd9ec77e4c839e27904155acde5102daf1f27aaae0d8e36476ab1047eb"
+amd64.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.9/mautrix-whatsapp-amd64"
+amd64.sha256 = "d63e377092763d463e9f716fc1c4edb23136dc9aa0b8861628b46d786ba852f1"
+arm64.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.9/mautrix-whatsapp-arm64"
+arm64.sha256 = "28120fce38b76617772a249194b3dd020fd5773c7dfebc5e0c443cacf8161d4c"
+armhf.url = "https://github.com/mautrix/whatsapp/releases/download/v0.10.9/mautrix-whatsapp-arm"
+armhf.sha256 = "597f9de165ceb2a37c07202fcfaa2c1e93c99e356afaff507dc0d278792898d1"
 
 autoupdate.strategy = "latest_github_release"
 autoupdate.asset.amd64 = "^mautrix-whatsapp-amd64$"
