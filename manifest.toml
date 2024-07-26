@@ -88,10 +88,8 @@ main.allowed = "all_users"
 main.auth_header = false
 
 [resources.system_user]
-home = "/opt/yunohost/__APP__"
 
 [resources.install_dir]
-dir = "/opt/yunohost/__APP__"
 
 [resources.ports]
 main.default = 8449
