@@ -30,7 +30,7 @@ Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) 
 
 - Website aplikasi resmi: <https://maunium.net/go/mautrix-whatsapp/>
 - Dokumentasi admin resmi: <https://docs.mau.fi/bridges/go/whatsapp/index.html>
-- Repositori kode aplikasi hulu: <https://github.com/mautrix/whatsapp>
+- Depot kode aplikasi hulu: <https://github.com/mautrix/whatsapp>
 - Gudang YunoHost: <https://apps.yunohost.org/app/mautrix_whatsapp>
 - Laporkan bug: <https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/issues>
 
