@@ -19,7 +19,8 @@ admindoc = "https://docs.mau.fi/bridges/go/whatsapp/index.html"
 fund = "https://github.com/sponsors/tulir"
 
 [integration]
-yunohost = ">= 11.2"
+yunohost = ">= 11.2.18"
+helpers_version = "2.1"
 architectures = ["amd64", "arm64", "armhf"]
 multi_instance = true
 ldap = false
