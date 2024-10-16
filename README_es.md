@@ -24,7 +24,7 @@ Por lo tanto, debe instalarse previamente [Synapse para YunoHost](https://github
 
 ** Atención: haz siempre copias de seguridad y restaura las aplicaciones Yunohost matrix_synapse y mautrix_whatsapp juntas.
 
-**Versión actual:** 0.10.9~ynh1
+**Versión actual:** 0.11.0~ynh1
 ## Documentaciones y recursos
 
 - Sitio web oficial: <https://maunium.net/go/mautrix-whatsapp/>
@@ -35,7 +35,7 @@ Por lo tanto, debe instalarse previamente [Synapse para YunoHost](https://github
 
 ## Información para desarrolladores
 
-Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing
+Por favor enviar sus correcciones a la [rama `testing`](https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing).
 
 Para probar la rama `testing`, sigue asÍ:
 
