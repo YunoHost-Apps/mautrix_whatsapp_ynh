@@ -5,7 +5,9 @@ No se debe editar a mano.
 
 # Matrix-WhatsApp bridge para Yunohost
 
-[![Nivel de integración](https://dash.yunohost.org/integration/mautrix_whatsapp.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix_whatsapp/) ![Estado funcional](https://ci-apps.yunohost.org/ci/badges/mautrix_whatsapp.status.svg) ![Estado En Mantención](https://ci-apps.yunohost.org/ci/badges/mautrix_whatsapp.maintain.svg)
+[![Nivel de integración](https://apps.yunohost.org/badge/integration/mautrix_whatsapp)](https://ci-apps.yunohost.org/ci/apps/mautrix_whatsapp/)
+![Estado funcional](https://apps.yunohost.org/badge/state/mautrix_whatsapp)
+![Estado En Mantención](https://apps.yunohost.org/badge/maintained/mautrix_whatsapp)
 
 [![Instalar Matrix-WhatsApp bridge con Yunhost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_whatsapp)
 
@@ -24,7 +26,7 @@ Por lo tanto, debe instalarse previamente [Synapse para YunoHost](https://github
 
 ** Atención: haz siempre copias de seguridad y restaura las aplicaciones Yunohost matrix_synapse y mautrix_whatsapp juntas.
 
-**Versión actual:** 0.10.9~ynh1
+**Versión actual:** 0.11.3~ynh1
 ## Documentaciones y recursos
 
 - Sitio web oficial: <https://maunium.net/go/mautrix-whatsapp/>
@@ -35,7 +37,7 @@ Por lo tanto, debe instalarse previamente [Synapse para YunoHost](https://github
 
 ## Información para desarrolladores
 
-Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing
+Por favor enviar sus correcciones a la [rama `testing`](https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing).
 
 Para probar la rama `testing`, sigue asÍ:
 
