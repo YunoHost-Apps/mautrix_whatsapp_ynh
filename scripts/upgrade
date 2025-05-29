@@ -9,6 +9,7 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
@@ -249,7 +250,7 @@ set__listadmin
 ynh_script_progression --message="Registering Synapse app-service" --weight=1
 
 $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 # Set permissions on app files
 chown -R $app:$app "$install_dir"
