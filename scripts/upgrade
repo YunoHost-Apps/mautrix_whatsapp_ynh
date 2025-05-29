@@ -22,8 +22,6 @@ async_media=$(ynh_app_setting_get --app=$app --key=async_media)
 displayname=$(ynh_app_setting_get --app=$app --key=displayname)
 avatar=$(ynh_app_setting_get --app=$app --key=avatar)
 ephemeral_events=$(ynh_app_setting_get --app=$app --key=ephemeral_events)
-enable_metrics=$(ynh_app_setting_get --app=$app --key=enable_metrics)
-listen_port=$(ynh_app_setting_get --app=$app --key=listen_port)
 os_name=$(ynh_app_setting_get --app=$app --key=os_name)
 browser_name=$(ynh_app_setting_get --app=$app --key=browser_name)
 username_template=$(ynh_app_setting_get --app=$app --key=username_template)
@@ -103,16 +101,6 @@ if [ -z "$ephemeral_events" ]
 then
   ephemeral_events="true"
   ynh_app_setting_set --app=$app --key=ephemeral_events --value=$ephemeral_events
-fi
-if [ -z "$enable_metrics" ]
-then
-  enable_metrics="false"
-  ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
-fi
-if [ -z "$listen_port" ]
-then
-  listen_port="127.0.0.1:8001"
-  ynh_app_setting_set --app=$app --key=listen_port --value=$listen_port
 fi
 if [ -z "$os_name" ]
 then
