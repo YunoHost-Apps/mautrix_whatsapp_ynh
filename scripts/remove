@@ -48,7 +48,7 @@ ynh_remove_logrotate
 ynh_script_progression --message="Removing various files..." --weight=6
 
 # Remove a directory securely
-ynh_secure_remove --file="$synapse_install_dir/app-service/$app.yaml"
+ynh_secure_remove --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
 $synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
 #=================================================
