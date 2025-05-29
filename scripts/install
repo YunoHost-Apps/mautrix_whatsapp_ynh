@@ -35,8 +35,6 @@ async_media="false"
 displayname="WhatsApp bridge bot"
 avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
 ephemeral_events="true"
-enable_metrics="false"
-listen_port="127.0.0.1:8001"
 os_name="Mautrix-WhatsApp bridge"
 browser_name="unknown"
 username_template="whatsapp_{{.}}"
@@ -58,8 +56,6 @@ ynh_app_setting_set --app=$app --key=async_media --value=$async_media
 ynh_app_setting_set --app=$app --key=displayname --value=$displayname
 ynh_app_setting_set --app=$app --key=avatar --value=$avatar
 ynh_app_setting_set --app=$app --key=ephemeral_events --value=$ephemeral_events
-ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
-ynh_app_setting_set --app=$app --key=listen_port --value=$listen_port
 ynh_app_setting_set --app=$app --key=os_name --value=$os_name
 ynh_app_setting_set --app=$app --key=browser_name --value=$browser_name
 ynh_app_setting_set --app=$app --key=username_template --value=$username_template
