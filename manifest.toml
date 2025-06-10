@@ -97,8 +97,8 @@ main.default = 8449
 [resources.sources]
 
 [resources.sources.main]
-in_subdir = false
-extract = false
+in_subdir = true
+extract = true
 rename = "mautrix-whatsapp"
 amd64.url = "https://mau.dev/mautrix/whatsapp/-/jobs/71406/artifacts/download"
 amd64.sha256 = "5f6b1ff4a6fd46f8f2cdbf512f1c5d210a42f81dc41d37c53dc9fd9feb4e7bd2"
