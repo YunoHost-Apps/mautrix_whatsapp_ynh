@@ -50,6 +50,7 @@ enable_relaybot="true"
 listrelay="*"
 listadmin="$botadmin"
 listuser="$botusers"
+pickle_key=$(ynh_string_random)
 
 ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
 ynh_app_setting_set --app=$app --key=async_media --value=$async_media
@@ -69,6 +70,7 @@ ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
 ynh_app_setting_set --app=$app --key=admin_only --value=$admin_only
 ynh_app_setting_set --app=$app --key=print_level --value=$print_level
 ynh_app_setting_set --app=$app --key=listrelay --value=$listrelay
+ynh_app_setting_set --app=$app --key=pickle_key --value=$pickle_key
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
