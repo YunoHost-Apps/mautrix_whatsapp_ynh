@@ -18,6 +18,7 @@ bot_synapse_db_user="@$botname:$server_name"
 #=================================================
 # GET CONFIG PANEL SETTINGS
 #=================================================
+pickle_key=$(ynh_app_setting_get --app=$app --key=pickle_key)
 async_media=$(ynh_app_setting_get --app=$app --key=async_media)
 displayname=$(ynh_app_setting_get --app=$app --key=displayname)
 avatar=$(ynh_app_setting_get --app=$app --key=avatar)
@@ -59,6 +60,14 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
+
+# Upgrade from <v0.11
+if [ -z "$pickle_key" ]
+then
+    pickle_key="maunium.net/go/mautrix-whatsapp"
+    ynh_app_setting_set --app=$app --key=pickle_key --value=$pickle_key
+fi
+
 
 # DB Backup missing because of wrong Upgrade from <=0.2.0
 if [ -z "$botname" ]
