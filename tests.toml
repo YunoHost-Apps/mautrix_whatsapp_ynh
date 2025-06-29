@@ -32,13 +32,6 @@ args.botusers = "server.name"
 # Commits to test upgrade from
 # -------------------------------
 
-test_upgrade_from.1d57a3b.name = "Upgrade from 0.7.2" # After config panel was implemented
-
-test_upgrade_from.ede12ed.name = "Upgrade from 0.8.0"
-
-test_upgrade_from.1e5340f.name = "Upgrade from 0.10.9"
-
-
 # This is an additional test suite
 [multiple_botusers]
 
