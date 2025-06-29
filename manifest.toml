@@ -98,7 +98,7 @@ main.default = 8449
 
 [resources.sources.main]
 in_subdir = false
-extract = true
+extract = false
 rename = "mautrix-whatsapp"
 amd64.url = "https://github.com/mautrix/whatsapp/releases/download/v0.12.2/mautrix-whatsapp-amd64"
 amd64.sha256 = "35a35693a0249941f9fd1e0fa8ee43da384b4dea2faeb6b103469a474d7c7c24"
