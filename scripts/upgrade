@@ -9,6 +9,7 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
@@ -17,12 +18,11 @@ bot_synapse_db_user="@$botname:$server_name"
 #=================================================
 # GET CONFIG PANEL SETTINGS
 #=================================================
+pickle_key=$(ynh_app_setting_get --app=$app --key=pickle_key)
 async_media=$(ynh_app_setting_get --app=$app --key=async_media)
 displayname=$(ynh_app_setting_get --app=$app --key=displayname)
 avatar=$(ynh_app_setting_get --app=$app --key=avatar)
 ephemeral_events=$(ynh_app_setting_get --app=$app --key=ephemeral_events)
-enable_metrics=$(ynh_app_setting_get --app=$app --key=enable_metrics)
-listen_port=$(ynh_app_setting_get --app=$app --key=listen_port)
 os_name=$(ynh_app_setting_get --app=$app --key=os_name)
 browser_name=$(ynh_app_setting_get --app=$app --key=browser_name)
 username_template=$(ynh_app_setting_get --app=$app --key=username_template)
@@ -60,6 +60,14 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
+
+# Upgrade from <v0.11
+if [ -z "$pickle_key" ]
+then
+    pickle_key="maunium.net/go/mautrix-whatsapp"
+    ynh_app_setting_set --app=$app --key=pickle_key --value=$pickle_key
+fi
+
 
 # DB Backup missing because of wrong Upgrade from <=0.2.0
 if [ -z "$botname" ]
@@ -102,16 +110,6 @@ if [ -z "$ephemeral_events" ]
 then
   ephemeral_events="true"
   ynh_app_setting_set --app=$app --key=ephemeral_events --value=$ephemeral_events
-fi
-if [ -z "$enable_metrics" ]
-then
-  enable_metrics="false"
-  ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
-fi
-if [ -z "$listen_port" ]
-then
-  listen_port="127.0.0.1:8001"
-  ynh_app_setting_set --app=$app --key=listen_port --value=$listen_port
 fi
 if [ -z "$os_name" ]
 then
@@ -249,7 +247,7 @@ set__listadmin
 ynh_script_progression --message="Registering Synapse app-service" --weight=1
 
 $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 # Set permissions on app files
 chown -R $app:$app "$install_dir"
