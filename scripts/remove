@@ -11,7 +11,7 @@ ynh_script_progression "Loading installation settings..."
 app=$YNH_APP_INSTANCE_NAME
 
 db_user=$db_name
-synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
+synapse_install_dir=$(ynh_app_setting_get --app=$synapse_instance --key=install_dir)
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@""$botname"":""$server_name"
 
@@ -36,7 +36,6 @@ ynh_config_remove_logrotate
 ynh_script_progression "Removing various files..."
 
 # Remove a directory securely
-
 ynh_safe_rm "/etc/matrix-$synapse_instance/app-service/$app.yaml"
 $synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 

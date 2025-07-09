@@ -94,7 +94,6 @@ $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$syn
 
 $synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
 ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
 ynh_store_file_checksum "$install_dir/config.yaml"
 
@@ -106,18 +105,8 @@ ynh_script_progression "Configuring $app's systemd service..."
 # Create a dedicated systemd config
 ynh_config_add_systemd
 
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression "Configuring log rotation..."
-
 # Use logrotate to manage application logfile(s)
-ynh_config_add_logrotate  "/var/log/$app/$app.log"  $app/$app
-
-#=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-ynh_script_progression "Integrating service in YunoHost..."
+ynh_config_add_logrotate
 
 yunohost service add $app --description="$app daemon for bridging Whatsapp and Matrix messages" --log="/var/log/$app/$app.log"
 

@@ -56,23 +56,13 @@ then
     ynh_app_setting_set --app=$app --key=pickle_key --value=$pickle_key
 fi
 
-
 # DB Backup missing because of wrong Upgrade from <=0.2.0
 if [ -z "$botname" ]
 then
     botname=$(ynh_app_setting_get --key=whatsappbot)
     ynh_app_setting_set --key=botname --value=$botname
 fi
-if [ -z "$db_name" ]
-then
-    db_name=$(ynh_app_setting_get --key=mautrix_whatsapp_db_name)
-    ynh_app_setting_set --key=db_name --value=$db_name
-fi
-if [ -z "$db_pwd" ]
-then
-    db_pwd=$(ynh_app_setting_get --key=mautrix_whatsapp_db_pwd)
-    ynh_app_setting_set --key=db_pwd --value=$db_pwd
-fi
+
 ynh_app_setting_delete --key=whatsappbot
 ynh_app_setting_delete --key=mautrix_whatsapp_db_name
 ynh_app_setting_delete --key=mautrix_whatsapp_db_pwd
@@ -236,18 +226,8 @@ ynh_script_progression "Upgrading systemd configuration..."
 # Create a dedicated systemd config
 ynh_config_add_systemd
 
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression "Upgrading logrotate configuration..."
-
 # Use logrotate to manage application logfile(s)
-ynh_config_add_logrotate  "/var/log/$app/$app.log"  $app/$app
-
-#=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-ynh_script_progression "Integrating service in YunoHost..."
+ynh_config_add_logrotate
 
 yunohost service add $app --description="$app daemon for bridging Whatsapp and Matrix messages" --log="/var/log/$app/$app.log"
 

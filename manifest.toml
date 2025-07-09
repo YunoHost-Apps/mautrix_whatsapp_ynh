@@ -5,8 +5,8 @@ packaging_format = 2
 id = "mautrix_whatsapp"
 name = "Matrix-WhatsApp bridge"
 
-description.en = "Matrix / Synapse puppeting bridge for WhatsApp"
-description.fr = "Passerelle Matrix / Synapse pour WhatsApp"
+description.en = "Matrix/Synapse puppeting bridge for WhatsApp"
+description.fr = "Passerelle Matrix/Synapse pour WhatsApp"
 version = "0.12.2~ynh1"
 
 maintainers = ["thardev"]
@@ -19,12 +19,14 @@ admindoc = "https://docs.mau.fi/bridges/go/whatsapp/index.html"
 fund = "https://github.com/sponsors/tulir"
 
 [integration]
-yunohost = ">= 11.2.18"
+yunohost = ">= 12.0.9"
 helpers_version = "2.1"
 architectures = ["amd64", "arm64", "armhf"]
 multi_instance = true
+
 ldap = false
 sso = false
+
 disk = "100M"
 ram.build = "256M"
 ram.runtime = "1024M"
