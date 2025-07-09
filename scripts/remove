@@ -11,19 +11,16 @@ ynh_script_progression "Loading installation settings..."
 app=$YNH_APP_INSTANCE_NAME
 
 db_user=$db_name
+synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@""$botname"":""$server_name"
 
-#=================================================
-# STANDARD REMOVE
 #=================================================
 # REMOVE SERVICE INTEGRATION IN YUNOHOST
 #=================================================
 
 # Remove the service from the list of services known by YunoHost (added from `yunohost service add`)
-if ynh_hide_warnings yunohost service status $app >/dev/null
-then
-	ynh_script_progression "Removing $app service integration..."
+if ynh_hide_warnings yunohost service status $app >/dev/null; then
 	yunohost service remove $app
 fi
 
@@ -34,15 +31,14 @@ ynh_config_remove_systemd
 ynh_config_remove_logrotate
 
 #=================================================
-# SPECIFIC REMOVE
-#=================================================
 # REMOVE VARIOUS FILES
 #=================================================
 ynh_script_progression "Removing various files..."
 
 # Remove a directory securely
+
 ynh_safe_rm "/etc/matrix-$synapse_instance/app-service/$app.yaml"
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
 #=================================================
 # END OF SCRIPT

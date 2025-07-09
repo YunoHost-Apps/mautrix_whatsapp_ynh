@@ -4,6 +4,7 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 # Retrieve some values from selected Synapse instance and store them
+synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 ynh_app_setting_set --key=server_name --value=$server_name
@@ -28,8 +29,6 @@ async_media="false"
 displayname="WhatsApp bridge bot"
 avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
 ephemeral_events="true"
-enable_metrics="false"
-listen_port="127.0.0.1:8001"
 os_name="Mautrix-WhatsApp bridge"
 browser_name="unknown"
 username_template="whatsapp_{{.}}"
@@ -45,6 +44,7 @@ enable_relaybot="true"
 listrelay="*"
 listadmin="$botadmin"
 listuser="$botusers"
+pickle_key=$(ynh_string_random)
 
 ynh_app_setting_set --key=appserviceid --value=$appserviceid
 ynh_app_setting_set --key=async_media --value=$async_media
@@ -75,20 +75,12 @@ ynh_script_progression "Setting up source files..."
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$install_dir"
 
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R 750 "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
-#=================================================
-# SPECIFIC SETUP
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
 ynh_script_progression "Adding $app's configuration..."
 
 ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
-
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 400 "$install_dir/config.yaml"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app "$install_dir/config.yaml"
 
 # This calls allows to set multiple users during install question "botusers" specifying them separated by a comma
 set__listuser
@@ -101,7 +93,8 @@ set__listadmin
 ynh_script_progression "Registering Synapse app-service"
 
 $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
 #REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
 ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
@@ -122,9 +115,6 @@ ynh_script_progression "Configuring log rotation..."
 
 # Use logrotate to manage application logfile(s)
 ynh_config_add_logrotate  "/var/log/$app/$app.log"  $app/$app
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R 600 "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 700 "/var/log/$app"
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app /var/log/$app
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST

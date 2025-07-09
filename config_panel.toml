@@ -198,20 +198,3 @@ services = ["__APP__"]
         choices = ["debug", "info", "warn", "error", "fatal"]
         help = "Minimum severity for log messages printed to stdout/stderr. This doesn't affect the log file."
         bind = ":__INSTALL_DIR__/config.yaml"
-
-    [advanced.metrics]
-    name = "Prometheus Metrics"
-
-        [advanced.metrics.enable_metrics]
-        ask = "Enable Prometheus Metrics?"
-        type = "boolean"
-        yes = "true"
-        no = "false"
-        bind = "metrics>enabled:__INSTALL_DIR__/config.yaml"
-
-        [advanced.metrics.listen_port]
-        ask = "IP and Port for the Metrics listener?"
-        type = "string"
-        help = "Defaults to: '127.0.0.1:8001'. The path is always /metrics"
-        bind = "metrics>listen:__INSTALL_DIR__/config.yaml"
-        visible = "enable_metrics"

@@ -6,6 +6,7 @@ source /usr/share/yunohost/helpers
 
 server_name=$(ynh_app_setting_get --key=server_name)
 
+synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@$botname:$server_name"
 
@@ -34,7 +35,7 @@ ynh_psql_db_shell  < "./db.sql""
 ynh_script_progression "Registering Synapse app-service"
 
 $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 #REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 400 "$install_dir/config.yaml"
 #REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app "$install_dir/config.yaml"
