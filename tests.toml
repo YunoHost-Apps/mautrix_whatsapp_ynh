@@ -11,10 +11,11 @@ test_format = 1.0
 # For special usecases, sometimes you need to setup other things on the machine
 # prior to installing the app (such as installing another app)
 # (Remove this key entirely if not needed)
-domain="server.name"
-server_name="server.name"
 preinstall = """
     sudo yunohost tools update apps
+    sudo yunohost domain add matrix.domain.tld
+    domain=matrix.domain.tld
+    server_name=$domain
     sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh -a "domain=$domain&init_main_permission=all_users&server_name=$server_name&is_free_registration=$is_free_registration" --force
     """
 
@@ -37,10 +38,11 @@ args.botusers = "server.name"
 # This is an additional test suite
 [multiple_botusers]
 
-domain="server.name"
-server_name="server.name"
 preinstall = """
     sudo yunohost tools update apps
+    sudo yunohost domain add matrix.domain.tld
+    domain=matrix.domain.tld
+    server_name=$domain
     sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh -a "domain=$domain&init_main_permission=all_users&server_name=$server_name&is_free_registration=$is_free_registration" --force
     """
 
