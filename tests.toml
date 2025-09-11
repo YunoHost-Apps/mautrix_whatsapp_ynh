@@ -16,7 +16,7 @@ preinstall = """
     sudo yunohost domain add matrix.domain.tld
     domain=matrix.domain.tld
     server_name=$domain
-    sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh -a "domain=$domain&init_main_permission=all_users&server_name=$server_name&is_free_registrationfalse" --force
+    sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh -a "domain=$domain&init_main_permission=all_users&server_name=$server_name&is_free_registration=false" --force
     """
 
 # -------------------------------
