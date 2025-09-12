@@ -1,14 +1,14 @@
 #!/bin/bash
 source _common.sh
 source /usr/share/yunohost/helpers
-ynh_abort_if_errors
+#REMOVEME? ynh_abort_if_errors
 
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
 
 get__botname() {
-    botname=$(ynh_app_setting_get --app $app --key botname)
+    botname=$(ynh_app_setting_get --key botname)
     echo "${botname}"
 }
 
@@ -45,21 +45,21 @@ EOF
 #=================================================
 
 set__botname() {
-    old_botname=$(ynh_app_setting_get --app $app --key botname)
+    old_botname=$(ynh_app_setting_get --key botname)
     if [ "$botname" -eq "$old_botname" ] # Check to avoid updating botname when it's not needed.
     then
       return
     fi
 
-    ynh_app_setting_set --app=$app --key=botname --value="$botname"
-    synapse_instance=$(ynh_app_setting_get --app $app --key synapse_instance)
+    ynh_app_setting_set --key=botname --value="$botname"
+    synapse_instance=$(ynh_app_setting_get --key synapse_instance)
 
     sed -i "s/username:.*/username: $botname/" "$install_dir/config.yaml"
     "$install_dir/mautrix-whatsapp" -g -c "$install_dir/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
-    "/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh" || ynh_die --message="Synapse can't restart with the appservice configuration"
-    chown -R "$app:$app" "$install_dir"
-    ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
-    ynh_store_file_checksum --file="$install_dir/config.yaml"
+    "/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh" || ynh_die "Synapse can't restart with the appservice configuration"
+    #REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app:$app" "$install_dir"
+    ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+    ynh_store_file_checksum "$install_dir/config.yaml"
 }
 
 ynh_app_config_run $1
