@@ -2,7 +2,7 @@
 El puente está [configurado a grandes rasgos en la instalación](https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/blob/master/conf/config.yaml), por ejemplo, se permite admin y usuarix del bot.
 Se puede hacer una configuración más fina usando el panel de configuración existente en el panel de administración de Yunohost o modificando el
 siguiente archivo de configuración con SSH:
-```/opt/yunohost/mautrix_whatsapp/config.yaml```
+```/var/www/mautrix_whatsapp/config.yaml```
 y reiniciando el servicio mautrix_whatsapp.
 
 #### Cifrado de extremo a puente
