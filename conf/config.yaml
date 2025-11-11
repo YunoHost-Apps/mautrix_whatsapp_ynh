@@ -300,7 +300,7 @@ appservice:
     # A public address that external services can use to reach this appservice.
     # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
     # This value doesn't affect the registration file.
-    public_address: https://bridge.example.com
+    #public_address: https://bridge.example.com
 
     # The hostname and port where this appservice should listen.
     # For Docker, you generally have to change the hostname to 0.0.0.0.
@@ -450,7 +450,7 @@ double_puppet:
     # Servers to always allow double puppeting from.
     # This is only for other servers and should NOT contain the server the bridge is on.
     servers:
-        anotherserver.example.org: https://matrix.anotherserver.example.org
+        #anotherserver.example.org: https://matrix.anotherserver.example.org
     # Whether to allow client API URL discovery for other servers. When using this option,
     # users on other servers can use double puppeting even if their server URLs aren't
     # explicitly added to the servers map above.
@@ -458,7 +458,7 @@ double_puppet:
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
     secrets:
-        example.com: as_token:foobar
+        #example.com: as_token:foobar
 
 # End-to-bridge encryption support options.
 #
