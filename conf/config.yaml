@@ -13,14 +13,15 @@ network:
     get_proxy_url: null
     # Whether the proxy options should only apply to the login websocket and not to authenticated connections.
     proxy_only_login: false
-    
+
     # Displayname template for WhatsApp users.
-    # {{.PushName}}     - nickname set by the WhatsApp user
-    # {{.BusinessName}} - validated WhatsApp business name
-    # {{.Phone}}        - phone number (international format)
-    # {{.FullName}}     - Name you set in the contacts list
-    displayname_template: "{{or .BusinessName .PushName .JID}} (WA)"
-    
+    # {{.PushName}}      - nickname set by the WhatsApp user
+    # {{.BusinessName}}  - validated WhatsApp business name
+    # {{.Phone}}         - phone number (international format)
+    # {{.RedactedPhone}} - phone number with middle digits replaced by "∙"
+    # {{.FullName}}      - Name you set in the contacts list
+    displayname_template: '{{or .BusinessName .PushName .Phone .RedactedPhone "Unknown user"}} (WA)'
+
     # Should incoming calls send a message to the Matrix room?
     call_start_notices: true
     # Should another user's cryptographic identity changing send a message to Matrix?
@@ -63,7 +64,9 @@ network:
     # When direct media is enabled and a piece of media isn't available on the WhatsApp servers,
     # should it be automatically requested from the phone?
     direct_media_auto_request: true
-    
+    # Should the bridge automatically reconnect if it fails to connect on startup?
+    initial_auto_reconnect: true
+
     # Settings for converting animated stickers.
     animated_sticker:
         # Format to which animated stickers should be converted.
@@ -78,7 +81,7 @@ network:
             width: 320
             height: 320
             fps: 25 # only for webm, webp and gif (2, 5, 10, 20 or 25 recommended)
-    
+
     # Settings for handling history sync payloads.
     history_sync:
         # How many conversations should the bridge create after login?
@@ -88,6 +91,10 @@ network:
         # Should the bridge request a full sync from the phone when logging in?
         # This bumps the size of history syncs from 3 months to 1 year.
         request_full_sync: false
+        # Time to wait for history sync payloads before starting backfill. Each new payload resets the timer.
+        # If this is too low, the backfill may happen with incomplete history
+        # and backfill less messages than what is configured in the backfill section.
+        dispatch_wait: 1m
         # Configuration parameters that are sent to the phone along with the request full sync flag.
         # By default, (when the values are null or 0), the config isn't sent at all.
         full_sync_config:
