@@ -13,14 +13,15 @@ network:
     get_proxy_url: null
     # Whether the proxy options should only apply to the login websocket and not to authenticated connections.
     proxy_only_login: false
-    
+
     # Displayname template for WhatsApp users.
-    # {{.PushName}}     - nickname set by the WhatsApp user
-    # {{.BusinessName}} - validated WhatsApp business name
-    # {{.Phone}}        - phone number (international format)
-    # {{.FullName}}     - Name you set in the contacts list
-    displayname_template: "{{or .BusinessName .PushName .JID}} (WA)"
-    
+    # {{.PushName}}      - nickname set by the WhatsApp user
+    # {{.BusinessName}}  - validated WhatsApp business name
+    # {{.Phone}}         - phone number (international format)
+    # {{.RedactedPhone}} - phone number with middle digits replaced by "∙"
+    # {{.FullName}}      - Name you set in the contacts list
+    displayname_template: '{{or .BusinessName .PushName .Phone .RedactedPhone "Unknown user"}} (WA)'
+
     # Should incoming calls send a message to the Matrix room?
     call_start_notices: true
     # Should another user's cryptographic identity changing send a message to Matrix?
@@ -63,7 +64,9 @@ network:
     # When direct media is enabled and a piece of media isn't available on the WhatsApp servers,
     # should it be automatically requested from the phone?
     direct_media_auto_request: true
-    
+    # Should the bridge automatically reconnect if it fails to connect on startup?
+    initial_auto_reconnect: true
+
     # Settings for converting animated stickers.
     animated_sticker:
         # Format to which animated stickers should be converted.
@@ -78,7 +81,7 @@ network:
             width: 320
             height: 320
             fps: 25 # only for webm, webp and gif (2, 5, 10, 20 or 25 recommended)
-    
+
     # Settings for handling history sync payloads.
     history_sync:
         # How many conversations should the bridge create after login?
@@ -88,6 +91,10 @@ network:
         # Should the bridge request a full sync from the phone when logging in?
         # This bumps the size of history syncs from 3 months to 1 year.
         request_full_sync: false
+        # Time to wait for history sync payloads before starting backfill. Each new payload resets the timer.
+        # If this is too low, the backfill may happen with incomplete history
+        # and backfill less messages than what is configured in the backfill section.
+        dispatch_wait: 1m
         # Configuration parameters that are sent to the phone along with the request full sync flag.
         # By default, (when the values are null or 0), the config isn't sent at all.
         full_sync_config:
@@ -129,6 +136,7 @@ bridge:
     # By default, users who are in the same group on the remote network will be
     # in the same Matrix room bridged to that group. If this is set to true,
     # every user will get their own Matrix room instead.
+    # SETTING THIS IS IRREVERSIBLE AND POTENTIALLY DESTRUCTIVE IF PORTALS ALREADY EXIST.
     split_portals: false
     # Should the bridge resend `m.bridge` events to all portals on startup?
     resend_bridge_info: false
@@ -139,6 +147,9 @@ bridge:
     # These contain the same data that can be posted to an external HTTP server using homeserver -> status_endpoint.
     # Allowed values: none, errors, all
     bridge_status_notices: errors
+    # How long after an unknown error should the bridge attempt a full reconnect?
+    # Must be at least 1 minute. The bridge will add an extra ±20% jitter to this value.
+    unknown_error_auto_reconnect: null
 
     # Should leaving Matrix rooms be bridged as leaving groups on the remote network?
     bridge_matrix_leave: true
@@ -154,6 +165,9 @@ bridge:
     mute_only_on_create: true
     # Should the bridge check the db to ensure that incoming events haven't been handled before
     deduplicate_matrix_messages: false
+    # Should cross-room reply metadata be bridged?
+    # Most Matrix clients don't support this and servers may reject such messages too.
+    cross_room_replies: false
 
     # What should be done to portal rooms when a user logs out or is logged out?
     # Permitted values:
@@ -241,7 +255,7 @@ database:
     #           https://github.com/mattn/go-sqlite3#connection-string
     #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
     #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-    uri: postgres://__APP__:__DB_PWD__@localhost:5432/__DB_NAME__
+    uri: postgres://__APP__:__DB_PWD__@localhost:5432/__DB_NAME__?sslmode=disable
     # Maximum number of connections.
     max_open_conns: 5
     max_idle_conns: 1
@@ -293,7 +307,7 @@ appservice:
     # A public address that external services can use to reach this appservice.
     # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
     # This value doesn't affect the registration file.
-    public_address: https://bridge.example.com
+    #public_address: https://bridge.example.com
 
     # The hostname and port where this appservice should listen.
     # For Docker, you generally have to change the hostname to 0.0.0.0.
@@ -355,10 +369,8 @@ analytics:
 
 # Settings for provisioning API
 provisioning:
-    # Prefix for the provisioning API paths.
-    prefix: /_matrix/provision
     # Shared secret for authentication. If set to "generate" or null, a random secret will be generated,
-    # or if set to "disable", the provisioning API will be disabled.
+    # or if set to "disable", the provisioning API will be disabled. Must be at least 16 characters.
     shared_secret: generate
     # Whether to allow provisioning API requests to be authed using Matrix access tokens.
     # This follows the same rules as double puppeting to determine which server to contact to check the token,
@@ -445,7 +457,7 @@ double_puppet:
     # Servers to always allow double puppeting from.
     # This is only for other servers and should NOT contain the server the bridge is on.
     servers:
-        anotherserver.example.org: https://matrix.anotherserver.example.org
+        #anotherserver.example.org: https://matrix.anotherserver.example.org
     # Whether to allow client API URL discovery for other servers. When using this option,
     # users on other servers can use double puppeting even if their server URLs aren't
     # explicitly added to the servers map above.
@@ -453,7 +465,7 @@ double_puppet:
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
     secrets:
-        example.com: as_token:foobar
+        #example.com: as_token:foobar
 
 # End-to-bridge encryption support options.
 #
@@ -474,9 +486,13 @@ encryption:
     # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
     # Changing this option requires updating the appservice registration file.
     msc4190: false
+    # Should the bridge bot generate a recovery key and cross-signing keys and verify itself?
+    # Note that without the latest version of MSC4190, this will fail if you reset the bridge database.
+    # The generated recovery key will be saved in the kv_store table under `recovery_key`.
+    self_sign: false
     # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
     # You must use a client that supports requesting keys from other users to use this feature.
-    allow_key_sharing: false
+    allow_key_sharing: true
     # Pickle key for encrypting encryption keys in the bridge database.
     # If set to generate, a random key will be generated.
     pickle_key: __PICKLE_KEY__
@@ -547,4 +563,4 @@ logging:
           filename: /var/log/__APP__/__APP__.log
           max_size: 100
           max_backups: 10
-          compress: true
+          compress: false

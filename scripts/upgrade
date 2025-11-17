@@ -1,16 +1,10 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
 synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
-server_name=$(ynh_app_setting_get --app=$app --key=server_name)
+server_name=$(ynh_app_setting_get --key=server_name)
 
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@$botname:$server_name"
@@ -18,206 +12,193 @@ bot_synapse_db_user="@$botname:$server_name"
 #=================================================
 # GET CONFIG PANEL SETTINGS
 #=================================================
-pickle_key=$(ynh_app_setting_get --app=$app --key=pickle_key)
-async_media=$(ynh_app_setting_get --app=$app --key=async_media)
-displayname=$(ynh_app_setting_get --app=$app --key=displayname)
-avatar=$(ynh_app_setting_get --app=$app --key=avatar)
-ephemeral_events=$(ynh_app_setting_get --app=$app --key=ephemeral_events)
-os_name=$(ynh_app_setting_get --app=$app --key=os_name)
-browser_name=$(ynh_app_setting_get --app=$app --key=browser_name)
-username_template=$(ynh_app_setting_get --app=$app --key=username_template)
-personal_filtering_spaces=$(ynh_app_setting_get --app=$app --key=personal_filtering_spaces)
-delivery_receipts=$(ynh_app_setting_get --app=$app --key=delivery_receipts)
-send_presence_on_typing=$(ynh_app_setting_get --app=$app --key=send_presence_on_typing)
-url_previews=$(ynh_app_setting_get --app=$app --key=url_previews)
-encryption_default=$(ynh_app_setting_get --app=$app --key=encryption_default)
-encryption_require=$(ynh_app_setting_get --app=$app --key=encryption_require)
-enable_relaybot=$(ynh_app_setting_get --app=$app --key=enable_relaybot)
-admin_only=$(ynh_app_setting_get --app=$app --key=admin_only)
-print_level=$(ynh_app_setting_get --app=$app --key=print_level)
+pickle_key=$(ynh_app_setting_get --key=pickle_key)
+async_media=$(ynh_app_setting_get --key=async_media)
+displayname=$(ynh_app_setting_get --key=displayname)
+avatar=$(ynh_app_setting_get --key=avatar)
+ephemeral_events=$(ynh_app_setting_get --key=ephemeral_events)
+os_name=$(ynh_app_setting_get --key=os_name)
+browser_name=$(ynh_app_setting_get --key=browser_name)
+username_template=$(ynh_app_setting_get --key=username_template)
+personal_filtering_spaces=$(ynh_app_setting_get --key=personal_filtering_spaces)
+delivery_receipts=$(ynh_app_setting_get --key=delivery_receipts)
+send_presence_on_typing=$(ynh_app_setting_get --key=send_presence_on_typing)
+url_previews=$(ynh_app_setting_get --key=url_previews)
+encryption_default=$(ynh_app_setting_get --key=encryption_default)
+encryption_require=$(ynh_app_setting_get --key=encryption_require)
+enable_relaybot=$(ynh_app_setting_get --key=enable_relaybot)
+admin_only=$(ynh_app_setting_get --key=admin_only)
+print_level=$(ynh_app_setting_get --key=print_level)
 
-listrelay=$(ynh_app_setting_get --app=$app --key=listrelay)
-listuser=$(ynh_app_setting_get --app=$app --key=listuser)
-listadmin=$(ynh_app_setting_get --app=$app --key=listadmin)
+listrelay=$(ynh_app_setting_get --key=listrelay)
+listuser=$(ynh_app_setting_get --key=listuser)
+listadmin=$(ynh_app_setting_get --key=listadmin)
 
-#=================================================
-# CHECK VERSION
-#=================================================
-ynh_script_progression --message="Checking version..." --weight=1
+ynh_script_progression "Checking version..."
 
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=1
+ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service=$app --action="stop"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
+ynh_script_progression "Ensuring downward compatibility..."
 
 # Upgrade from <v0.11
 if [ -z "$pickle_key" ]
 then
     pickle_key="maunium.net/go/mautrix-whatsapp"
-    ynh_app_setting_set --app=$app --key=pickle_key --value=$pickle_key
+    ynh_app_setting_set --key=pickle_key --value=$pickle_key
 fi
-
 
 # DB Backup missing because of wrong Upgrade from <=0.2.0
 if [ -z "$botname" ]
 then
-    botname=$(ynh_app_setting_get --app=$app --key=whatsappbot)
-    ynh_app_setting_set --app=$app --key=botname --value=$botname
+    botname=$(ynh_app_setting_get --key=whatsappbot)
+    ynh_app_setting_set --key=botname --value=$botname
 fi
 if [ -z "$db_name" ]
 then
-    db_name=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_name)
-    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+    db_name=$(ynh_app_setting_get --key=mautrix_whatsapp_db_name)
+    ynh_app_setting_set --key=db_name --value=$db_name
 fi
 if [ -z "$db_pwd" ]
 then
-    db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_whatsapp_db_pwd)
-    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+    db_pwd=$(ynh_app_setting_get --key=mautrix_whatsapp_db_pwd)
+    ynh_app_setting_set --key=db_pwd --value=$db_pwd
 fi
-ynh_app_setting_delete --app=$app --key=whatsappbot
-ynh_app_setting_delete --app=$app --key=mautrix_whatsapp_db_name
-ynh_app_setting_delete --app=$app --key=mautrix_whatsapp_db_pwd
+ynh_app_setting_delete --key=whatsappbot
+ynh_app_setting_delete --key=mautrix_whatsapp_db_name
+ynh_app_setting_delete --key=mautrix_whatsapp_db_pwd
 
 # SET STANDARD SETTINGS FROM DEFAULT CONFIG
 
 if [ -z "$async_media" ]
 then
   async_media="false"
-  ynh_app_setting_set --app=$app --key=async_media --value=$async_media
+  ynh_app_setting_set --key=async_media --value=$async_media
 fi
 if [ -z "$displayname" ]
 then
   displayname="WhatsApp bridge bot"
-  ynh_app_setting_set --app=$app --key=displayname --value=$displayname
+  ynh_app_setting_set --key=displayname --value=$displayname
 fi
 if [ -z "$avatar" ]
 then
   avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
-  ynh_app_setting_set --app=$app --key=avatar --value=$avatar
+  ynh_app_setting_set --key=avatar --value=$avatar
 fi
 if [ -z "$ephemeral_events" ]
 then
   ephemeral_events="true"
-  ynh_app_setting_set --app=$app --key=ephemeral_events --value=$ephemeral_events
+  ynh_app_setting_set --key=ephemeral_events --value=$ephemeral_events
 fi
 if [ -z "$os_name" ]
 then
   os_name="Mautrix-WhatsApp bridge"
-  ynh_app_setting_set --app=$app --key=os_name --value=$os_name
+  ynh_app_setting_set --key=os_name --value=$os_name
 fi
 if [ -z "$browser_name" ]
 then
   browser_name="unknown"
-  ynh_app_setting_set --app=$app --key=browser_name --value=$browser_name
+  ynh_app_setting_set --key=browser_name --value=$browser_name
 fi
 if [ -z "$username_template" ]
 then
   username_template="whatsapp_{{.}}"
-  ynh_app_setting_set --app=$app --key=username_template --value=$username_template
+  ynh_app_setting_set --key=username_template --value=$username_template
 fi
 if [ -z "$personal_filtering_spaces" ]
 then
   personal_filtering_spaces="false"
-  ynh_app_setting_set --app=$app --key=personal_filtering_spaces --value=$personal_filtering_spaces
+  ynh_app_setting_set --key=personal_filtering_spaces --value=$personal_filtering_spaces
 fi
 if [ -z "$delivery_receipts" ]
 then
   delivery_receipts="false"
-  ynh_app_setting_set --app=$app --key=delivery_receipts --value=$delivery_receipts
+  ynh_app_setting_set --key=delivery_receipts --value=$delivery_receipts
 fi
 if [ -z "$send_presence_on_typing" ]
 then
   send_presence_on_typing="false"
-  ynh_app_setting_set --app=$app --key=send_presence_on_typing --value=$send_presence_on_typing
+  ynh_app_setting_set --key=send_presence_on_typing --value=$send_presence_on_typing
 fi
 if [ -z "$url_previews" ]
 then
   url_previews="false"
-  ynh_app_setting_set --app=$app --key=url_previews --value=$url_previews
+  ynh_app_setting_set --key=url_previews --value=$url_previews
 fi
 if [ -z "$encryption_default" ]
 then
   encryption_default="false"
-  ynh_app_setting_set --app=$app --key=encryption_default --value=$encryption_default
+  ynh_app_setting_set --key=encryption_default --value=$encryption_default
 fi
 if [ -z "$encryption_require" ]
 then
   encryption_require="false"
-  ynh_app_setting_set --app=$app --key=encryption_require --value=$encryption_require
+  ynh_app_setting_set --key=encryption_require --value=$encryption_require
 fi
 if [ -z "$enable_relaybot" ]
 then
   enable_relaybot="true"
-  ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
+  ynh_app_setting_set --key=enable_relaybot --value=$enable_relaybot
 fi
 if [ -z "$admin_only" ]
 then
   admin_only="true"
-  ynh_app_setting_set --app=$app --key=admin_only --value=$admin_only
+  ynh_app_setting_set --key=admin_only --value=$admin_only
 fi
 if [ -z "$print_level" ]
 then
   print_level="info"
-  ynh_app_setting_set --app=$app --key=print_level --value=$print_level
+  ynh_app_setting_set --key=print_level --value=$print_level
 fi
 if [ -z "$listrelay" ]
 then
     listrelay="*"
-    ynh_app_setting_set --app=$app --key=listrelay --value=$listrelay
+    ynh_app_setting_set --key=listrelay --value=$listrelay
 fi
 if [ -z "$enable_relaybot" ]
 then
     enable_relaybot="true"
-    ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
+    ynh_app_setting_set --key=enable_relaybot --value=$enable_relaybot
 fi
 
 if [ -z "$listuser" ]
 then
-    listuser=$(ynh_app_setting_get --app=$app --key=botusers)
-    ynh_app_setting_set --app=$app --key=listuser --value=$listuser
-    ynh_app_setting_delete --app=$app --key=botusers
+    listuser=$(ynh_app_setting_get --key=botusers)
+    ynh_app_setting_set --key=listuser --value=$listuser
+    ynh_app_setting_delete --key=botusers
 fi
 
 if [ -z "$listadmin" ]
 then
-    listadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
-    ynh_app_setting_set --app=$app --key=listadmin --value=$listadmin
-    ynh_app_setting_delete --app=$app --key=botadmin
+    listadmin=$(ynh_app_setting_get --key=botadmin)
+    ynh_app_setting_set --key=listadmin --value=$listadmin
+    ynh_app_setting_delete --key=botadmin
 fi
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-	ynh_script_progression --message="Upgrading source files..." --weight=2
+ynh_script_progression "Upgrading source files..."
 
-	# Download, check integrity, uncompress and patch the source from app.src
-    ynh_setup_source --dest_dir="$install_dir"
-fi
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$install_dir"
 
 chmod 750 "$install_dir"
 chmod -R 750 "$install_dir"
 chown -R $app:$app "$install_dir"
 
 #=================================================
-# SPECIFIC UPGRADE
-#=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Updating a configuration file..." --weight=2
+ynh_script_progression "Updating configuration..."
 
 # reset permissions to be able to apply_permissions with app_setting values after upgrade
 listrelay_=$listrelay
@@ -227,10 +208,7 @@ listrelay="*"
 listuser="@user:domain.tld"
 listadmin="@admin:domain.tld"
 
-ynh_add_config --template="../conf/config.yaml" --destination="$install_dir/config.yaml"
-
-chmod 400 "$install_dir/config.yaml"
-chown $app:$app "$install_dir/config.yaml"
+ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
 
 listrelay=$listrelay_
 listuser=$listuser_
@@ -244,54 +222,49 @@ set__listadmin
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
-ynh_script_progression --message="Registering Synapse app-service" --weight=1
+ynh_script_progression "Registering Synapse app-service"
 
 $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
 $synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 # Set permissions on app files
 chown -R $app:$app "$install_dir"
-ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
-ynh_store_file_checksum --file="$install_dir/config.yaml"
+ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+ynh_store_file_checksum "$install_dir/config.yaml"
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Upgrading systemd configuration..." --weight=4
+ynh_script_progression "Upgrading systemd configuration..."
 
 # Create a dedicated systemd config
-ynh_add_systemd_config
+ynh_config_add_systemd
 
-#=================================================
-# GENERIC FINALIZATION
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
+ynh_script_progression "Upgrading logrotate configuration..."
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app/$app.log" --nonappend --specific_user $app/$app
-chmod -R 600 "/var/log/$app"
-chmod 700 "/var/log/$app"
-chown -R $app:$app /var/log/$app
+ynh_config_add_logrotate  "/var/log/$app/$app.log"  $app/$app
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
+ynh_script_progression "Integrating service in YunoHost..."
 
 yunohost service add $app --description="$app daemon for bridging Whatsapp and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start"
+ynh_systemctl --service=$app --action="start"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"
