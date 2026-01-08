@@ -4,8 +4,6 @@
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
-server_name=$(ynh_app_setting_get --key=server_name)
-
 synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@$botname:$server_name"
@@ -58,7 +56,7 @@ mkdir --parents "/var/log/$app"
 #=================================================
 ynh_script_progression "Integrating service in YunoHost..."
 
-yunohost service add $app --description="$app daemon for bridging Whatsapp and Matrix messages" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging WhatsApp and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -66,7 +64,7 @@ yunohost service add $app --description="$app daemon for bridging Whatsapp and M
 ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
-ynh_systemctl --service=$app --action="start"
+ynh_systemctl --service="$app" --action="start"
 
 #=================================================
 # END OF SCRIPT

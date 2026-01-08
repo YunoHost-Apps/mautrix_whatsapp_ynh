@@ -156,7 +156,7 @@ ynh_config_add_systemd
 ynh_script_progression "Configuring log rotation..."
 
 # Use logrotate to manage application logfile(s)
-ynh_config_add_logrotate "/var/log/$app/$app.log"
+ynh_config_add_logrotate "/var/log/$app/$app.log" $app/$app
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
@@ -171,7 +171,7 @@ yunohost service add $app --description="$app daemon for bridging WhatsApp and M
 ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
-ynh_systemctl --service=$app --action="start"
+ynh_systemctl --service="$app" --action="start"
 
 #=================================================
 # END OF SCRIPT

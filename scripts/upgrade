@@ -49,7 +49,7 @@ ynh_script_progression "Checking version..."
 #=================================================
 ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemctl --service=$app --action="stop"
+ynh_systemctl --service="$app" --action="stop"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
@@ -246,14 +246,14 @@ ynh_config_add_systemd
 ynh_script_progression "Upgrading logrotate configuration..."
 
 # Use logrotate to manage application logfile(s)
-ynh_config_add_logrotate  "/var/log/$app/$app.log"
+ynh_config_add_logrotate "/var/log/$app/$app.log" $app/$app
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
 ynh_script_progression "Integrating service in YunoHost..."
 
-yunohost service add $app --description="$app daemon for bridging Whatsapp and Matrix messages" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging WhatsApp and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -261,7 +261,7 @@ yunohost service add $app --description="$app daemon for bridging Whatsapp and M
 ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
-ynh_systemctl --service=$app --action="start"
+ynh_systemctl --service="$app" --action="start"
 
 #=================================================
 # END OF SCRIPT
