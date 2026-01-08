@@ -1,5 +1,12 @@
 #!/bin/bash
 
+#=================================================
+# COMMON VARIABLES AND CUSTOM HELPERS
+#=================================================
+
+network_name="WhatsApp"
+network_script="whatsapp"
+
 get_synapse_db_name() {
 	# Parameters: synapse instance identifier
 	# Returns: database name

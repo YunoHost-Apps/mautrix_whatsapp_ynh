@@ -68,16 +68,6 @@ ynh_script_progression "Starting $app's systemd service..."
 # Start a systemd service
 ynh_systemctl --service=$app --action="start"
 
-# Wait until the synapse user is created
-sleep 30
-    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-    if [ "$bot_synapse_adm" = true ]
-    then
-    ynh_psql_db_shell $synapse_db_name <<< "UPDATE users SET admin = 1 WHERE name = ""$botname"";"
-    #yunohost app action run $synapse_instance set_admin_user -a username=$botname
-    fi
-ynh_systemctl --service=$app --action="restart"
-
 #=================================================
 # END OF SCRIPT
 #=================================================

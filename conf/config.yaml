@@ -20,7 +20,7 @@ network:
     # {{.Phone}}         - phone number (international format)
     # {{.RedactedPhone}} - phone number with middle digits replaced by "∙"
     # {{.FullName}}      - Name you set in the contacts list
-    displayname_template: '{{or .BusinessName .PushName .Phone .RedactedPhone "Unknown user"}} (WA)'
+    displayname_template: '{{or .BusinessName .PushName .RedactedPhone "Unknown user"}} (WA)'
 
     # Should incoming calls send a message to the Matrix room?
     call_start_notices: true
@@ -127,7 +127,7 @@ bridge:
     personal_filtering_spaces: __PERSONAL_FILTERING_SPACES__
     # Whether the bridge should set names and avatars explicitly for DM portals.
     # This is only necessary when using clients that don't support MSC4171.
-    private_chat_portal_meta: false
+    private_chat_portal_meta: true
     # Should events be handled asynchronously within portal rooms?
     # If true, events may end up being out of order, but slow events won't block other ones.
     # This is not yet safe to use.
@@ -315,7 +315,7 @@ appservice:
     port: __PORT__
 
     # The unique ID of this appservice.
-    id: __APPSERVICEID__
+    id: __APP__
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
