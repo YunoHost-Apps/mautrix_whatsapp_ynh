@@ -169,7 +169,7 @@ services = ["__APP__"]
         [advanced.network.browser_name]
         ask = "Browser name that determines the logo shown in the mobile app."
         type = "select"
-        choices = ["unknown", "chrome", "firefox", "ie", "opera", "safari", "edge", "desktop", "ipad", "android_tablet", "ohana", "aloha", "catalina", "tcl_tv", "IOS_PHONE", "IOS_CATALYST", "ANDROID_PHONE, "ANDROID_AMBIGUOUS", "WEAR_OS", "AR_WRIST", "AR_DEVICE", "UWP"]
+        choices = ["unknown", "chrome", "firefox", "ie", "opera", "safari", "edge", "desktop", "ipad", "android_tablet", "ohana", "aloha", "catalina", "tcl_tv", "IOS_PHONE", "IOS_CATALYST", "ANDROID_PHONE", "ANDROID_AMBIGUOUS", "WEAR_OS", "AR_WRIST", "AR_DEVICE", "UWP"]
         help = "Must be 'unknown' for a generic icon or a valid browser name if you want a specific logo."
         bind = ":__INSTALL_DIR__/config.yaml"
 
