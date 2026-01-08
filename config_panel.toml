@@ -158,7 +158,7 @@ services = ["__APP__"]
         [advanced.network.displayname_template]
         ask = "Displayname template for __NETWORK_NAME__ users"
         type = "string"
-        help = "Defaults to '{{or .BusinessName .PushName .RedactedPhone "Unknown user"}} (WA)'. validated WhatsApp business name. nickname set by the WhatsApp user. phone number with middle digits replaced by "∙"."
+        help = "Defaults to '{{or .BusinessName .PushName .RedactedPhone "Unknown user"}} (WA)'. validated WhatsApp business name. nickname set by the WhatsApp user. phone number with middle digits replaced by '∙'."
         bind = ":__INSTALL_DIR__/config.yaml"
 
         [advanced.network.os_name]
