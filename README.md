@@ -4,8 +4,8 @@ It shall NOT be edited by hand.
 -->
 
 <h1>
-  <img src="https://raw.githubusercontent.com/YunoHost/apps/main/logos/mautrix_whatsapp.png" width="32px" alt="Logo of Matrix-WhatsApp bridge">
-  Matrix-WhatsApp bridge, packaged for YunoHost
+  <img src="https://raw.githubusercontent.com/YunoHost/apps/main/logos/mautrix_whatsapp.png" width="32px" alt="Logo of Matrix WhatsApp bridge">
+  Matrix WhatsApp bridge, packaged for YunoHost
 </h1>
 
 Matrix / Synapse puppeting bridge for WhatsApp
@@ -22,7 +22,7 @@ Matrix / Synapse puppeting bridge for WhatsApp
 
 [![Automatic tests level](https://apps.yunohost.org/badge/cilevel/mautrix_whatsapp)](https://ci-apps.yunohost.org/ci/apps/mautrix_whatsapp/)
 
-🛠️ Upstream Matrix-WhatsApp bridge repository: <https://github.com/mautrix/whatsapp>
+🛠️ Upstream Matrix WhatsApp bridge repository: <https://github.com/mautrix/whatsapp>
 
 Pull request are welcome and should target the [`testing` branch](https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing).
 
