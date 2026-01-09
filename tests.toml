@@ -28,8 +28,10 @@ preinstall = """
 # and also install args with a "default" provided in the manifest..
 # It should only make sense to declare custom args here for args with no default values
 
-args.botadmin = "@johndoe:server.name"
-args.botusers = "server.name"
+domain=matrix.domain.tld
+server_name=$domain
+args.botadmin = "@johndoe:$server_name"
+args.botusers = "$server_name"
 
 # -------------------------------
 # Commits to test upgrade from
@@ -50,5 +52,7 @@ preinstall = """
 
 only = ["install.subdir"]
 
-args.botadmin = "@johndoe:server.name"
-args.botusers = "@john:server.name,@jdoe:server.name,@janedoe:server.name"
+domain=matrix.domain.tld
+server_name=$domain
+args.botadmin = "@johndoe:$server_name"
+args.botusers = "@john:$server_name,@jdoe:$server_name,@janedoe:$server_name"
