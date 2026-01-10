@@ -153,10 +153,10 @@ services = ["__APP__"]
     help = "There are security and privacy risks if you change these settings without knowing what you do!"
 
     [advanced.network]
-    name = "__NETWORK_NAME__ specific config options"
+    name = "WhatsApp specific config options"
 
         [advanced.network.displayname_template]
-        ask = "Displayname template for __NETWORK_NAME__ users"
+        ask = "Displayname template for WhatsApp users"
         type = "string"
         help = "Defaults to '{{or .BusinessName .PushName .RedactedPhone 'Unknown user'}} (WA)'. validated WhatsApp business name. nickname set by the WhatsApp user. phone number with middle digits replaced by '∙'."
         bind = ":__INSTALL_DIR__/config.yaml"

@@ -1,5 +1,5 @@
 [Unit]
-Description=Matrix __NETWORK_NAME__ Bridge
+Description=Matrix WhatsApp Bridge
 After=matrix-synapse.service
 
 [Service]
@@ -7,7 +7,7 @@ Type=simple
 User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__/
-ExecStart=__INSTALL_DIR__/mautrix-__NETWORK_SCRIPT__ -c=__INSTALL_DIR__/config.yaml
+ExecStart=__INSTALL_DIR__/mautrix-whatsapp -c=__INSTALL_DIR__/config.yaml
 Restart=always
 RestartSec=3
 
