@@ -46,6 +46,11 @@ os_name="Mautrix-WhatsApp bridge"
 browser_name="unknown"
 send_presence_on_typing="false"
 url_previews="false"
+ynh_app_setting_set --key=os_name --value=$os_name
+ynh_app_setting_set --key=browser_name --value=$browser_name
+ynh_app_setting_set --key=send_presence_on_typing --value=$send_presence_on_typing
+ynh_app_setting_set --key=url_previews --value=$url_previews
+
 
 # Config options that affect the central bridge module.
 personal_filtering_spaces="false"
@@ -75,11 +80,6 @@ pickle_key=$(ynh_string_random)
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
 print_level="info"
-
-ynh_app_setting_set --key=os_name --value=$os_name
-ynh_app_setting_set --key=browser_name --value=$browser_name
-ynh_app_setting_set --key=send_presence_on_typing --value=$send_presence_on_typing
-ynh_app_setting_set --key=url_previews --value=$url_previews
 
 ynh_app_setting_set --key=personal_filtering_spaces --value=$personal_filtering_spaces
 ynh_app_setting_set --key=enable_relaybot --value=$enable_relaybot
@@ -119,6 +119,8 @@ ynh_setup_source --dest_dir="$install_dir"
 # ADD A CONFIGURATION
 #=================================================
 ynh_script_progression "Adding $app's configuration..."
+# as_token="\"This value is generated when generating the registration\""
+# hs_token="\"This value is generated when generating the registration\""
 
 ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
 # Set permissions on app files

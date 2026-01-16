@@ -13,7 +13,7 @@ maintainers = ["thardev"]
 
 [upstream]
 license = "AGPL-3.0-or-later"
-website = "https://maunium.net/go/mautrix-whatsapp/"
+website = "https://maunium.net/go/mautrix-whatsapp"
 code = "https://github.com/mautrix/whatsapp"
 admindoc = "https://docs.mau.fi/bridges/go/whatsapp/index.html"
 fund = "https://github.com/sponsors/tulir"
@@ -63,8 +63,8 @@ ram.runtime = "128M"
     ask.fr = "Choisissez le compte Matrix administrateur du robot WhatsApp."
     type = "string"
     example = "@johndoe:localsynapse.servername or @johndoe:matrix.org"
-    help.en = "It does not need to be a local Synapse account. Valid formats are @johndoe:localsynapse.servername or @johndoe:matrix.org"
-    help.fr = "Cela peut ne pas être un compte local Synapse. Les formats valables sont @johndoe:localsynapse.servername or @johndoe:matrix.org"
+    help.en = "The administrator does not need to be a local Synapse account. Valid formats are @johndoe:localsynapse.servername or @johndoe:matrix.org"
+    help.fr = "L'administrateur peut ne pas être un compte local Synapse. Les formats valables sont @johndoe:localsynapse.servername or @johndoe:matrix.org"
     default = "Your main Matrix account"
 
     [install.botusers]
