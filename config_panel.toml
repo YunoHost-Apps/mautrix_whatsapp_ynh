@@ -173,6 +173,13 @@ services = ["__APP__"]
         help = "Must be 'unknown' for a generic icon or a valid browser name if you want a specific logo."
         bind = ":__INSTALL_DIR__/config.yaml"
 
+        [advanced.network.disable_view_once]
+        ask = "Should view-once messages disappear shortly after sending a read receipt on Matrix?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        bind = ":__INSTALL_DIR__/config.yaml"
+
     [advanced.appservice]
     name = "HomeServer Application Service"
 
@@ -181,7 +188,7 @@ services = ["__APP__"]
         type = "boolean"
         yes = "true"
         no = "false"
-        help = "Enable only if HomeServer supports https://github.com/matrix-org/matrix-spec-proposals/pull/2246?"
+        help = "Enable only if HomeServer supports https://github.com/matrix-org/matrix-spec-proposals/pull/2246"
         bind = ":__INSTALL_DIR__/config.yaml"
 
         [advanced.appservice.ephemeral_events]
