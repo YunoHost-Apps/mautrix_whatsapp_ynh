@@ -34,7 +34,7 @@ ynh_exec_as_app $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r 
 # Required because between ynh_config_add and here config.yaml gets to chown root:root
 chown $app:$app "$install_dir/config.yaml"
 
-$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+sudo -u $synapse_instance $synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 #=================================================
 # RESTORE SYSTEMD
