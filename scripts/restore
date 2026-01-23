@@ -29,7 +29,7 @@ ynh_psql_db_shell  < "./db.sql"
 #=================================================
 ynh_script_progression "Registering Synapse app-service"
 
-chmod 750 "$install_dir/mautrix-whatsapp"
+chmod u+x "$install_dir/mautrix-whatsapp" # Execute permissions for app user
 $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
 # We need to run mautrix-whatsapp -g (registration) as root to be able to write in /etc/matrix-...
 # Then config.yaml somehow gets chown root:root , so we need to chown $app:$app
