@@ -135,12 +135,13 @@ set__listadmin
 ynh_script_progression "Registering Synapse app-service"
 
 chmod 750 "$install_dir/mautrix-whatsapp"
-ynh_exec_as_app $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-# Required because between ynh_config_add and here config.yaml gets to chown root:root
+$install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+# We need to run mautrix-whatsapp -g (registration) as root to be able to write in /etc/matrix-...
+# Then config.yaml somehow gets chown root:root , so we need to chown $app:$app
 chown $app:$app "$install_dir/config.yaml"
 ynh_store_file_checksum "$install_dir/config.yaml"
 
-sudo -u $synapse_instance $synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
 
 #=================================================
