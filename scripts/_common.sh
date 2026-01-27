@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#=================================================
+# COMMON VARIABLES AND CUSTOM HELPERS
+#=================================================
+
 get_synapse_db_name() {
 	# Parameters: synapse instance identifier
 	# Returns: database name

@@ -4,8 +4,6 @@
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
-server_name=$(ynh_app_setting_get --key=server_name)
-
 synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@$botname:$server_name"
@@ -24,18 +22,20 @@ ynh_restore "$install_dir"
 #=================================================
 ynh_script_progression "Restoring the PostgreSQL database..."
 
-ynh_psql_db_shell  < "./db.sql"
+ynh_psql_db_shell < "./db.sql"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 ynh_script_progression "Registering Synapse app-service"
 
+chmod u+x "$install_dir/mautrix-whatsapp" # Execute permissions for app user
 $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
-
-chmod 400 "$install_dir/config.yaml"
+# We need to run mautrix-whatsapp -g (registration) as root to be able to write in /etc/matrix-...
+# Then config.yaml somehow gets chown root:root , so we need to chown $app:$app
 chown $app:$app "$install_dir/config.yaml"
+
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 #=================================================
 # RESTORE SYSTEMD
@@ -58,7 +58,7 @@ mkdir --parents "/var/log/$app"
 #=================================================
 ynh_script_progression "Integrating service in YunoHost..."
 
-yunohost service add $app --description="$app daemon for bridging Whatsapp and Matrix messages" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging WhatsApp and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -66,17 +66,7 @@ yunohost service add $app --description="$app daemon for bridging Whatsapp and M
 ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
-ynh_systemctl --service=$app --action="start"
-
-# Wait until the synapse user is created
-sleep 30
-    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-    if [ "$bot_synapse_adm" = true ]
-    then
-    ynh_psql_db_shell $synapse_db_name <<< "UPDATE users SET admin = 1 WHERE name = ""$botname"";"
-    #yunohost app action run $synapse_instance set_admin_user -a username=$botname
-    fi
-ynh_systemctl --service=$app --action="restart"
+ynh_systemctl --service="$app" --action="start"
 
 #=================================================
 # END OF SCRIPT

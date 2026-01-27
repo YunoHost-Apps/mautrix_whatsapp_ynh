@@ -152,25 +152,32 @@ services = ["__APP__"]
     name = "SETTINGS FOR EXPERTS IN SERVER ADMINISTRATION"
     help = "There are security and privacy risks if you change these settings without knowing what you do!"
 
-    [advanced.whatsapp]
-    name = "WhatsApp Web API MetaData"
+    [advanced.network]
+    name = "WhatsApp specific config options"
 
-        [advanced.whatsapp.username_template]
-        ask = "Localpart template of MXIDs for WhatsApp users"
+        [advanced.network.displayname_template]
+        ask = "Displayname template for WhatsApp users"
         type = "string"
-        help = "Defaults to 'whatsapp_{{.}}'. '{{.}}' is replaced with the phone number 'msidsn' of the WhatsApp user."
+        help = "Defaults to '{{or .BusinessName .PushName .RedactedPhone 'Unknown user'}} (WA)'. validated WhatsApp business name. nickname set by the WhatsApp user. phone number with middle digits replaced by '∙'."
         bind = ":__INSTALL_DIR__/config.yaml"
 
-        [advanced.whatsapp.os_name]
-        ask = "Device name in the 'WhatsApp Web' section of the smartphone app"
+        [advanced.network.os_name]
+        ask = "Device name that's shown in the 'WhatsApp Web' section in the mobile app."
         type = "string"
         bind = ":__INSTALL_DIR__/config.yaml"
 
-        [advanced.whatsapp.browser_name]
-        ask = "Browser name that determines the logo shown in the smartphone app"
+        [advanced.network.browser_name]
+        ask = "Browser name that determines the logo shown in the mobile app."
         type = "select"
-        choices = ["unknown", "chrome", "firefox", "ie", "opera", "safari", "edge", "desktop", "ipad", "android_tablet", "ohana", "aloha", "catalina", "tcl_tv"]
+        choices = ["unknown", "chrome", "firefox", "ie", "opera", "safari", "edge", "desktop", "ipad", "android_tablet", "ohana", "aloha", "catalina", "tcl_tv", "IOS_PHONE", "IOS_CATALYST", "ANDROID_PHONE", "ANDROID_AMBIGUOUS", "WEAR_OS", "AR_WRIST", "AR_DEVICE", "UWP"]
         help = "Must be 'unknown' for a generic icon or a valid browser name if you want a specific logo."
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [advanced.network.disable_view_once]
+        ask = "Should view-once messages disappear shortly after sending a read receipt on Matrix?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
         bind = ":__INSTALL_DIR__/config.yaml"
 
     [advanced.appservice]
@@ -181,7 +188,7 @@ services = ["__APP__"]
         type = "boolean"
         yes = "true"
         no = "false"
-        help = "Enable only if HomeServer supports https://github.com/matrix-org/matrix-spec-proposals/pull/2246?"
+        help = "Enable only if HomeServer supports https://github.com/matrix-org/matrix-spec-proposals/pull/2246"
         bind = ":__INSTALL_DIR__/config.yaml"
 
         [advanced.appservice.ephemeral_events]

@@ -1,5 +1,5 @@
 [Unit]
-Description=Matrix Whatsapp Bridge
+Description=Matrix WhatsApp Bridge
 After=matrix-synapse.service
 
 [Service]

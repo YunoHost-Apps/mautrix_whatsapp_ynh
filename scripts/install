@@ -3,16 +3,25 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-# Retrieve some values from selected Synapse instance and store them
-synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
-server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
-domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
-ynh_app_setting_set --key=server_name --value=$server_name
-ynh_app_setting_set --key=domain --value=$domain
-synapse_db_name="$(get_synapse_db_name $synapse_instance)"
+# Satisfy shellcheck, those variables are known when starting the script:
+# shellcheck disable=SC2154
+echo From manifest: "$synapse_instance", \
+     From yunohost: "$app $install_dir" > /dev/null
+
+#=================================================
+# INITIALIZE AND STORE SETTINGS
+#=================================================
 
 # This is needed to convert the value from the manifest to a valid value for the config.yaml file.
 # Without this the install script will throw a warning.
+# Convert user choice boolean from the manifest into a config value
+if [ "$enable_relaybot" -eq "1" ]
+then
+  enable_relaybot="true"
+else
+  enable_relaybot="false"
+fi
+
 if [ "$encryption" -eq "1" ]
 then
   encryption="true"
@@ -20,51 +29,80 @@ else
   encryption="false"
 fi
 
+# Retrieve some values from selected Synapse instance and store them
+ynh_app_setting_set --key=synapse_instance --value="$synapse_instance"
+synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
+server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
+domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
+ynh_app_setting_set --key=server_name --value=$server_name
+ynh_app_setting_set --key=domain --value=$domain
+
 #=================================================
 # SET STANDARD SETTINGS FROM DEFAULT CONFIG
 #=================================================
 
-appserviceid=$app
-async_media="false"
-displayname="WhatsApp bridge bot"
-avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
-ephemeral_events="true"
+# Network-specific config options
 os_name="Mautrix-WhatsApp bridge"
 browser_name="unknown"
-username_template="whatsapp_{{.}}"
-personal_filtering_spaces="false"
-delivery_receipts="false"
 send_presence_on_typing="false"
 url_previews="false"
-encryption_default="false"
-encryption_require="false"
-admin_only="true"
-print_level="info"
-enable_relaybot="true"
-listrelay="*"
-listadmin="$botadmin"
-listuser="$botusers"
-pickle_key=$(ynh_string_random)
-
-ynh_app_setting_set --key=appserviceid --value=$appserviceid
-ynh_app_setting_set --key=async_media --value=$async_media
-ynh_app_setting_set --key=displayname --value=$displayname
-ynh_app_setting_set --key=avatar --value=$avatar
-ynh_app_setting_set --key=ephemeral_events --value=$ephemeral_events
 ynh_app_setting_set --key=os_name --value=$os_name
 ynh_app_setting_set --key=browser_name --value=$browser_name
-ynh_app_setting_set --key=username_template --value=$username_template
-ynh_app_setting_set --key=personal_filtering_spaces --value=$personal_filtering_spaces
-ynh_app_setting_set --key=delivery_receipts --value=$delivery_receipts
 ynh_app_setting_set --key=send_presence_on_typing --value=$send_presence_on_typing
 ynh_app_setting_set --key=url_previews --value=$url_previews
-ynh_app_setting_set --key=encryption_default --value=$encryption_default
-ynh_app_setting_set --key=encryption_require --value=$encryption_require
+
+
+# Config options that affect the central bridge module.
+personal_filtering_spaces="false"
+enable_relaybot="true"
+admin_only="true"
+displayname="WhatsApp bridge bot"
+listrelay="*"
+listuser="$botusers"
+listadmin="$botadmin"
+
+# Homeserver details.
+async_media="false"
+
+# Application service host/registration related details.
+avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+ephemeral_events="true"
+username_template="whatsapp_{{.}}"  # Localpart template of MXIDs for remote users.
+                                    # {{.}} is replaced with the internal ID of the user.
+
+# Config options that affect the Matrix connector of the bridge.
+delivery_receipts="false"
+
+# End-to-bridge encryption support options.
+encryption_default="false"
+encryption_require="false"
+pickle_key=$(ynh_string_random)
+
+# Logging config. See https://github.com/tulir/zeroconfig for details.
+print_level="info"
+
+ynh_app_setting_set --key=personal_filtering_spaces --value=$personal_filtering_spaces
 ynh_app_setting_set --key=enable_relaybot --value=$enable_relaybot
 ynh_app_setting_set --key=admin_only --value=$admin_only
-ynh_app_setting_set --key=print_level --value=$print_level
+ynh_app_setting_set --key=displayname --value=$displayname
 ynh_app_setting_set --key=listrelay --value=$listrelay
+ynh_app_setting_set --key=listuser --value=$listuser
+ynh_app_setting_set --key=listadmin --value=$listadmin
+
+ynh_app_setting_set --key=async_media --value=$async_media
+
+ynh_app_setting_set --key=avatar --value=$avatar
+ynh_app_setting_set --key=ephemeral_events --value=$ephemeral_events
+ynh_app_setting_set --key=username_template --value=$username_template
+
+ynh_app_setting_set --key=delivery_receipts --value=$delivery_receipts
+
+ynh_app_setting_set --key=encryption --value=$encryption
+ynh_app_setting_set --key=encryption_default --value=$encryption_default
+ynh_app_setting_set --key=encryption_require --value=$encryption_require
 ynh_app_setting_set --key=pickle_key --value=$pickle_key
+
+ynh_app_setting_set --key=print_level --value=$print_level
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -73,10 +111,7 @@ ynh_script_progression "Setting up source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$install_dir"
-
-chmod 750 "$install_dir"
-chmod -R 750 "$install_dir"
-chown -R $app:$app "$install_dir"
+#chmod u+x "$install_dir"/mautrix-whatsapp # Execute permissions for app user
 
 #=================================================
 # SPECIFIC SETUP
@@ -84,6 +119,8 @@ chown -R $app:$app "$install_dir"
 # ADD A CONFIGURATION
 #=================================================
 ynh_script_progression "Adding $app's configuration..."
+# as_token="\"This value is generated when generating the registration\""
+# hs_token="\"This value is generated when generating the registration\""
 
 ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
 
@@ -97,11 +134,15 @@ set__listadmin
 #=================================================
 ynh_script_progression "Registering Synapse app-service"
 
+chmod u+x "$install_dir/mautrix-whatsapp" # Execute permissions for app user
 $install_dir/mautrix-whatsapp -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
-
-ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+# We need to run mautrix-whatsapp -g (registration) as root to be able to write in /etc/matrix-...
+# Then config.yaml somehow gets chown root:root , so we need to chown $app:$app
+chown $app:$app "$install_dir/config.yaml"
 ynh_store_file_checksum "$install_dir/config.yaml"
+
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
 
 #=================================================
 # SETUP SYSTEMD
@@ -117,14 +158,14 @@ ynh_config_add_systemd
 ynh_script_progression "Configuring log rotation..."
 
 # Use logrotate to manage application logfile(s)
-ynh_config_add_logrotate  "/var/log/$app/$app.log"  $app/$app
+ynh_config_add_logrotate "/var/log/$app/$app.log" $app/$app
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
 ynh_script_progression "Integrating service in YunoHost..."
 
-yunohost service add $app --description="$app daemon for bridging Whatsapp and Matrix messages" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging WhatsApp and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -132,17 +173,7 @@ yunohost service add $app --description="$app daemon for bridging Whatsapp and M
 ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
-ynh_systemctl --service=$app --action="start"
-
-# Wait until the synapse user is created
-sleep 30
-    # (Note that, by default, non-admins might not have your homeserver's permission to create Spaces.)
-    if [ "$bot_synapse_adm" = true ]
-    then
-    ynh_psql_db_shell $synapse_db_name <<< "UPDATE users SET admin = 1 WHERE name = ""$botname"";"
-    #yunohost app action run $synapse_instance set_admin_user -a username=$botname
-    fi
-ynh_systemctl --service=$app --action="restart"
+ynh_systemctl --service="$app" --action="start"
 
 #=================================================
 # END OF SCRIPT

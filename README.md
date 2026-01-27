@@ -4,14 +4,14 @@ It shall NOT be edited by hand.
 -->
 
 <h1>
-  <img src="https://raw.githubusercontent.com/YunoHost/apps/main/logos/mautrix_whatsapp.png" width="32px" alt="Logo of Matrix-WhatsApp bridge">
-  Matrix-WhatsApp bridge, packaged for YunoHost
+  <img src="https://raw.githubusercontent.com/YunoHost/apps/main/logos/mautrix_whatsapp.png" width="32px" alt="Logo of Matrix WhatsApp bridge">
+  Matrix WhatsApp bridge, packaged for YunoHost
 </h1>
 
 Matrix / Synapse puppeting bridge for WhatsApp
 
-[![🌐 Official app website](https://img.shields.io/badge/Official_app_website-darkgreen?style=for-the-badge)](https://maunium.net/go/mautrix-whatsapp/)
-[![Version: 0.2511.0~ynh1](https://img.shields.io/badge/Version-0.2511.0~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/mautrix_whatsapp/)
+[![🌐 Official app website](https://img.shields.io/badge/Official_app_website-darkgreen?style=for-the-badge)](https://maunium.net/go/mautrix-whatsapp)
+[![Version: 0.2601.0~ynh1](https://img.shields.io/badge/Version-0.2601.0~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/mautrix_whatsapp/)
 
 <div align="center">
 <a href="https://apps.yunohost.org/app/mautrix_whatsapp"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
@@ -22,7 +22,7 @@ Matrix / Synapse puppeting bridge for WhatsApp
 
 [![Automatic tests level](https://apps.yunohost.org/badge/cilevel/mautrix_whatsapp)](https://ci-apps.yunohost.org/ci/apps/mautrix_whatsapp/)
 
-🛠️ Upstream Matrix-WhatsApp bridge repository: <https://github.com/mautrix/whatsapp>
+🛠️ Upstream Matrix WhatsApp bridge repository: <https://github.com/mautrix/whatsapp>
 
 Pull request are welcome and should target the [`testing` branch](https://github.com/YunoHost-Apps/mautrix_whatsapp_ynh/tree/testing).
 
