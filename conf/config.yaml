@@ -168,6 +168,11 @@ bridge:
     # Should cross-room reply metadata be bridged?
     # Most Matrix clients don't support this and servers may reject such messages too.
     cross_room_replies: false
+    # If a state event fails to bridge, should the bridge revert any state changes made by that event?
+    revert_failed_state_changes: false
+    # In portals with no relay set, should Matrix users be kicked if they're
+    # not logged into an account that's in the remote chat?
+    kick_matrix_users: true
 
     # What should be done to portal rooms when a user logs out or is logged out?
     # Permitted values:
@@ -396,6 +401,14 @@ public_media:
     expiry: 0
     # Length of hash to use for public media URLs. Must be between 0 and 32.
     hash_length: 32
+    # The path prefix for generated URLs. Note that this will NOT change the path where media is actually served.
+    # If you change this, you must configure your reverse proxy to rewrite the path accordingly.
+    path_prefix: /_mautrix/publicmedia
+    # Should the bridge store media metadata in the database in order to support encrypted media and generate shorter URLs?
+    # If false, the generated URLs will just have the MXC URI and a HMAC signature.
+    # The hash_length field will be used to decide the length of the generated URL.
+    # This also allows invalidating URLs by deleting the database entry.
+    use_database: false
 
 # Settings for converting remote media to custom mxc:// URIs instead of reuploading.
 # More details can be found at https://docs.mau.fi/bridges/go/discord/direct-media.html
@@ -486,6 +499,8 @@ encryption:
     # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
     # Changing this option requires updating the appservice registration file.
     msc4190: false
+    # Whether to encrypt reactions and reply metadata as per MSC4392.
+    msc4392: false
     # Should the bridge bot generate a recovery key and cross-signing keys and verify itself?
     # Note that without the latest version of MSC4190, this will fail if you reset the bridge database.
     # The generated recovery key will be saved in the kv_store table under `recovery_key`.
@@ -551,6 +566,16 @@ encryption:
         # Disable rotating keys when a user's devices change?
         # You should not enable this option unless you understand all the implications.
         disable_device_change_key_rotation: false
+
+# Prefix for environment variables. All variables with this prefix must map to valid config fields.
+# Nesting in variable names is represented with a dot (.).
+# If there are no dots in the name, two underscores (__) are replaced with a dot.
+#
+# e.g. if the prefix is set to `BRIDGE_`, then `BRIDGE_APPSERVICE__AS_TOKEN` will set appservice.as_token.
+# `BRIDGE_appservice.as_token` would work as well, but can't be set in a shell as easily.
+#
+# If this is null, reading config fields from environment will be disabled.
+env_config_prefix: null
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
