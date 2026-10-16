@@ -60,7 +60,7 @@ ynh_script_progression "Ensuring downward compatibility..."
 if [ -z "$botname" ]
 then
     botname=$(ynh_app_setting_get --key=whatsappbot)
-    ynh_app_setting_set --key=botname --value=$botname
+    ynh_app_setting_set --key=botname --value="$botname"
 fi
 
 
@@ -69,60 +69,60 @@ fi
 if [ -z "$os_name" ]
 then
   os_name="Mautrix-WhatsApp bridge"
-  ynh_app_setting_set --key=os_name --value=$os_name
+  ynh_app_setting_set --key=os_name --value="$os_name"
 fi
 if [ -z "$browser_name" ]
 then
   browser_name="unknown"
-  ynh_app_setting_set --key=browser_name --value=$browser_name
+  ynh_app_setting_set --key=browser_name --value="$browser_name"
 fi
 if [ -z "$send_presence_on_typing" ]
 then
   send_presence_on_typing="false"
-  ynh_app_setting_set --key=send_presence_on_typing --value=$send_presence_on_typing
+  ynh_app_setting_set --key=send_presence_on_typing --value="$send_presence_on_typing"
 fi
 if [ -z "$url_previews" ]
 then
   url_previews="false"
-  ynh_app_setting_set --key=url_previews --value=$url_previews
+  ynh_app_setting_set --key=url_previews --value="$url_previews"
 fi
 
 
 if [ -z "$personal_filtering_spaces" ]
 then
   personal_filtering_spaces="false"
-  ynh_app_setting_set --key=personal_filtering_spaces --value=$personal_filtering_spaces
+  ynh_app_setting_set --key=personal_filtering_spaces --value="$personal_filtering_spaces"
 fi
 if [ -z "$enable_relaybot" ]
 then
   enable_relaybot="true"
-  ynh_app_setting_set --key=enable_relaybot --value=$enable_relaybot
+  ynh_app_setting_set --key=enable_relaybot --value="$enable_relaybot"
 fi
 if [ -z "$admin_only" ]
 then
   admin_only="true"
-  ynh_app_setting_set --key=admin_only --value=$admin_only
+  ynh_app_setting_set --key=admin_only --value="$admin_only"
 fi
 if [ -z "$displayname" ]
 then
   displayname="WhatsApp bridge bot"
-  ynh_app_setting_set --key=displayname --value=$displayname
+  ynh_app_setting_set --key=displayname --value="$displayname"
 fi
 if [ -z "$listrelay" ]
 then
     listrelay="*"
-    ynh_app_setting_set --key=listrelay --value=$listrelay
+    ynh_app_setting_set --key=listrelay --value="$listrelay"
 fi
 if [ -z "$listuser" ]
 then
     listuser=$(ynh_app_setting_get --key=botusers)
-    ynh_app_setting_set --key=listuser --value=$listuser
+    ynh_app_setting_set --key=listuser --value="$listuser"
     ynh_app_setting_delete --key=botusers
 fi
 if [ -z "$listadmin" ]
 then
     listadmin=$(ynh_app_setting_get --key=botadmin)
-    ynh_app_setting_set --key=listadmin --value=$listadmin
+    ynh_app_setting_set --key=listadmin --value="$listadmin"
     ynh_app_setting_delete --key=botadmin
 fi
 
@@ -130,56 +130,56 @@ fi
 if [ -z "$async_media" ]
 then
   async_media="false"
-  ynh_app_setting_set --key=async_media --value=$async_media
+  ynh_app_setting_set --key=async_media --value="$async_media"
 fi
 
 
 if [ -z "$avatar" ]
 then
   avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
-  ynh_app_setting_set --key=avatar --value=$avatar
+  ynh_app_setting_set --key=avatar --value="$avatar"
 fi
 if [ -z "$ephemeral_events" ]
 then
   ephemeral_events="true"
-  ynh_app_setting_set --key=ephemeral_events --value=$ephemeral_events
+  ynh_app_setting_set --key=ephemeral_events --value="$ephemeral_events"
 fi
 if [ -z "$username_template" ]
 then
   username_template="whatsapp_{{.}}"
-  ynh_app_setting_set --key=username_template --value=$username_template
+  ynh_app_setting_set --key=username_template --value="$username_template"
 fi
 
 
 if [ -z "$delivery_receipts" ]
 then
   delivery_receipts="false"
-  ynh_app_setting_set --key=delivery_receipts --value=$delivery_receipts
+  ynh_app_setting_set --key=delivery_receipts --value="$delivery_receipts"
 fi
 
 
 if [ -z "$encryption_default" ]
 then
   encryption_default="false"
-  ynh_app_setting_set --key=encryption_default --value=$encryption_default
+  ynh_app_setting_set --key=encryption_default --value="$encryption_default"
 fi
 if [ -z "$encryption_require" ]
 then
   encryption_require="false"
-  ynh_app_setting_set --key=encryption_require --value=$encryption_require
+  ynh_app_setting_set --key=encryption_require --value="$encryption_require"
 fi
 # Upgrade from <v0.11
 if [ -z "$pickle_key" ]
 then
     pickle_key="maunium.net/go/mautrix-whatsapp"
-    ynh_app_setting_set --key=pickle_key --value=$pickle_key
+    ynh_app_setting_set --key=pickle_key --value="$pickle_key"
 fi
 
 
 if [ -z "$print_level" ]
 then
   print_level="info"
-  ynh_app_setting_set --key=print_level --value=$print_level
+  ynh_app_setting_set --key=print_level --value="$print_level"
 fi
 
 
