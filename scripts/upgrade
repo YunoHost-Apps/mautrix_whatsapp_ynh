@@ -56,6 +56,26 @@ ynh_systemctl --service="$app" --action="stop"
 #=================================================
 ynh_script_progression "Ensuring downward compatibility..."
 
+# Boolean settings stored by older versions (manifest boolean questions were saved as 1/0)
+# are not read as booleans by the bridge in config.yaml (e.g. "encryption: 1").
+normalize_bool_setting() {
+  local value="${!1}"
+  case "${value,,}" in
+    1|yes|true) value="true" ;;
+    0|no|false) value="false" ;;
+    *) return 0 ;;
+  esac
+  if [ "${!1}" != "$value" ]; then
+    printf -v "$1" '%s' "$value"
+    ynh_app_setting_set --key="$1" --value="$value"
+  fi
+}
+for setting in encryption encryption_default encryption_require ephemeral_events delivery_receipts \
+               async_media personal_filtering_spaces enable_relaybot admin_only
+do
+  normalize_bool_setting "$setting"
+done
+
 # DB Backup missing because of wrong Upgrade from <=0.2.0
 if [ -z "$botname" ]
 then
