@@ -1,6 +1,6 @@
 [Unit]
 Description=Matrix WhatsApp Bridge
-After=matrix-synapse.service
+Requires=matrix-synapse.service
 
 [Service]
 Type=simple
