@@ -23,7 +23,6 @@ services = ["__APP__"]
         ask = "Users bridged thanks to Relay Mode"
         type = "tags"
         help = "Relay Role: Talk on WhatsApp through the RelayBot in a room where it has been activated with '!wa set-relay', no access otherwise."
-        visible = "enable_relaybot"
 
         [main.permissions.listuser]
         ask = "Bridge Users"
