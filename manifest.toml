@@ -65,7 +65,6 @@ ram.runtime = "128M"
     example = "@johndoe:localsynapse.servername or @johndoe:matrix.org"
     help.en = "The administrator does not need to be a local Synapse account. Valid formats are @johndoe:localsynapse.servername or @johndoe:matrix.org"
     help.fr = "L'administrateur peut ne pas être un compte local Synapse. Les formats valables sont @johndoe:localsynapse.servername or @johndoe:matrix.org"
-    default = "Your main Matrix account"
 
     [install.botusers]
     ask.en = "Choose Matrix user(s) authorized to bridge with the WhatsApp bot."
