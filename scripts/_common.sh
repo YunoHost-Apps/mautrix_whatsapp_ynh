@@ -19,25 +19,30 @@ apply_permissions() {
     declare values="list$role"
     newValues="${!values}" # Here we expand the dynamic variable we created in the previous line. ! Does the trick
     newValues="${newValues//\"}"
-    usersArray=(${newValues//,/ }) # Split the values using comma (,) as separator.
+    # Split on commas only and trim surrounding whitespace, so that a value containing spaces
+    # (e.g. a leftover placeholder sentence) is never split into several bogus entries.
+    IFS=',' read -r -a rawArray <<< "$newValues"
+    usersArray=()
+    for user in "${rawArray[@]}"; do
+        user="${user#"${user%%[![:space:]]*}"}"
+        user="${user%"${user##*[![:space:]]}"}"
+        [ -n "$user" ] && usersArray+=("$user")
+    done
 
-    if [ -n "$newValues" ]
+    if [ ${#usersArray[@]} -gt 0 ]
     then
-        #ynh_systemctl --service="$app" --action=stop
-        # Get all entries between "permissions:" and "relay:" keys, remove the role part, remove commented parts, format it with newlines and clean whitespaces and double quotes.
-        allDefinedEntries=$(awk '/permissions:/{flag=1; next} /relay:/{flag=0} flag' "$install_dir/config.yaml" | sed "/: $role/d" | sed -r 's/: (admin|user|relay)//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr ',' '\n' )
+        # Only touch the "permissions:" block of the bridge section (it ends at the top-level "database:" key).
+        allDefinedEntries=$(sed -n '/^    permissions:/,/^database:/p' "$install_dir/config.yaml" | sed '1d;$d' | sed '/^ *#/d' | grep -v -E ": \"?$role\"?$" | sed -E 's/^ *"?([^"]*)"?: .*/\1/')
         # Delete everything from the corresponding role to insert the new defined values. This way we also handle deletion of users.
-        sed -i "/permissions:/,/relay:/{/: $role/d;}" "$install_dir/config.yaml"
-        # Ensure that entries with value surrounded with quotes are deleted too. E.g. "users".
-        sed -i "/permissions:/,/relay:/{/: \"$role\"/d;}" "$install_dir/config.yaml"
-      	for user in "${usersArray[@]}"
-            do
-              if grep -q -x "${user}" <<< "$allDefinedEntries"
-              then
+        sed -i -E "/^    permissions:/,/^database:/{/: \"?$role\"?$/d;}" "$install_dir/config.yaml"
+        for user in "${usersArray[@]}"
+        do
+            if grep -q -x -F "${user}" <<< "$allDefinedEntries"
+            then
                 ynh_print_info "User $user already defined in another role."
-              else
-                sed -i "/permissions:/a \        \\\"$user\": $role" "$install_dir/config.yaml" # Whitespaces are needed so that the file can be correctly parsed
-              fi
+            else
+                sed -i "/^    permissions:/a \        \\\"$user\\\": $role" "$install_dir/config.yaml" # Whitespaces are needed so that the file can be correctly parsed
+            fi
         done
     fi
     set +o noglob
